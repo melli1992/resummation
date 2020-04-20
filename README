@@ -1,0 +1,10 @@
+EDIT in makefile:
+LHAPDF (path to LHAPDF)
+LOOPTOOLS (path to looptools)
+CUBA (path to cuba)
+
+Compiler is g++
+
+Documentation in overleaf document
+
+.cfg are config files
