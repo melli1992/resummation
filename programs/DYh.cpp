@@ -30,7 +30,7 @@ using namespace std;
 ///
 /// resums DY and higgs and calculates fixed-order expansions
 ///
-/// inputs and flags via DYh.cfg 
+/// inputs and flags via DYh.cfg
 ///
 ////////////////////////////////////////////////////////////////
 
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]){
 	//////////////////////////////////////////////
 	configure(argc, argv, to_string2("DYh.cfg"), true);
 	bool PDFmemuse = false;
-	
+
 	//////////////////////
 	/// TEST FUNCTIONS
 	//////////////////////
@@ -198,8 +198,11 @@ int main(int argc, char* argv[]){
 		output2 << "1/x*g(z)*g(tau/z)), for gg: " << pdf_sum_gg(z, tau) << endl;
 		output2 << "Sum_i(1/x*q_i(z)*q_i(tau/z)+qbar_i(z)*qbar_i(tau/z)), for qq+qbarqbar (identical) : " << pdf_sum_qq(z, tau) << endl;
 		output2 << "Sum_(i,j)(1/x*q_i(z)*q_j(tau/z)+<->+qbar_i(z)*qbar_j(tau/z)+<->), for qq+qbarqbar (non-identical) : " << pdf_sum_qqNI(z, tau) << endl;
-	}
 	
+		output2.close();
+		exit(0);
+	}
+
 	//////////////////////
 	/// LO declarations
 	//////////////////////
@@ -250,13 +253,13 @@ int main(int argc, char* argv[]){
 	vector<results_c> resummed_DY_LP_NNLL_exp_NNLO, resummed_DY_LP_NNLL_NLP_LL_exp_NNLO, resummed_DY_LP_NLL_exp_NNLO, resummed_DY_LP_NLL_NLP_LL_exp_NNLO, resummed_DY_LP_LL_NLP_LL_exp_NNLO, resummed_DY_LP_LL_exp_NNLO;
 	vector<results_c> resummed_DY_LP_NNLL_exp_NLO, resummed_DY_LP_NNLL_NLP_LL_exp_NLO, resummed_DY_LP_NLL_exp_NLO, resummed_DY_LP_NLL_NLP_LL_exp_NLO, resummed_DY_LP_LL_NLP_LL_exp_NLO, resummed_DY_LP_LL_exp_NLO;
 	vector<results_c> SCET_DY_LP_NNLL, SCET_DY_LP_NNLL_NLP_LL, SCET_DY_LP_NLL, SCET_DY_LP_NLL_NLP_LL, SCET_DY_LP_LL_NLP_LL, SCET_DY_LP_LL;
-	
+
 	// higgs
 	vector<results_c> resummed_higgs_LP_NNLL, resummed_higgs_LP_NNLL_NLP_LL, resummed_higgs_LP_NLL, resummed_higgs_LP_NLL_NLP_LL, resummed_higgs_LP_LL_NLP_LL, resummed_higgs_LP_LL;
 	vector<results_c> resummed_higgs_LP_NNLL_exp_NNLO, resummed_higgs_LP_NNLL_NLP_LL_exp_NNLO, resummed_higgs_LP_NLL_exp_NNLO, resummed_higgs_LP_NLL_NLP_LL_exp_NNLO, resummed_higgs_LP_LL_NLP_LL_exp_NNLO, resummed_higgs_LP_LL_exp_NNLO;
 	vector<results_c> resummed_higgs_LP_NNLL_exp_NLO, resummed_higgs_LP_NNLL_NLP_LL_exp_NLO, resummed_higgs_LP_NLL_exp_NLO, resummed_higgs_LP_NLL_NLP_LL_exp_NLO, resummed_higgs_LP_LL_NLP_LL_exp_NLO, resummed_higgs_LP_LL_exp_NLO;
 	vector<results_c> SCET_higgs_LP_NNLL, SCET_higgs_LP_NNLL_NLP_LL, SCET_higgs_LP_NLL, SCET_higgs_LP_NLL_NLP_LL, SCET_higgs_LP_LL_NLP_LL, SCET_higgs_LP_LL;
-	
+
 	////////////////////////////////////////////////////////////////////
 
 	///////////////////
@@ -377,7 +380,7 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_NNLL_NLP_LL_exp_NLO =call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_NNLL_NLP_LL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
 				cout << resummed_higgs_LP_NNLL_NLP_LL[0].res << " " << resummed_higgs_LP_NNLL_NLP_LL[0].err << endl;
-				
+
 				cout << "LP NLL + NLP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 1;
@@ -387,7 +390,7 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_NLL_NLP_LL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_NLL_NLP_LL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
 				cout << resummed_higgs_LP_NLL_NLP_LL[0].res << " " << resummed_higgs_LP_NLL_NLP_LL[0].err << endl;
-				
+
 				cout << "LP LL + NLP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 1;
@@ -397,7 +400,7 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_LL_NLP_LL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_LL_NLP_LL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
 				cout << resummed_higgs_LP_LL_NLP_LL[0].res << " " << resummed_higgs_LP_LL_NLP_LL[0].err << endl;
-				
+
 				cout << "LP NNLL" << endl;
 				ISNNLL = 1;
 				ISNLP = 0;
@@ -407,7 +410,7 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_NNLL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_NNLL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
 				cout << resummed_higgs_LP_NNLL[0].res << " " << resummed_higgs_LP_NNLL[0].err << endl;
-				
+
 				cout << "LP NLL" << endl;
 				ISNNLL = 0;
 				ISNLP = 0;
@@ -417,7 +420,7 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_NLL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_NLL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
 				cout << resummed_higgs_LP_NLL[0].res << " " << resummed_higgs_LP_NLL[0].err << endl;
-				
+
 
 				cout << "LP LL" << endl;
 				ISNNLL = 0;
@@ -428,7 +431,7 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_LL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_LL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
 				cout << resummed_higgs_LP_LL[0].res << " " << resummed_higgs_LP_LL[0].err << endl;
-				
+
 
 
 		}
@@ -441,7 +444,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_higgs_LP_NNLL_NLP_LL = call_cuhre_higgs("resum","gg","SCET",fitPDF);
 				cout << SCET_higgs_LP_NNLL_NLP_LL[0].res << " " << SCET_higgs_LP_NNLL_NLP_LL[0].err << endl;
-				
+
 				cout << "LP NLL + NLP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 1;
@@ -449,7 +452,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_higgs_LP_NLL_NLP_LL = call_cuhre_higgs("resum","gg","SCET",fitPDF);
 				cout << SCET_higgs_LP_NLL_NLP_LL[0].res << " " << SCET_higgs_LP_NLL_NLP_LL[0].err << endl;
-				
+
 				cout << "LP LL + NLP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 1;
@@ -457,7 +460,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 0;
 				SCET_higgs_LP_LL_NLP_LL = call_cuhre_higgs("resum","gg","SCET",fitPDF);
 				cout << SCET_higgs_LP_LL_NLP_LL[0].res << " " << SCET_higgs_LP_LL_NLP_LL[0].err << endl;
-				
+
 				cout << "LP NNLL" << endl;
 				ISNNLL = 1;
 				ISNLP = 0;
@@ -465,7 +468,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_higgs_LP_NNLL = call_cuhre_higgs("resum","gg","SCET",fitPDF);
 				cout << SCET_higgs_LP_NNLL[0].res << " " << SCET_higgs_LP_NNLL[0].err << endl;
-				
+
 				cout << "LP NLL" << endl;
 				ISNNLL = 0;
 				ISNLP = 0;
@@ -473,7 +476,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_higgs_LP_NLL = call_cuhre_higgs("resum","gg","SCET",fitPDF);
 				cout << SCET_higgs_LP_NLL[0].res << " " << SCET_higgs_LP_NLL[0].err << endl;
-				
+
 				cout << "LP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 0;
@@ -481,7 +484,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 0;
 				SCET_higgs_LP_LL = call_cuhre_higgs("resum","gg","SCET",fitPDF);
 				cout << SCET_higgs_LP_LL[0].res << " " << SCET_higgs_LP_LL[0].err << endl;
-			
+
 		}
 	}
 }
@@ -624,7 +627,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_DY_LP_NNLL_NLP_LL = call_cuhre_dy("resum","gg","SCET",fitPDF);
 				cout << SCET_DY_LP_NNLL_NLP_LL[0].res << " " << SCET_DY_LP_NNLL_NLP_LL[0].err << endl;
-			
+
 				cout << "LP NLL + NLP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 1;
@@ -632,7 +635,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_DY_LP_NLL_NLP_LL = call_cuhre_dy("resum","gg","SCET",fitPDF);
 				cout << SCET_DY_LP_NLL_NLP_LL[0].res << " " << SCET_DY_LP_NLL_NLP_LL[0].err << endl;
-			
+
 				cout << "LP LL + NLP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 1;
@@ -640,7 +643,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 0;
 				SCET_DY_LP_LL_NLP_LL = call_cuhre_dy("resum","gg","SCET",fitPDF);
 				cout << SCET_DY_LP_LL_NLP_LL[0].res << " " << SCET_DY_LP_LL_NLP_LL[0].err << endl;
-			
+
 				cout << "LP NNLL" << endl;
 				ISNNLL = 1;
 				ISNLP = 0;
@@ -648,7 +651,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_DY_LP_NNLL = call_cuhre_dy("resum","gg","SCET",fitPDF);
 				cout << SCET_DY_LP_NNLL[0].res << " " << SCET_DY_LP_NNLL[0].err << endl;
-			
+
 				cout << "LP NLL" << endl;
 				ISNNLL = 0;
 				ISNLP = 0;
@@ -656,7 +659,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 1;
 				SCET_DY_LP_NLL = call_cuhre_dy("resum","gg","SCET",fitPDF);
 				cout << SCET_DY_LP_NLL[0].res << " " << SCET_DY_LP_NLL[0].err << endl;
-			
+
 				cout << "LP LL" << endl;
 				ISNNLL = 0;
 				ISNLP = 0;
@@ -664,7 +667,7 @@ int main(int argc, char* argv[]){
 				ISNLL = 0;
 				SCET_DY_LP_LL = call_cuhre_dy("resum","gg","SCET",fitPDF);
 				cout << SCET_DY_LP_LL[0].res << " " << SCET_DY_LP_LL[0].err << endl;
-			
+
 
 			}
 		}
@@ -1051,7 +1054,7 @@ int main(int argc, char* argv[]){
 
 			output << "======================================================" << endl;
 		}
-		if(SCET&&DY){	
+		if(SCET&&DY){
 			output << "=======================" << endl;
 			output << "Resummed results (SCET)" << endl;
 			output << "=======================" << endl;
@@ -1072,7 +1075,7 @@ int main(int argc, char* argv[]){
 
 			output << "SCET (LP NLL): 				" << SCET_DY_LP_NLL[0].res << " pb +/- " << SCET_DY_LP_NLL[0].err <<  endl;
 			output << "--------------------------------" << endl;
-	
+
 			output << "SCET (LP LL): 				" << SCET_DY_LP_LL[0].res << " pb +/- " << SCET_DY_LP_LL[0].err <<  endl;
 			output << "--------------------------------" << endl;
 

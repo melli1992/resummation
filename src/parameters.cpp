@@ -13,6 +13,7 @@
 #include "LHAPDF/LHAPDF.h"
 #include "cuba.h"
 #include "cuba_integration.h"
+#include "SCET_functions.h"
 #include "fit_coefficients.h"
 
 using namespace std;
@@ -222,14 +223,22 @@ void update_defaults(bool printout , bool pdfset){
 		<< "Renormalization scale [GeV]: 		" << muR << endl
 		<< "Factorization scale [GeV]:		" << muF << endl;
 		if(SCET && setdym){
-			muh = Q; mut = Q;
-			if(higgs) mus = call_set_scale("gg")[0].res;
-			else if(DY) mus = call_set_scale("qqbar")[0].res;
-			cout << "Soft scale [GeV]: 			" << mus << endl
-			<< "Hard scale [GeV]:			" << muh << endl;
-		}		
-		cout << "alphas_mZ:			 	" << pdfs[use_member]->alphasQ(sqrt(mZ2)) << endl;
-		cout << "alphas_muR: 		 		" << alphas_muR << endl;
+			solveLambdaQCD();
+			muh = Q; mut = sqrt(mt2);
+			if(higgs) {cout << "Calculating Higgs soft scale" << endl; mus = call_set_scale("gg")[0].res;}
+			else if(DY) {cout << "Calculating DY soft scale" << endl;mus = call_set_scale("qqbar")[0].res;}
+			cout << "LambdaQCD [GeV]:			" << LambdaQCD << endl
+				 << "Soft scale [GeV]: 			" << mus << endl
+			     << "Hard scale [GeV]:			" << muh << endl
+				 << "alphas_mZ (grid):		 	" << pdfs[use_member]->alphasQ(sqrt(mZ2)) << endl
+				 << "alphas_mZ (own):		 	" << falphasQ2(mZ2) << endl
+			     << "alphas_muR (grid): 	 		" << alphas_muR << endl
+				 << "alphas_muR (own):		 	" << falphasQ2(muR2) << endl;
+		}
+		else{		
+			cout << "alphas_mZ:			 	" << pdfs[use_member]->alphasQ(sqrt(mZ2)) << endl;
+			cout << "alphas_muR: 		 		" << alphas_muR << endl;
+		}	
 		if(higgs) cout << "Higgs channel: ";
 		if(DY) cout << "DY channel: ";
 		if(NNLO) cout << "computing up to NNLO" << endl;

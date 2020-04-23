@@ -1,6 +1,12 @@
 #ifndef SCETRESUM_H
 #define SCETRESUM_H
 
+
+// solving lambdaQCD
+std::complex<double> invasLambdaQCD(std::complex<double> LambdaQCD);
+std::complex<double> DinvasLambdaQCD(std::complex<double> LambdaQCD);
+void solveLambdaQCD();
+
 // running alphas
 std::complex<double> falphasQ2(std::complex<double> mu2);
 

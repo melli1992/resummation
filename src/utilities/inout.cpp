@@ -17,7 +17,7 @@ using namespace std;
 template<class T>
 ostream& operator<<(ostream& os, const vector<T>& v)
 {
-    copy(v.begin(), v.end(), ostream_iterator<T>(os, " ")); 
+    copy(v.begin(), v.end(), ostream_iterator<T>(os, " "));
     return os;
 }
 
@@ -25,28 +25,28 @@ ostream& operator<<(ostream& os, const vector<T>& v)
 int configure(int ac, char* av[], string configfile, bool runupdate = true)
 {
     try {
-		
-        int order; //order for LO, NLO etc. 
+
+        int order; //order for LO, NLO etc.
         int resummed; // option for resummation (1) or scet (2)
         string resum_order; // LL, NLL, NNLL
         string process; //DY, higgs, dihiggs, WW, ZZ
         double comTeV; // sqrt(S) in TeV
         string config_file = configfile;
-		// Declare a group of options that will be 
+		// Declare a group of options that will be
         // allowed only on command line
         po::options_description generic("Generic options");
         generic.add_options()
             ("help,h", "produce help message")
             ("config,c", po::value<string>(&config_file)->default_value(configfile), "name of a file of a configuration.")
             ;
-    
-        // Declare a group of options that will be 
+
+        // Declare a group of options that will be
         // allowed both on command line and in
         // config file
         po::options_description config("Configuration");
         config.add_options()
-            ("include-path,I", 
-                 po::value< vector<string> >()->composing(), 
+            ("include-path,I",
+                 po::value< vector<string> >()->composing(),
                  "include path")
             ;
 
@@ -85,9 +85,12 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
             //SUSY
             ("setSUSY", po::value<double>(&SUSYset)->default_value(false), "relevant for dihiggs, use SUSY?")
             ("tanb", po::value<double>(&tb)->default_value(15.), "tan(beta)")
+            //integration
+            ("phiMP", po::value<double>(&phiMP)->default_value(3./4.*M_PI), "phiMP for inverse Mellin transform")
+            ("CMP", po::value<double>(&CMP)->default_value(2.1), "CMP for inverse Mellin transform")
             ;
 
-        
+
         po::options_description cmdline_options;
         cmdline_options.add(generic).add(config).add(hidden);
 
@@ -96,15 +99,15 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
 
         po::options_description visible("Allowed options");
         visible.add(generic).add(config);
-        
+
         po::positional_options_description p;
         p.add("input-file", -1);
-        
+
         po::variables_map vm;
         store(po::command_line_parser(ac, av).
               options(cmdline_options).positional(p).run(), vm);
         notify(vm);
-        
+
         ifstream ifs(config_file.c_str());
         if (!ifs)
         {
@@ -116,7 +119,7 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
             store(parse_config_file(ifs, config_file_options), vm);
             notify(vm);
         }
-    
+
         if (vm.count("help")) {
 			  cout << endl
 				   << "fill in the input.cfg file" << endl;
@@ -127,6 +130,11 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
             S2 = pow(S,2);
         }
         if (vm.count("fixed_order")){
+          if(order == -1){
+  			   LO = false;
+  			   NLO = false;
+  			   NNLO = false;
+  		   }
             if(order == 0){
 			   LO = true;
 			   NLO = false;
@@ -142,7 +150,7 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
 			   NLO = true;
 			   NNLO = true;
         }
-		}  
+		}
         if( vm.count("resum")){
 		   if(resummed == 0){
 			   RES = false;
@@ -177,7 +185,7 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
 			   ISNLL = 1;
 			   ISNNLL = 1;
 		   }
-		   
+
 	   }
 	    if( vm.count("process")){
 		   if(process.compare("DY") == 0){
@@ -229,12 +237,12 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
         if( vm.count("mb")){mb2 = pow(mb,2);}
         if( vm.count("setSUSY")){if(SUSYset==true) set_SUSY(sqrt(mA2), tb);}
         if (runupdate){update_defaults();}
-              
+
     }
     catch(exception& e)
     {
         cout << e.what() << "\n";
         return 1;
-    }    
+    }
     return 0;
 }

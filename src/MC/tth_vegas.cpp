@@ -12,8 +12,7 @@
 
 using namespace std;
 
-double vegas_ttH_Nspace_deform(double *k, size_t dim, void *params)
-{
+double vegas_ttH_Nspace_deform(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	rho	s34, 	angles,
@@ -39,8 +38,7 @@ double vegas_ttH_Nspace_deform(double *k, size_t dim, void *params)
 		}
 }
 
-double vegas_ttH_Nspace(double *k, size_t dim, void *params)
-{
+double vegas_ttH_Nspace(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	rho	s34, 	angles,
@@ -64,8 +62,7 @@ double vegas_ttH_Nspace(double *k, size_t dim, void *params)
 		}
 }
 
-double vegas_ttH_LO(double *k, size_t dim, void *params)
-{
+double vegas_ttH_LO(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	double s34 = 4.*pow(mt,2)+(pow(sqrt(k[0]*k[1]*S2)-mH,2)-4*pow(mt,2))*k[2];
@@ -82,8 +79,7 @@ double vegas_ttH_LO(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_LO1st(double *k, size_t dim, void *params)
-{
+double vegas_ttH_LO1st(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -112,8 +108,7 @@ double vegas_ttH_LO1st(double *k, size_t dim, void *params)
 
 
 
-double vegas_ttH_LO2nd(double *k, size_t dim, void *params)
-{
+double vegas_ttH_LO2nd(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -141,8 +136,7 @@ double vegas_ttH_LO2nd(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_resum_2nd(double *k, size_t dim, void *params)
-{
+double vegas_ttH_resum_2nd(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -171,8 +165,7 @@ double vegas_ttH_resum_2nd(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_resum_2nd_z5(double *k, size_t dim, void *params)
-{
+double vegas_ttH_resum_2nd_z5(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -202,8 +195,7 @@ double vegas_ttH_resum_2nd_z5(double *k, size_t dim, void *params)
 
 
 
-double vegas_ttH_resum_2nd_def(double *k, size_t dim, void *params)
-{
+double vegas_ttH_resum_2nd_def(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -234,8 +226,7 @@ double vegas_ttH_resum_2nd_def(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_resum_2nd_def_z5(double *k, size_t dim, void *params)
-{
+double vegas_ttH_resum_2nd_def_z5(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -266,8 +257,7 @@ double vegas_ttH_resum_2nd_def_z5(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_resum_def(double *k, size_t dim, void *params)
-{
+double vegas_ttH_resum_def(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	rho	s34, 	angles,
@@ -294,8 +284,7 @@ double vegas_ttH_resum_def(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_resum_def_z5(double *k, size_t dim, void *params)
-{
+double vegas_ttH_resum_def_z5(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	rho	s34, 	angles,
@@ -322,8 +311,7 @@ double vegas_ttH_resum_def_z5(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_inv_mass_LO(double *k, size_t dim, void *params)
-{
+double vegas_ttH_inv_mass_LO(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -351,8 +339,7 @@ double vegas_ttH_inv_mass_LO(double *k, size_t dim, void *params)
 		}
 }
 
-double vegas_ttH_inv_mass_res(double *k, size_t dim, void *params)
-{
+double vegas_ttH_inv_mass_res(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -380,8 +367,7 @@ double vegas_ttH_inv_mass_res(double *k, size_t dim, void *params)
 		}
 }
 
-double vegas_ttH_inv_mass_res_s34(double *k, size_t dim, void *params)
-{
+double vegas_ttH_inv_mass_res_s34(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -412,8 +398,7 @@ double vegas_ttH_inv_mass_res_s34(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_inv_mass_LO_s34(double *k, size_t dim, void *params)
-{
+double vegas_ttH_inv_mass_LO_s34(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 	//N,	 x1, 	x2, 	rho	s34, 	angles, 	gluon/quark : x1*x2*S = tau/x*S
@@ -453,10 +438,48 @@ double vegas_ttH_LO_pT(double *k, size_t dim, void *params)
 	double s = (k[0]*k[1]*S2);
 	double jacs34 = (s+mH2-2.*sqrt(s)*mT-4*mt2);
 	double s34 = 4.*mt2+jacs34*k[2];
+	vector<double> partonic = xsec_LO_pT((pow(mT+mTtt,2))/(s), Q2,s34, k[3], k[4]) ;
+	double result = 0;
+	if(!fitPDF) result = jacs34*(gluon_d0PDF(k[0],  k[1])*partonic[1] + quark_d0PDF(k[0],  k[1])*partonic[0]);
+	if(fitPDF) result = jacs34*(fit_gluon_d0PDF(k[0],  k[1])*partonic[1] + fit_quark_d0PDF(k[0],  k[1])*partonic[0]);
+	if (isnan(result)){return 0;}
+	else{ return result;}
+}
+
+
+double vegas_ttH_LO_pTfull(double *k, size_t dim, void *params)
+{
+	(void)(dim);
+	(void)(params);
+	double s = (k[0]*k[1]*S2);
+	double pT2 = S2*k[2];
+	double pT = sqrt(pT2);
+	double mT = sqrt(pT2+mH2);
+	double mTtt = sqrt(pT2+4.*mt2);
+	double jacs34 = (s+mH2-2.*sqrt(s)*mT-4*mt2);
+	double s34 = 4.*mt2+jacs34*k[3];
+	//Q2 = pT2 here!
+	vector<double> partonic = xsec_LO_pT((pow(mT+mTtt,2))/(s), pT2,s34, k[4], k[5]) ;
+	double result = 0;
+	if(!fitPDF) result = S2/(2.*pT)*jacs34*(gluon_d0PDF(k[0],  k[1])*partonic[1] + quark_d0PDF(k[0],  k[1])*partonic[0]);
+	if(fitPDF) result = S2/(2.*pT)*jacs34*(fit_gluon_d0PDF(k[0],  k[1])*partonic[1] + fit_quark_d0PDF(k[0],  k[1])*partonic[0]);
+	if (isnan(result)){return 0;}
+	else{ return result;}
+}
+
+double vegas_ttH_LO_pT_stt(double *k, size_t dim, void *params){
+	(void)(dim);
+	(void)(params);
+
+	double mT = sqrt(Q2+mH2);
+	double jacs34 = (S2+mH2-2.*sqrt(S2)*mT-4*mt2);
+	double s34 = 4.*mt2+jacs34*k[2];
+	double mTtt = sqrt(Q2+s34);
+	double s = (k[0]*k[1]*S2);
 	//Q2 = pT2 here!
 	if(k[0]*k[1]*S2  < Q2) {return 0;}
    	else{
-		vector<double> partonic = xsec_LO_pT((pow(mT+mTtt,2))/(k[0]*k[1]*S2), Q2,s34, k[3], k[4]) ;
+		vector<double> partonic = xsec_LO_pT_stt((pow(mT+mTtt,2))/(s), Q2,s34, k[3], k[4]) ;
 		double result = 0;
 		if(!fitPDF) result = jacs34*(gluon_d0PDF(k[0],  k[1])*partonic[1] + quark_d0PDF(k[0],  k[1])*partonic[0]);
 		if(fitPDF) result = jacs34*(fit_gluon_d0PDF(k[0],  k[1])*partonic[1] + fit_quark_d0PDF(k[0],  k[1])*partonic[0]);
@@ -465,9 +488,7 @@ double vegas_ttH_LO_pT(double *k, size_t dim, void *params)
 		}
 }
 
-
-double vegas_ttH_LO_pT_N(double *k, size_t dim, void *params)
-{
+double vegas_ttH_LO_pT_N(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 
@@ -491,20 +512,67 @@ double vegas_ttH_LO_pT_N(double *k, size_t dim, void *params)
 }
 
 
-double vegas_ttH_pT_res(double *k, size_t dim, void *params)
-{
+double vegas_ttH_LO_pT_stt_N(double *k, size_t dim, void *params){
+	(void)(dim);
+	(void)(params);
+	double mT = sqrt(Q2+mH2);
+	double jacs34 = (S2+mH2-2.*sqrt(S2)*mT-4*mt2);
+	double s34 = 4.*mt2+jacs34*k[2];
+	double mTtt = sqrt(Q2+s34);
+  double tau = pow(mT+mTtt,2)/S2;
+	if(k[0] == 1){return 0;}
+	else if(tau > 1){return 0;}
+   	else{
+		complex<double> N = CMP + k[0]/(1-k[0])*exp(I*phiMP);
+		vector<double> partonic = xsec_LO_pT_stt(k[1], Q2,s34, k[3], k[4]) ;
+		double result = 2*jacs34*imag(1./(2.*M_PI)*exp(I*phiMP)/pow(1.-k[0], 2.)*
+				(fit_mellin_pdf_sum_gg(N)*partonic[1] + fit_mellin_pdf_sum_qqbar(N)*partonic[0])
+					*pow(k[1], N - 1.)*pow(tau, -N));
+		if (isnan(result)){return 0;}
+		else{ return result;}
+		}
+}
+
+
+double vegas_ttH_LO_pT_stt_defN(double *k, size_t dim, void *params){
 	(void)(dim);
 	(void)(params);
 
-	//Q = 500.*k[5];
-	//Q2 = pow(Q,2);
+	double mT = sqrt(Q2+mH2);
+	double jacs34 = (S2+mH2-2.*sqrt(S2)*mT-4*mt2);
+	double s34 = 4.*mt2+jacs34*k[2];
+	double mTtt = sqrt(Q2+s34);
+  double tau = pow(mT+mTtt,2)/S2;
+	double xvar = k[1]-1.;
+	double wr = xvar/(1.+xvar);
+	double wjac = 1./(pow(1.+xvar,2));
+	complex<double> N = CMP + k[0]/(1-k[0])*exp(I*phiMP);
+  complex<double> xT2 = exp(wr/N);
 
-		double mT = sqrt(Q2+mH2);
-		double mTtt = sqrt(Q2+4.*mt2);
-		double s = pow(mT+mTtt,2)/k[1];
-		double jacs34 = (s+mH2-2.*sqrt(s)*mT-4*mt2);
-		double s34 = 4.*mt2+jacs34*k[2];
-	  double tau = pow(mT+mTtt,2)/S2;
+	if(k[0] == 1){return 0;}
+	else if(tau > 1){return 0;}
+	else if(k[1] == 0){return 0;}
+   	else{
+		complex<double> N = CMP + k[0]/(1-k[0])*exp(I*phiMP);
+		vector<complex<double>> partonic = xsec_LO_pT_stt_c(xT2, Q2,s34, k[3], k[4]) ;
+		double result = 2*jacs34*imag(1./(2.*M_PI)*exp(I*phiMP)/pow(1.-k[0], 2.)*
+				(fit_mellin_pdf_sum_gg(N)*partonic[1] + fit_mellin_pdf_sum_qqbar(N)*partonic[0])
+				*wjac*exp(wr)/N*pow(tau, -N));
+		if (isnan(result)){return 0;}
+		else{ return result;}
+		}
+}
+
+double vegas_ttH_pT_res(double *k, size_t dim, void *params){
+	(void)(dim);
+	(void)(params);
+
+	double mT = sqrt(Q2+mH2);
+	double mTtt = sqrt(Q2+4.*mt2);
+	double s = pow(mT+mTtt,2)/k[1];
+	double jacs34 = (s+mH2-2.*sqrt(s)*mT-4*mt2);
+	double s34 = 4.*mt2+jacs34*k[2];
+	double tau = pow(mT+mTtt,2)/S2;
 	if(k[0] == 1){return 0;}
 	else if(tau > 1){return 0;}
    	else{
@@ -513,6 +581,37 @@ double vegas_ttH_pT_res(double *k, size_t dim, void *params)
 		double result = 2*jacs34*imag(1./(2.*M_PI)*exp(I*phiMP)/pow(1.-k[0], 2.)*
 				(fit_mellin_pdf_sum_gg(N)*partonic[1] + fit_mellin_pdf_sum_qqbar(N)*partonic[0])
 					*pow(k[1], N - 1.)*pow(tau, -N));
+		if (isnan(result)){return 0;}
+		else{ return result;}
+		}
+}
+
+
+double vegas_ttH_pT_stt_res(double *k, size_t dim, void *params){
+	(void)(dim);
+	(void)(params);
+
+	double mT = sqrt(Q2+mH2);
+	double jacs34 = (S2+mH2-2.*sqrt(S2)*mT-4*mt2);
+	double s34 = 4.*mt2+jacs34*k[2];
+	double mTtt = sqrt(Q2+s34);
+    double tau = pow(mT+mTtt,2)/S2;
+	double xvar = k[1]-1.;
+	double wr = xvar/(1.+xvar);
+	double wjac = 1./(pow(1.+xvar,2));
+	complex<double> N = CMP + k[0]/(1-k[0])*exp(I*phiMP);
+  complex<double> xT2 = exp(wr/N);
+
+	if(k[0] == 1){return 0;}
+	else if(tau > 1){return 0;}
+	else if(k[1] == 0){return 0;}
+
+   	else{
+		complex<double> N = CMP + k[0]/(1-k[0])*exp(I*phiMP);
+		vector<complex<double>> partonic = xsec_pT_res_stt_c(N, xT2, Q2,s34, k[3], k[4]);
+		double result = 2*jacs34*imag(1./(2.*M_PI)*exp(I*phiMP)/pow(1.-k[0], 2.)*
+				(fit_mellin_pdf_sum_gg(N)*partonic[1] + fit_mellin_pdf_sum_qqbar(N)*partonic[0])
+					*wjac*exp(wr)/N*pow(tau, -N));
 		if (isnan(result)){return 0;}
 		else{ return result;}
 		}
@@ -554,17 +653,57 @@ double t14 = mt2-E34CM*sqrts/2.-sqrts/2.*pz5+sqrts*pz3tt-2.*p3tt/sqrt(s34)*p5CM*
 double t23 = mt2-E34CM*sqrts/2.+sqrts/2.*pz5+sqrts*pz3tt+2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
 double coupling = pow(mt/v,2)*pow(alphas_muR,2)*pow(4*M_PI,2);
 std::vector<double> result = {0,0};
-result[0] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))*(pow(kallen(s, s34, pow(mH,2)),0.5)/(8*s))*(SH_qq_LO(s, t13, t14, t23, t24)/36.)*sin(thetaHCM)*sin(thetat);
-result[1] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))*(pow(kallen(s, s34, pow(mH,2)),0.5)/(8*s))*(SH_gg_LO(s, t13, t14, t23, t24)/256.)*sin(thetaHCM)*sin(thetat);
+result[0] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																*(pow(kallen(s, s34, pow(mH,2)),0.5)/(8*s))
+																*(SH_qq_LO(s, t13, t14, t23, t24)/36.)
+																*sin(thetaHCM)*sin(thetat);
+result[1] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																*(pow(kallen(s, s34, pow(mH,2)),0.5)/(8*s))
+																*(SH_gg_LO(s, t13, t14, t23, t24)/256.)
+																*sin(thetaHCM)*sin(thetat);
+return result;
+
+}
+
+//seem to be missing a factor of 2 somewhere??
+std::vector<double> xsec_LO_pT(double xT2, double pT2, double s34, double thetat, double phit){
+
+double mT = sqrt(pT2+mH2);
+double mTtt = sqrt(pT2+4.*mt2);
+double s = pow(mT+mTtt,2)/xT2;
+double sqrts = sqrt(s);
+double cosheta = (s+mH2-s34)/2./sqrts/mT; //cosh eta in CM frame
+double sinheta = sqrt(pow(cosheta,2)-1.);
+double p3tt = sqrt(s34/4.-mt2); //in ttbar CM frame we have Etop = sqrt(stt)/2 so ptop = sqrt(Etop^2-mt^2)
+double pz5 = mT*sinheta; //pZ of Higgs boson in CM frame
+double p5CM = sqrt(pT2+pow(pz5,2)); // |p| of Higgs boson in CM frame
+double E34CM = sqrt(s34+pow(p5CM,2)); // energy of ttbar in CM frame (E^2 - ptt^2 = stt with ptt = pH)
+double thetaHCM = acos(pz5/p5CM);
+double pz3tt = p3tt*(cos(thetaHCM)*cos(thetat)-sin(thetaHCM)*sin(thetat)*cos(phit));
+
+double t13 = mt2-E34CM*sqrts/2.-sqrts/2.*pz5-sqrts*pz3tt+2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(-sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+double t24 = mt2-E34CM*sqrts/2.+sqrts/2.*pz5-sqrts*pz3tt-2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+double t14 = mt2-E34CM*sqrts/2.-sqrts/2.*pz5+sqrts*pz3tt-2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(-sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+double t23 = mt2-E34CM*sqrts/2.+sqrts/2.*pz5+sqrts*pz3tt+2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+double coupling = pow(mt/v,2)*pow(alphas_muR,2)*pow(4*M_PI,2);
+std::vector<double> result = {0,0};
+result[0] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																*(sqrt(pT2)/(4.*sqrts)*1./pz5)
+																*(SH_qq_LO(s, t13, t14, t23, t24)/36.)
+																*sin(thetat);
+result[1] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																*(sqrt(pT2)/(4.*sqrts)*1./pz5)
+																*(SH_gg_LO(s, t13, t14, t23, t24)/256.)
+																*sin(thetat);
 return result;
 
 }
 
 
-std::vector<double> xsec_LO_pT(double xT2, double pT2, double s34, double thetat, double phit){
+std::vector<double> xsec_LO_pT_stt(double xT2, double pT2, double s34, double thetat, double phit){
 
 double mT = sqrt(pT2+mH2);
-double mTtt = sqrt(pT2+4.*mt2);
+double mTtt = sqrt(pT2+s34);
 double s = pow(mT+mTtt,2)/xT2;
 double sqrts = sqrt(s);
 double cosheta = (s+mH2-s34)/2./sqrts/mT; //cosh eta in CM frame
@@ -593,7 +732,6 @@ result[1] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(
 return result;
 
 }
-
 
 std::vector<complex<double>> xsec_pT_res(complex<double> N, double xT2, double pT2, double s34, double thetat, double phit){
 
@@ -628,6 +766,8 @@ return result;
 
 }
 
+
+
 std::vector<complex<double>> xsec_LO_c(complex<double> rho, double s34, double thetaHCM, double thetat, double phit){
 
 complex<double> s = Q2/rho;
@@ -655,6 +795,73 @@ std::vector<complex<double>> result = {0,0};
  	return result;
 }
 
+
+
+std::vector<complex<double>> xsec_LO_pT_stt_c(complex<double> xT2, double pT2, double s34, double thetat, double phit){
+double mT = sqrt(pT2+mH2);
+double mTtt = sqrt(pT2+s34);
+complex<double> s = pow(mT+mTtt,2)/xT2;
+complex<double> sqrts = sqrt(s);
+complex<double> cosheta = (s+mH2-s34)/2./sqrts/mT; //cosh eta in CM frame
+complex<double> sinheta = sqrt(pow(cosheta,2)-1.);
+double p3tt = sqrt(s34/4.-mt2); //in ttbar CM frame we have Etop = sqrt(stt)/2 so ptop = sqrt(Etop^2-mt^2)
+complex<double> pz5 = mT*sinheta; //pZ of Higgs boson in CM frame
+complex<double> p5CM = sqrt(pT2+pow(pz5,2)); // |p| of Higgs boson in CM frame
+complex<double> E34CM = sqrt(s34+pow(p5CM,2)); // energy of ttbar in CM frame (E^2 - ptt^2 = stt with ptt = pH)
+complex<double> thetaHCM = acos(pz5/p5CM);
+complex<double> pz3tt = p3tt*(cos(thetaHCM)*cos(thetat)-sin(thetaHCM)*sin(thetat)*cos(phit));
+
+complex<double> t13 = mt2-E34CM*sqrts/2.-sqrts/2.*pz5-sqrts*pz3tt+2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(-sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+complex<double> t24 = mt2-E34CM*sqrts/2.+sqrts/2.*pz5-sqrts*pz3tt-2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+complex<double> t14 = mt2-E34CM*sqrts/2.-sqrts/2.*pz5+sqrts*pz3tt-2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(-sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+complex<double> t23 = mt2-E34CM*sqrts/2.+sqrts/2.*pz5+sqrts*pz3tt+2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+complex<double> coupling = pow(mt/v,2)*pow(alphas_muR,2)*pow(4*M_PI,2);
+std::vector<complex<double>> result = {0,0};
+result[0] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																													*(sqrt(pT2)/(4.*sqrts)*1./pz5)
+																													*(SH_qq_LO_c(s, t13, t14, t23, t24)/36.)
+																													*sin(thetat);
+result[1] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																													*(sqrt(pT2)/(4.*sqrts)*1./pz5)
+																													*(SH_gg_LO_c(s, t13, t14, t23, t24)/256.)
+																													*sin(thetat);
+return result;
+
+}
+
+
+std::vector<complex<double>> xsec_pT_res_stt_c(complex<double> N, complex<double> xT2, double pT2, double s34, double thetat, double phit){
+
+	double mT = sqrt(pT2+mH2);
+	double mTtt = sqrt(pT2+s34);
+	complex<double> s = pow(mT+mTtt,2)/xT2;
+	complex<double> sqrts = sqrt(s);
+	complex<double> cosheta = (s+mH2-s34)/2./sqrts/mT; //cosh eta in CM frame
+	complex<double> sinheta = sqrt(pow(cosheta,2)-1.);
+	double p3tt = sqrt(s34/4.-mt2); //in ttbar CM frame we have Etop = sqrt(stt)/2 so ptop = sqrt(Etop^2-mt^2)
+	complex<double> pz5 = mT*sinheta; //pZ of Higgs boson in CM frame
+	complex<double> p5CM = sqrt(pT2+pow(pz5,2)); // |p| of Higgs boson in CM frame
+	complex<double> E34CM = sqrt(s34+pow(p5CM,2)); // energy of ttbar in CM frame (E^2 - ptt^2 = stt with ptt = pH)
+	complex<double> thetaHCM = acos(pz5/p5CM);
+	complex<double> pz3tt = p3tt*(cos(thetaHCM)*cos(thetat)-sin(thetaHCM)*sin(thetat)*cos(phit));
+
+	complex<double> t13 = mt2-E34CM*sqrts/2.-sqrts/2.*pz5-sqrts*pz3tt+2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(-sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+	complex<double> t24 = mt2-E34CM*sqrts/2.+sqrts/2.*pz5-sqrts*pz3tt-2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+	complex<double> t14 = mt2-E34CM*sqrts/2.-sqrts/2.*pz5+sqrts*pz3tt-2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(-sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+	complex<double> t23 = mt2-E34CM*sqrts/2.+sqrts/2.*pz5+sqrts*pz3tt+2.*p3tt/sqrt(s34)*p5CM*cos(thetat)*(sqrts/2.*pz5/(E34CM+sqrt(s34))-sqrts/2);
+	double coupling = pow(mt/v,2)*pow(alphas_muR,2)*pow(4*M_PI,2);
+	std::vector<complex<double>> result = {0,0};
+	result[0] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																														*(sqrt(pT2)/(4.*sqrts)*1./pz5)
+																														*(omega_qq_res(N+1., s, t13, t14, t23, t24,s34)/36.)
+																														*sin(thetat);
+	result[1] = coupling*pbunits*(1/(2*s))*(1/(pow(2*M_PI,4)))*(pow(kallen(s34, pow(mt,2), pow(mt,2)), 0.5)/(8*s34))
+																														*(sqrt(pT2)/(4.*sqrts)*1./pz5)
+																														*(omega_gg_res(N+1., s, t13, t14, t23, t24,s34)/256.)
+																														*sin(thetat);
+	return result;
+
+}
 
 std::vector<complex<double>> xsec_res(complex<double> N, double rho, double s34, double thetaHCM, double thetat, double phit){
 double s = Q2/rho;

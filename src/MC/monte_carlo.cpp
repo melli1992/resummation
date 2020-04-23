@@ -126,24 +126,43 @@ functionint init_vegas_ttH(std::string process){
 				integrand.xl = {0.,0., 0.,0.,0.};
 				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
 			}
+	else if(process == "LOpTfull"){
+				integrand.G.f =&vegas_ttH_LO_pTfull;
+				integrand.G.dim = 6;
+				// x1, x2, pT, s34, thetatt, phitt
+				integrand.xl = {0.,0.,0., 0.,0.,0.};
+				integrand.xu = {1.,1.,1., 1.,M_PI, 2.*M_PI};
+			}
 	else if(process == "LOpTN"){
 					integrand.G.f =&vegas_ttH_LO_pT_N;
 					integrand.G.dim = 5;
 					integrand.xl = {0.,0., 0.,0.,0.};
 					integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
 				}
-		else if(process == "LOpTres"){
-						integrand.G.f =&vegas_ttH_pT_res;
-						integrand.G.dim = 5;
-						integrand.xl = {0.,0., 0.,0.,0.};
-						integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
-					}
-		else if(process == "LOpTresint"){
-							integrand.G.f =&vegas_ttH_pT_res;
-							integrand.G.dim = 6;
-							integrand.xl = {0.,0.,0.,0.,0.,0.};
-							integrand.xu = {1.,1.,1.,M_PI, 2.*M_PI,1.};
-						}
+	else if(process == "LOpTsttN"){
+					integrand.G.f =&vegas_ttH_LO_pT_stt_N;
+					integrand.G.dim = 5;
+					integrand.xl = {0.,0., 0.,0.,0.};
+					integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+				}
+	else if(process == "LOpTsttdefN"){
+					integrand.G.f =&vegas_ttH_LO_pT_stt_defN;
+					integrand.G.dim = 5;
+					integrand.xl = {0.,0., 0.,0.,0.};
+					integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+				}
+	else if(process == "pTres"){
+				integrand.G.f =&vegas_ttH_pT_res;
+				integrand.G.dim = 5;
+				integrand.xl = {0.,0., 0.,0.,0.};
+				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+			}
+	else if(process == "pTresstt"){
+				integrand.G.f =&vegas_ttH_pT_stt_res;
+				integrand.G.dim = 5;
+				integrand.xl = {0.,0., 0.,0.,0.};	
+				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+			}
 
 	else{cout << "this lumi does not exist" << endl;
 exit(0);}

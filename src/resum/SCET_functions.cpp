@@ -15,12 +15,44 @@
 //////////////////////////////////////////////////////////
 using namespace std;
 
+///////////////////////
+/// solve Landau pole
+///////////////////////
+complex<double> invasLambdaQCD(complex<double> lambdaQCD){
+	double b1 = beta1/beta0;
+	double b2 = beta2/beta0;
+	complex<double> LLambda = log((mZ2-I*1.E-16)/(lambdaQCD*lambdaQCD));
+	return 4.*M_PI*(1./(beta0*LLambda)-1./(pow(beta0*LLambda,2))*b1*log(LLambda)
+												+1./(pow(beta0*LLambda,3))*(pow(b1,2)*(pow(log(LLambda),2)-log(LLambda)-1.)+b2))
+								-pdfs[use_member]->alphasQ(sqrt(mZ2)) ;//+1./(pow(beta0*LLambda,4))*(pow(b1,3)*(-pow(log(LLambda),3)+5./2.*pow(log(LLambda),2)+2.*log(LLambda)-1./2.)-3.*b1*b2*log(LLambda)+b3/2.);
+}
 
+complex<double> DinvasLambdaQCD(complex<double> lambdaQCD){
+	complex<double> delta = lambdaQCD*0.00000001;
+	complex<double> fdp = invasLambdaQCD(lambdaQCD+delta); 
+	complex<double> fdm = invasLambdaQCD(lambdaQCD-delta);   
+	complex<double> fd2p = invasLambdaQCD(lambdaQCD+2.0*delta); 
+	complex<double> fd2m = invasLambdaQCD(lambdaQCD-2.0*delta);  
+
+	// derivative
+	return (-fd2p+8.*fdp-8.*fdm+fd2m)/(12.*delta); 
+}
+
+void solveLambdaQCD(){
+	int i = 1;
+	complex<double> lambda(0.18,0.);
+	while((abs(invasLambdaQCD(lambda)) > 0.0000001) && (i <=10)){
+		lambda = lambda - invasLambdaQCD(lambda)/DinvasLambdaQCD(lambda);
+		i++;
+	}
+	//cout << lambda << endl;
+	LambdaQCD = real(lambda);
+}
 ///////////////////////
 /// evolution as
 ///////////////////////
 
-//https://arxiv.org/pdf/hep-ph/0408244.pdf eqn (2.5)
+// https://arxiv.org/pdf/hep-ph/0408244.pdf eqn (2.5)
 // Checked with Leonardo
 complex<double> falphasQ2(complex<double> mu2){
 	complex<double> LLambda = log((mu2-I*1.E-16)/(LambdaQCD*LambdaQCD));
