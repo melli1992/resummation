@@ -23,10 +23,10 @@ using namespace std;
 //////////////////////////////////////////////////////////
 
 // log dep parts extracted from ihixs
-// chaplin::HPL(0,z) = log(z)
-// chaplin::HPL(-1,0,z) = li2(-z)+log(z)*log(1.+z)
-// chaplin::HPL(1,0,z) = -li2(z)-log(z)*log(1.-z)
-// chaplin::HPL(0,1,z) = li2(z)
+// (log(z)) = log(z)
+// (li2(-z)+log(z)*log(z+1.)) = li2(-z)+log(z)*log(1.+z)
+// (-li2(z)-log(1.-z)*log(z)) = -li2(z)-log(z)*log(1.-z)
+// (li2(z)) = li2(z)
 
 
 
@@ -65,48 +65,54 @@ double higgs_NNLO_gg_reg(double x){
 				+1./216.*(333.*pow(x,2)+2384.*pow(x,4)-598.*x-3041.*pow(x,3)+1282.)/(1.-x)*log(x)-8887./648.*pow(x,3)+1267./432.*pow(x,2)-497./216.*x+12923./1296.)));
 }
 
-
-
+//Wilson Coefficient part
+//HEFT::gg_n2lo_lzbar0_lz0_L_1(z)+HEFT::gg_n2lo_lzbar0_lz1_L_1(z)	//+HEFT::gg_n2lo_lzbar0_lz2_L_1(z)+HEFT::gg_n2lo_lzbar1_L_1(z)//+HEFT::gg_n2lo_lzbar2_L_1(z)
+//HEFT::gg_n2lo_lzbar1_L_2(z)+HEFT::gg_n2lo_lzbar0_lz0_L_2(z)+HEFT::gg_n2lo_lzbar0_lz1_L_2(z)
 double logdep_gg_reg(double z){
-	return pow(alphas_muR/M_PI,2)*(
-		     11./2.*6.*(1./z-2.+z-pow(z,2))*log(Q2/muF2) //Wilson Coefficient part
-		     + log(muF2/Q2)*((12966*pow(CA,3) + 192*nF - 876*pow(CA,2)*nF - 10686*pow(CA,3)*z + 1008*nF*z + 84*pow(CA,2)*nF*z - 3888*pow(CA,3)*pow(z,2) - 984*nF*pow(z,2) + 816*pow(CA,2)*nF*pow(z,2) - 2280*pow(CA,3)*pow(z,3) - 1416*nF*pow(z,3) + 1008*pow(CA,2)*nF*pow(z,3) - 9078*pow(CA,3)*pow(z,4) + 792*nF*pow(z,4) + 60*pow(CA,2)*nF*pow(z,4) + 12966*pow(CA,3)*pow(z,5) + 408*nF*pow(z,5) - 1092*pow(CA,2)*nF*pow(z,5) - 1728*pow(CA,3)*zeta2 - 2160*pow(CA,3)*z*zeta2 - 432*nF*z*zeta2 + 432*pow(CA,2)*nF*z*zeta2 - 6480*pow(CA,3)*pow(z,2)*zeta2 - 432*nF*pow(z,2)*zeta2 + 432*pow(CA,2)*nF*pow(z,2)*zeta2 + 4320*pow(CA,3)*pow(z,3)*zeta2 + 432*nF*pow(z,3)*zeta2 - 432*pow(CA,2)*nF*pow(z,3)*zeta2 + 8640*pow(CA,3)*pow(z,4)*zeta2 + 432*nF*pow(z,4)*zeta2 - 432*pow(CA,2)*nF*pow(z,4)*zeta2 - 2592*pow(CA,3)*pow(z,5)*zeta2)/(432.*CA*(-1 + z)*z*(1 + z)) + ((864*pow(CA,3) + 864*pow(CA,3)*z + 864*pow(CA,3)*pow(z,2) - 864*pow(CA,3)*pow(z,3) - 864*pow(CA,3)*pow(z,4) - 864*pow(CA,3)*pow(z,5))*(li2(-z)+log(z)*log(1.+z)))/(432.*CA*(-1 + z)*z*(1 + z)) + ((-5184*pow(CA,3) - 1728*pow(CA,3)*z - 432*nF*z + 432*pow(CA,2)*nF*z - 12096*pow(CA,3)*pow(z,2) - 432*nF*pow(z,2) + 432*pow(CA,2)*nF*pow(z,2) + 1728*pow(CA,3)*pow(z,3) + 432*nF*pow(z,3) - 432*pow(CA,2)*nF*pow(z,3) + 12096*pow(CA,3)*pow(z,4) + 432*nF*pow(z,4) - 432*pow(CA,2)*nF*pow(z,4) - 5184*pow(CA,3)*pow(z,5))*li2(z))/(432.*CA*(-1 + z)*z*(1 + z)) + ((-5184*pow(CA,3) - 8640*pow(CA,3)*z - 864*nF*z + 864*pow(CA,2)*nF*z - 19008*pow(CA,3)*pow(z,2) - 864*nF*pow(z,2) + 864*pow(CA,2)*nF*pow(z,2) + 8640*pow(CA,3)*pow(z,3) + 864*nF*pow(z,3) - 864*pow(CA,2)*nF*pow(z,3) + 19008*pow(CA,3)*pow(z,4) + 864*nF*pow(z,4) - 864*pow(CA,2)*nF*pow(z,4) - 5184*pow(CA,3)*pow(z,5))*(-li2(z)-log(1.-z)*log(z)))/(432.*CA*(-1 + z)*z*(1 + z))
-									    + log(z)*((924*pow(CA,3) + 24*nF - 48*pow(CA,2)*nF - 1224*pow(CA,3)*z + 72*nF*z - 72*pow(CA,2)*nF*z + 1200*pow(CA,3)*pow(z,2) + 30*nF*pow(z,2) - 78*pow(CA,2)*nF*pow(z,2) - 888*pow(CA,3)*pow(z,3) - 120*nF*pow(z,3) + 120*pow(CA,2)*nF*pow(z,3) - 1992*pow(CA,3)*pow(z,4) - 54*nF*pow(z,4) + 102*pow(CA,2)*nF*pow(z,4) + 2244*pow(CA,3)*pow(z,5) + 48*nF*pow(z,5) - 72*pow(CA,2)*nF*pow(z,5))/(72.*CA*(-1 + z)*z*(1 + z)))
-											+ pow(log(z),2)*( (96*pow(CA,3) + 144*pow(CA,3)*z + 24*nF*z - 24*pow(CA,2)*nF*z + 384*pow(CA,3)*pow(z,2) + 24*nF*pow(z,2) - 24*pow(CA,2)*nF*pow(z,2) - 144*pow(CA,3)*pow(z,3) - 24*nF*pow(z,3) + 24*pow(CA,2)*nF*pow(z,3) - 384*pow(CA,3)*pow(z,4) - 24*nF*pow(z,4) + 24*pow(CA,2)*nF*pow(z,4) + 144*pow(CA,3)*pow(z,5))/(48.*CA*(-1 + z)*z*(1 + z)))
-										  + log(1.-z)*(-(1320*pow(CA,3) + 24*nF - 48*pow(CA,2)*nF - 1524*pow(CA,3)*z + 18*nF*z + 30*pow(CA,2)*nF*z + 72*pow(CA,3)*pow(z,2) - 42*nF*pow(z,2) + 42*pow(CA,2)*nF*pow(z,2) + 204*pow(CA,3)*pow(z,3) - 42*nF*pow(z,3) + 18*pow(CA,2)*nF*pow(z,3) - 1392*pow(CA,3)*pow(z,4) + 18*nF*pow(z,4) + 6*pow(CA,2)*nF*pow(z,4) + 1320*pow(CA,3)*pow(z,5) + 24*nF*pow(z,5) - 48*pow(CA,2)*nF*pow(z,5))/(36.*CA*(-1 + z)*z*(1 + z)) - ((936*pow(CA,3) + 216*pow(CA,3)*z + 72*nF*z - 72*pow(CA,2)*nF*z + 2088*pow(CA,3)*pow(z,2) + 72*nF*pow(z,2) - 72*pow(CA,2)*nF*pow(z,2) - 216*pow(CA,3)*pow(z,3) - 72*nF*pow(z,3) + 72*pow(CA,2)*nF*pow(z,3) - 2088*pow(CA,3)*pow(z,4) - 72*nF*pow(z,4) + 72*pow(CA,2)*nF*pow(z,4) + 936*pow(CA,3)*pow(z,5))*log(z))/(36.*CA*(-1 + z)*z*(1 + z)))
-										  + pow(log(1.-z),2)*((72*pow(CA,3) - 216*pow(CA,3)*z + 216*pow(CA,3)*pow(z,2) - 144*pow(CA,3)*pow(z,3) + 72*pow(CA,3)*pow(z,4))/(6.*CA*(-1 + z)*z))
-	                    )//HEFT::gg_n2lo_lzbar0_lz0_L_1(z)+HEFT::gg_n2lo_lzbar0_lz1_L_1(z)	//+HEFT::gg_n2lo_lzbar0_lz2_L_1(z)+HEFT::gg_n2lo_lzbar1_L_1(z)//+HEFT::gg_n2lo_lzbar2_L_1(z)
-	       + pow(log(muF2/Q2),2)*(log(1.-z)*(-(144*pow(CA,3) - 288*pow(CA,3)*z + 144*pow(CA,3)*pow(z,3) - 144*pow(CA,3)*pow(z,4) + 144*pow(CA,3)*pow(z,5))/(36.*CA*(-1 + z)*z*(1 + z)))
-	                          + ((3564*pow(CA,3) + 72*nF - 144*pow(CA,2)*nF - 3384*pow(CA,3)*z + 54*nF*z + 90*pow(CA,2)*nF*z - 576*pow(CA,3)*pow(z,2) - 126*nF*pow(z,2) + 126*pow(CA,2)*nF*pow(z,2) - 180*pow(CA,3)*pow(z,3) - 126*nF*pow(z,3) + 54*pow(CA,2)*nF*pow(z,3) - 2988*pow(CA,3)*pow(z,4) + 54*nF*pow(z,4) + 18*pow(CA,2)*nF*pow(z,4) + 3564*pow(CA,3)*pow(z,5) + 72*nF*pow(z,5) - 144*pow(CA,2)*nF*pow(z,5))/(432.*CA*(-1 + z)*z*(1 + z)))
-													  + log(z)*((144*pow(CA,3) + 144*pow(CA,3)*z + 18*nF*z - 18*pow(CA,2)*nF*z + 432*pow(CA,3)*pow(z,2) + 18*nF*pow(z,2) - 18*pow(CA,2)*nF*pow(z,2) - 144*pow(CA,3)*pow(z,3) - 18*nF*pow(z,3) + 18*pow(CA,2)*nF*pow(z,3) - 432*pow(CA,3)*pow(z,4) - 18*nF*pow(z,4) + 18*pow(CA,2)*nF*pow(z,4) + 144*pow(CA,3)*pow(z,5))/(72.*CA*(-1 + z)*z*(1 + z)))
-			                )//HEFT::gg_n2lo_lzbar1_L_2(z)+HEFT::gg_n2lo_lzbar0_lz0_L_2(z)+HEFT::gg_n2lo_lzbar0_lz1_L_2(z)
-	       );
+	double L = log(muF2/Q2);
+	double L2 = log(muF2/Q2)*log(muF2/Q2); //checked
+	double z2 = z*z;
+	double z3 = z*z*z;
+	double LZp = log(1.+z);
+	double LZm = log(1.-z);
+	double LZ = log(z); //checked
+	double LZ2 = pow(log(z),2); //checked
+	double LZm2 = pow(log(1.-z),2); //checked
+	double result = L*(-((8./3.)*nF*z*li2(1. - z)) - (8./3.)*nF*li2(1. - z) - (36.*z2*li2(-z))/(z + 1.) - (18.*z3*li2(-z))/(z + 1.) + 144.*z*li2(1. - z) + 144.*li2(1. - z) - (54.*z*li2(-z))/(z + 1.) - (18.*li2(-z))/(z*(z + 1.)) - (36.*li2(-z))/(z + 1.)
+					+ LZ*(LZm*(-((8.*nF*z)/3.) - (8.*nF)/3. + (396.*z2)/(z-1.) - (126.*z3)/(z-1.) - (378.*z)/(z-1.) + 108./(z-1.) - 126./((z-1.)*z))
+								- (36.*LZp*z2)/(z + 1) - (18.*LZp*z3)/(z + 1.) - (54.*LZp*z)/(z + 1.) - (18.*LZp)/(z*(z + 1.)) - (36.*LZp)/(z + 1.)
+								+ (3.*nF*z2)/(z-1.) - (nF*z3)/(z-1.) + 2.*nF*z - (3.*nF*z)/(z-1.) + nF/(z-1.) + (8.*nF)/(9.*z) - nF/((z-1.)*z) - (16.*nF*z2)/9. + (8.*nF)/3. - (1059.*z2)/(2.*(z-1.)) + (561.*z3)/(2.*(z-1.)) + (837.*z)/(2*(z-1.)) - 537./(2.*(z-1.)) + 231./(2.*(z-1.)*z))
+					+ LZ2*((4.*nF*z)/3. + (4.*nF)/3. - 18./(z*(1.-z2)) - 72.*z + 27.*z2 - 27./(1.-z2)) + LZm*(-((4.*nF*z2)/(z-1.)) + (2.*nF*z3)/(z-1.) + (6.*nF*z)/(z-1.) + (4.*nF*z)/3. - (4.*nF)/(z-1.) - (34.*nF)/(9.*z) + (16.*nF*z2)/9. - (4.*nF)/3. + 348.*z + 330./z - 330.*z2 - 381.)
+					+ LZm2*(-(108.*z) - 108./z + 108.*z2 + 216.) + (32.*nF*z2)/(3.*(z-1.)) - (19.*nF*z3)/(4.*(z-1.)) - (27.*nF*z)/(2.*(z-1.)) - (44.*nF*z)/9. + (32.*nF)/(3.*(z-1.)) - (37.*nF)/(12.*(z-1.)*z) + (77.*nF)/(27.*z) - (68.*nF*z2)/27. + (56.*nF)/9. + 36.*z*zeta2 + (45.*zeta2)/z - (9.*zeta2)/(z*(z + 1.)) - (1513.*z)/8. - 2161./(8.*z) - 54.*z2*zeta2 + (2161.*z2)/8. - 108.*zeta2 + 1781./8.) +
+   			L2*(LZ*((2.*nF*z)/3. + (2.*nF)/3. - (72.*z2)/(z-1.) + (18.*z3)/(z-1.) + (54.*z)/(z-1.) + 18./((z-1.)*z))
+				+ LZm*(36.*z + 36./z - 36.*z2 - 72.) + (nF*z2)/(z-1.) - (nF*z3)/(2.*(z-1.)) - (3.*nF*z)/(2.*(z-1.)) - (nF*z)/3. + nF/(z-1.) + (17.*nF)/(18.*z) - (4.*nF*z2)/9. + nF/3. - (249.*z)/4. - 297./(4.*z) + (297.*z2)/4. + 141./2.);
+	return pow(alphas_muR/M_PI,2)*(11./2.*6.*(1./z-2.+z-pow(z,2))*log(Q2/muF2)+result);
 }
-
 
 // https://arxiv.org/pdf/hep-ph/0207004.pdf eqn. 47 and 48 (note that there is no scale dependeCAe now)
 // same as in Mathematica code
 double higgs_NNLO_gg_plus(double x){
 	return logdep_gg_plus(x)+pow(alphas_muR/M_PI,2)*((133.-90.*zeta2)*log(1.-x)/(1.-x)+(-101./3.+33.*zeta2+351./2.*zeta3)*1./(1.-x)-33.*pow(log(1.-x),2)/(1.-x)+72.*pow(log(1.-x),3)/(1.-x)+nF*(-10./3.*log(1.-x)/(1.-x)+(14./9.-2.*zeta2)*1./(1.-x)+2.*pow(log(1.-x),2)/(1.-x)));
 }
-
+//https://arxiv.org/pdf/hep-ph/0302135.pdf also checked with this (appendix has scale dep terms)
+//n_NNLO_D0_L() +n_NNLO_D1_L()+ n_NNLO_D2_L()
+// n_NNLO_D0_L2()+ n_NNLO_D1_L2()
 double logdep_gg_plus(double z){
-	return pow(alphas_muR/M_PI,2)*(
-		log(muF2/Q2)*(1./(1.-z)*(5. / 3. * nF+ 45.  * zeta2- 67./ 2.-33./*from the Wilson coefficient*/)
-		 							+log(1.-z)/(1.-z)*(- 2. * nF + 33.)
-									+pow(log(1.-z),2)/(1.-z)*(- 108.))
-									//n_NNLO_D0_L() +n_NNLO_D1_L()+ n_NNLO_D2_L()
-		+ pow(log(muF2/Q2),2)*(1./(1.-z)*(1./ 2. * nF - 33. / 4.)
-									+log(1.-z)/(1.-z)*(36.)
-		)// n_NNLO_D0_L2()+ n_NNLO_D1_L2()
-	);
+	double L = log(muF2/Q2);
+	double L2 = L*L;
+	double D0 = 1./(1.-z);
+	double D1 = log(1.-z)/(1.-z);
+	double D2 = log(1.-z)*log(1.-z)/(1.-z);
+	double result = L*(nF*((5*D0)/3.- 2*D1) + 45*D0*zeta2 - (67*D0)/2.+ 33*D1 - 108*D2 /*should this be there:*/-33*D0)
+									+ L2*((D0*nF)/2.- (33*D0)/4.+ 36*D1);
+	return pow(alphas_muR/M_PI,2)*(result);
 }
-
 
 // https://arxiv.org/pdf/hep-ph/0207004.pdf eqn. 47 and 48 (note that there is no scale dependeCAe now)
 // Lt = log(muR2/mt2)
 // same as in Mathematica code
 double higgs_NNLO_gg_delta(){
+	Lt = log(Q2/mt2);
 	return logdep_gg_constant()+ pow(alphas_muR/M_PI,2)*(
 		(11399./144.+133./2.*zeta2-165./4.*zeta3-9./20.*pow(zeta2,2)+19./8.*Lt)
 		+nF*(-1189./144.+5./6.*zeta3-5./3.*zeta2+2./3.*Lt));
@@ -114,80 +120,84 @@ double higgs_NNLO_gg_delta(){
 
 // from HiggsEFTGGfast::EvaluateDeltaAndPlusCoeffs
 // checked - agreement with Leonardo
+// also https://arxiv.org/pdf/hep-ph/0302135.pdf appendix B!!
+// n_NNLO_delta_L()*_log_muf_mh_sq
+//+ n_NNLO_delta_L2()*pow(_log_muf_mh_sq,2.)
+
 double logdep_gg_constant(){
-	return pow(alphas_muR/M_PI,2)*(log(muR2/muF2)*2.*b0
-																+ log(muF2/Q2)*(33./2. * zeta2-171./2.*zeta3+27./2.+ (-zeta2 - 11./6.)* nF
-																								)// n_NNLO_delta_L()*_log_muf_mh_sq
-																+ pow(log(muF2/Q2),2)*(- 18. * zeta2)  //+ n_NNLO_delta_L2()*pow(_log_muf_mh_sq,2.)
-															);
+	double L = log(muF2/Q2);
+	double L2 = L*L;
+	double result = L*((nF*(-zeta2 - 11/6.) + (33*zeta2)/2.- (171*zeta3)/2.+ 27/2.))
+									+ L2*(- 18*zeta2);
+	return pow(alphas_muR/M_PI,2)*(result);
 }
 
 // power expansion, checked the coefficients with the mathematica code
 double higgs_NNLO_gg_expansion(double x, int power){
-
 	if(power==1){
-		return pow(alphas_muR/M_PI,2)*(3147 - 684*pow(M_PI,2) + 2*nF*(-49 + 6*pow(M_PI,2)) + 3*log(1 - x)*(-1983 + 61*nF + 180*pow(M_PI,2) - 6*log(1 - x)*(-345 + 4*nF + 144*log(1 - x))) - 6318*zeta3)/36.;
+		return pow(alphas_muR/M_PI,2)*(3147 - 684*pow(M_PI,2) + 2*nF*(-49 + 6*pow(M_PI,2)) + 3*log(1. - x)*(-1983 + 61*nF + 180*pow(M_PI,2) - 6*log(1. - x)*(-345 + 4*nF + 144*log(1. - x))) - 6318*zeta3)/36.;
 	}
 	if(power==2){
-		return pow(alphas_muR/M_PI,2)*(1 - x)*((-55572 + 989*nF + 4734*pow(M_PI,2) - 64*nF*pow(M_PI,2) + 6*log(1 - x)*(12291 - 209*nF - 360*pow(M_PI,2) + log(1 - x)*(-5085 + 64*nF + 1728*log(1 - x))))/72. + 351*zeta3);
+		return pow(alphas_muR/M_PI,2)*(1. - x)*((-55572 + 989*nF + 4734*pow(M_PI,2) - 64*nF*pow(M_PI,2) + 6*log(1 - x)*(12291 - 209*nF - 360*pow(M_PI,2) + log(1 - x)*(-5085 + 64*nF + 1728*log(1 - x))))/72. + 351*zeta3);
 	}
 	if(power==3){
 		return pow(alphas_muR/M_PI,2)*(pow(-1. + x,2)*(44828 - 965*nF - 2376*pow(M_PI,2) + 24*log(1 - x)*(-1682 + 28*nF + 1023*log(1 - x))))/96.;
 	}
 	if(power==4){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,3)*(-757.1067708333334 + 29*pow(M_PI,2) + nF*(11.765432098765432 - (5*pow(M_PI,2))/9.) + (798 - (28*nF)/3. - 15*pow(M_PI,2))*log(1 - x) + (5*(-855 + 16*nF)*pow(log(1 - x),2))/24. + 72*pow(log(1 - x),3) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,3)*(-757.1067708333334 + 29*pow(M_PI,2) + nF*(11.765432098765432 - (5*pow(M_PI,2))/9.) + (798 - (28*nF)/3. - 15*pow(M_PI,2))*log(1 - x) + (5*(-855 + 16*nF)*pow(log(1 - x),2))/24. + 72*pow(log(1 - x),3) + (351*zeta3)/2.);
 	}
 	if(power==5){
 		return pow(alphas_muR/M_PI,2)*pow(-1. + x,4)*(-327.39152083333335 + (391*pow(M_PI,2))/20. + nF*(5.709187885802469 - (5*pow(M_PI,2))/9.) + log(1 - x)*(485.4 - (272*nF)/45. - 15*pow(M_PI,2) + (-80.475 + (10*nF)/3.)*log(1 - x) + 72*pow(log(1 - x),2)) + (351*zeta3)/2.);
 	}
 	if(power==6){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,5)*(-233.03654166666666 + (609*pow(M_PI,2))/40. + nF*(4.4048391203703705 - (76*pow(M_PI,2))/135.) + (413.56 - (3197*nF)/675. - 15*pow(M_PI,2))*log(1 - x) + ((-6129 + 608*nF)*pow(log(1 - x),2))/180. + 72*pow(log(1 - x),3) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,5)*(-233.03654166666666 + (609*pow(M_PI,2))/40. + nF*(4.4048391203703705 - (76*pow(M_PI,2))/135.) + (413.56 - (3197*nF)/675. - 15*pow(M_PI,2))*log(1 - x) + ((-6129 + 608*nF)*pow(log(1 - x),2))/180. + 72*pow(log(1 - x),3) + (351*zeta3)/2.);
 	}
 	if(power==7){
 		return pow(alphas_muR/M_PI,2)*pow(-1. + x,6)*(-187.7184452137998 + (3457*pow(M_PI,2))/280. + nF*(3.8538812200806247 - (77*pow(M_PI,2))/135.) + (log(1 - x)*(3671379 - 36731*nF - 141750*pow(M_PI,2) + 60*log(1 - x)*(-405 + 539*nF + 11340*log(1 - x))))/9450. + (351*zeta3)/2.);
 	}
 	if(power==8){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,7)*(-157.21313551536687 + (1135*pow(M_PI,2))/112. + nF*(3.5441843393442034 - (109*pow(M_PI,2))/189.) + log(1 - x)*(379.50204081632654 - (85373*nF)/26460. - 15*pow(M_PI,2) + (21.776785714285715 + (218*nF)/63.)*log(1 - x) + 72*pow(log(1 - x),2)) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,7)*(-157.21313551536687 + (1135*pow(M_PI,2))/112. + nF*(3.5441843393442034 - (109*pow(M_PI,2))/189.) + log(1 - x)*(379.50204081632654 - (85373*nF)/26460. - 15*pow(M_PI,2) + (21.776785714285715 + (218*nF)/63.)*log(1 - x) + 72*pow(log(1 - x),2)) + (351*zeta3)/2.);
 	}
 	if(power==9){
 		return pow(alphas_muR/M_PI,2)*pow(-1. + x,8)*((-948743967014 + 23810115581*nF - 5174400*(-11421. + 800*nF)*pow(M_PI,2))/7.112448e9 - ((-9994419 + 70717*nF + 396900*pow(M_PI,2))*log(1 - x))/26460. + (41.87321428571428 + (220*nF)/63.)*pow(log(1 - x),2) + 72*pow(log(1 - x),3) + (351*zeta3)/2.);
 	}
 	if(power==10){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,9)*(-113.44591817050895 + (809*pow(M_PI,2))/120. + nF*(3.2171579041421463 - (95*pow(M_PI,2))/162.) + log(1 - x)*(379.74150793650796 - (7451*nF)/3402. - 15*pow(M_PI,2) + log(1 - x)*(59.1 + (95*nF)/27. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,9)*(-113.44591817050895 + (809*pow(M_PI,2))/120. + nF*(3.2171579041421463 - (95*pow(M_PI,2))/162.) + log(1 - x)*(379.74150793650796 - (7451*nF)/3402. - 15*pow(M_PI,2) + log(1 - x)*(59.1 + (95*nF)/27. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==11){
-		return pow(alphas_muR/M_PI,2)*pow(-1 + x,10)*(-96.11099293000008 + (24767*pow(M_PI,2))/4620. + nF*(3.130178372772995 - (239*pow(M_PI,2))/405.) + log(1 - x)*(383.98531746031745 - (823616*nF)/467775. - 15*pow(M_PI,2) + log(1 - x)*(74.2353896103896 + (478*nF)/135. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(-1. + x,10)*(-96.11099293000008 + (24767*pow(M_PI,2))/4620. + nF*(3.130178372772995 - (239*pow(M_PI,2))/405.) + log(1 - x)*(383.98531746031745 - (823616*nF)/467775. - 15*pow(M_PI,2) + log(1 - x)*(74.2353896103896 + (478*nF)/135. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==12){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,11)*(-80.69721017667689 + (5079*pow(M_PI,2))/1232. + nF*(3.0740456666125624 - (881*pow(M_PI,2))/1485.) + log(1 - x)*(389.61004820936637 - (9418411*nF)/6.8607e6 - 15*pow(M_PI,2) + log(1 - x)*(87.76607142857142 + (1762*nF)/495. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,11)*(-80.69721017667689 + (5079*pow(M_PI,2))/1232. + nF*(3.0740456666125624 - (881*pow(M_PI,2))/1485.) + log(1 - x)*(389.61004820936637 - (9418411*nF)/6.8607e6 - 15*pow(M_PI,2) + log(1 - x)*(87.76607142857142 + (1762*nF)/495. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==13){
-		return pow(alphas_muR/M_PI,2)*pow(-1 + x,12)*(-66.77320867484431 + (240059*pow(M_PI,2))/80080. + nF*(3.0407719398265622 - (59*pow(M_PI,2))/99.) + log(1 - x)*((28264271679 - 72689996*nF)/7.135128e7 - 15*pow(M_PI,2) + log(1 - x)*(100.01956793206793 + (118*nF)/33. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(-1. + x,12)*(-66.77320867484431 + (240059*pow(M_PI,2))/80080. + nF*(3.0407719398265622 - (59*pow(M_PI,2))/99.) + log(1 - x)*((28264271679 - 72689996*nF)/7.135128e7 - 15*pow(M_PI,2) + log(1 - x)*(100.01956793206793 + (118*nF)/33. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==14){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,13)*(-54.044223123583215 + (14311*pow(M_PI,2))/7280. + nF*(3.024951566494933 - (70*pow(M_PI,2))/117.) + log(1 - x)*((595047198321 - 1022640010*nF)/1.4756742e9 - 15*pow(M_PI,2) + log(1 - x)*(111.22843406593407 + (140*nF)/39. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,13)*(-54.044223123583215 + (14311*pow(M_PI,2))/7280. + nF*(3.024951566494933 - (70*pow(M_PI,2))/117.) + log(1 - x)*((595047198321 - 1022640010*nF)/1.4756742e9 - 15*pow(M_PI,2) + log(1 - x)*(111.22843406593407 + (140*nF)/39. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==15){
-		return pow(alphas_muR/M_PI,2)*pow(-1 + x,14)*(-42.29690552559648 + (81009*pow(M_PI,2))/80080. + nF*(3.022742912785512 - (1475*pow(M_PI,2))/2457.) + log(1 - x)*(410.7389213991137 - (11548297*nF)/2.9513484e7 - 15*pow(M_PI,2) + log(1 - x)*(121.56464785214786 + (2950*nF)/819. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(-1. + x,14)*(-42.29690552559648 + (81009*pow(M_PI,2))/80080. + nF*(3.022742912785512 - (1475*pow(M_PI,2))/2457.) + log(1 - x)*(410.7389213991137 - (11548297*nF)/2.9513484e7 - 15*pow(M_PI,2) + log(1 - x)*(121.56464785214786 + (2950*nF)/819. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==16){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,15)*(-31.370825678652583 + (1523*pow(M_PI,2))/12320. + nF*(3.031318854190447 - (569*pow(M_PI,2))/945.) - ((-21113379141 + 5566076*nF + 756756000*pow(M_PI,2))*log(1 - x))/5.04504e7 + (131.15949675324674 + (1138*nF)/315.)*pow(log(1 - x),2) + 72*pow(log(1 - x),3) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,15)*(-31.370825678652583 + (1523*pow(M_PI,2))/12320. + nF*(3.031318854190447 - (569*pow(M_PI,2))/945.) - ((-21113379141 + 5566076*nF + 756756000*pow(M_PI,2))*log(1 - x))/5.04504e7 + (131.15949675324674 + (1138*nF)/315.)*pow(log(1 - x),2) + 72*pow(log(1 - x),3) + (351*zeta3)/2.);
 	}
 	if(power==17){
-		return pow(alphas_muR/M_PI,2)*pow(-1 + x,16)*(-21.14204430455084 - (385087*pow(M_PI,2))/544544. + nF*(3.048543842443933 - (163*pow(M_PI,2))/270.) + log(1 - x)*((156737846709 + 56066504*nF)/3.675672e8 - 15*pow(M_PI,2) + log(1 - x)*(140.1157911941 + (163*nF)/45. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(-1. + x,16)*(-21.14204430455084 - (385087*pow(M_PI,2))/544544. + nF*(3.048543842443933 - (163*pow(M_PI,2))/270.) + log(1 - x)*((156737846709 + 56066504*nF)/3.675672e8 - 15*pow(M_PI,2) + log(1 - x)*(140.1157911941 + (163*nF)/45. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==18){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,17)*(-11.512822272425945 - (506427*pow(M_PI,2))/340340. + nF*(3.0727715659285475 - (1111*pow(M_PI,2))/1836.) + log(1 - x)*((28503721680426 + 26208824915*nF)/6.56107452e10 - 15*pow(M_PI,2) + log(1 - x)*(148.51573867309162 + (1111*nF)/306. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,17)*(-11.512822272425945 - (506427*pow(M_PI,2))/340340. + nF*(3.0727715659285475 - (1111*pow(M_PI,2))/1836.) + log(1 - x)*((28503721680426 + 26208824915*nF)/6.56107452e10 - 15*pow(M_PI,2) + log(1 - x)*(148.51573867309162 + (1111*nF)/306. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==19){
-		return pow(alphas_muR/M_PI,2)*pow(-1 + x,18)*(-2.4047783740564834 - (172635469*pow(M_PI,2))/7.759752e7 + nF*(3.102711853767016 - (835*pow(M_PI,2))/1377.) + log(1 - x)*((150442559584749 + 214951253020*nF)/3.399829524e11 - 15*pow(M_PI,2) + log(1 - x)*(156.42622628919068 + (1670*nF)/459. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(-1. + x,18)*(-2.4047783740564834 - (172635469*pow(M_PI,2))/7.759752e7 + nF*(3.102711853767016 - (835*pow(M_PI,2))/1377.) + log(1 - x)*((150442559584749 + 214951253020*nF)/3.399829524e11 - 15*pow(M_PI,2) + log(1 - x)*(156.42622628919068 + (1670*nF)/459. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==20){
-		return pow(alphas_muR/M_PI,2)*pow(1 - x,19)*(6.245853262257745 - (5335601*pow(M_PI,2))/1.825824e6 + nF*(3.137339768041842 - (935*pow(M_PI,2))/1539.) + log(1 - x)*((1883304752426037 + 3562789557670*nF)/4.1797904148e12 - 15*pow(M_PI,2) + log(1 - x)*(163.90248402912877 + (1870*nF)/513. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(1. - x,19)*(6.245853262257745 - (5335601*pow(M_PI,2))/1.825824e6 + nF*(3.137339768041842 - (935*pow(M_PI,2))/1539.) + log(1 - x)*((1883304752426037 + 3562789557670*nF)/4.1797904148e12 - 15*pow(M_PI,2) + log(1 - x)*(163.90248402912877 + (1870*nF)/513. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
 	if(power==21){
-		return pow(alphas_muR/M_PI,2)*pow(-1 + x,20)*(14.491609203985492 - (185443119*pow(M_PI,2))/5.173168e7 + nF*(3.175831629546658 - (1561*pow(M_PI,2))/2565.) + log(1 - x)*((638993812780395 + 1478484240002*nF)/1.3932634716e12 - 15*pow(M_PI,2) + log(1 - x)*(170.9906972091376 + (3122*nF)/855. + 72*log(1 - x))) + (351*zeta3)/2.);
+		return pow(alphas_muR/M_PI,2)*pow(-1. + x,20)*(14.491609203985492 - (185443119*pow(M_PI,2))/5.173168e7 + nF*(3.175831629546658 - (1561*pow(M_PI,2))/2565.) + log(1 - x)*((638993812780395 + 1478484240002*nF)/1.3932634716e12 - 15*pow(M_PI,2) + log(1 - x)*(170.9906972091376 + (3122*nF)/855. + 72*log(1 - x))) + (351*zeta3)/2.);
 	}
+	return 0.;
 }
 
 
@@ -235,7 +245,7 @@ return pow(alphas_muR/M_PI,2)*(
 // checked
 double higgs_NNLO_qg_expansion(double x, int power){
 	if(power==1){
-		return pow(alphas_muR/M_PI,2)*(132 + 52*nF + 261*pow(M_PI,2) + 3*log(1 - x)*(2046 - 72*nF - 100*pow(M_PI,2) + log(1 - x)*(255 + 6*nF + 734*log(1 - x))) + 5598*zeta3)/324.;
+		return pow(alphas_muR/M_PI,2)*(132 + 52*nF + 261*pow(M_PI,2) + 3*log(1. - x)*(2046 - 72*nF - 100*pow(M_PI,2) + log(1. - x)*(255 + 6*nF + 734*log(1. - x))) + 5598*zeta3)/324.;
 	}
 	if(power==2){
 		return pow(alphas_muR/M_PI,2)*((1 - x)*(-17130 + 52*nF + 693*pow(M_PI,2) + 3*log(1 - x)*(7242 - 24*nF - 100*pow(M_PI,2) + log(1 - x)*(-1527 + 6*nF + 734*log(1 - x))) + 5598*zeta3))/324.;
@@ -297,6 +307,7 @@ double higgs_NNLO_qg_expansion(double x, int power){
 	if(power==21){
 		return pow(alphas_muR/M_PI,2)*pow(-1 + x,20)*(43.385680767448534 + (188202536987*nF)/6.599669076e11 - (70654979*pow(M_PI,2))/2.2054032e7 + (99.7147677337292 + (23001757*nF)/1.7459442e8 - (50*pow(M_PI,2))/27.)*log(1 - x) + (56.76631092935273 + nF/9.)*pow(log(1 - x),2) + (367*pow(log(1 - x),3))/27. + (311*zeta3)/9.);
 	}
+	return 0.;
 }
 
 ///////////////////////////
@@ -381,6 +392,7 @@ if(power==20){
 if(power==21){
 	return pow(alphas_muR/M_PI,2)*pow(-1 + x,20)*(2.7099055665905247 + 3.4957048454251773*log(1 - x) + 15.268136977115306*pow(log(1 - x),2));
 }
+return 0.;
 }
 
 double logdep_qq(double z){
@@ -475,6 +487,7 @@ double higgs_NNLO_qqp_expansion(double x, int power){
 	if(power==21){
 		return pow(alphas_muR/M_PI,2)*pow(-1 + x,20)*(3.5291749497289544 + 3.4957048454251773*log(1 - x) + 15.268136977115306*pow(log(1 - x),2));
 	}
+	return 0.;
 }
 
 double logdep_qqp(double z){
@@ -583,4 +596,5 @@ double higgs_NNLO_qqbar_expansion(double x, int power){
 	if(power==21){
 		return pow(alphas_muR/M_PI,2)*pow(-1 + x,20)*(40.46776562277762 + (1437991559*nF)/1.178512335e9 - (311152976*pow(M_PI,2))/7.8567489e7 + (-4.847010393104761 + (32*nF)/81.)*log(1 - x) + (534362096*pow(log(1 - x),2))/2.6189163e7);
 	}
+	return 0.;
 }

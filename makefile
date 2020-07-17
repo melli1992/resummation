@@ -28,7 +28,7 @@ RESUM_OBJS := $(RESUM_OBJS) src/parameters.o src/mellin_functions.o
 #MC integrations
 RESUM_OBJS := $(RESUM_OBJS) src/MC/cuba_integration.o
 #PDFs
-RESUM_OBJS := $(RESUM_OBJS) src/pdf/fit_coefficients.o src/pdf/deriv_pdf.o src/pdf/pf_pdf.o src/pdf/mellin_pdf.o 
+RESUM_OBJS := $(RESUM_OBJS) src/pdf/fit_coefficients.o src/pdf/deriv_pdf.o src/pdf/pf_pdf.o src/pdf/mellin_pdf.o src/pdf/cheb_pdf.o 
 #resummation functions
 RESUM_OBJS := $(RESUM_OBJS) src/resum/resum_functions.o src/resum/SCET_functions.o 
 #kfactor files
@@ -39,16 +39,23 @@ RESUM_OBJS := $(RESUM_OBJS) src/kfactors/k_factors_prompt_photon.o
 #SUSY
 RESUM_OBJS := $(RESUM_OBJS) src/susy/susypar.o
 #ulilities
-RESUM_OBJS := $(RESUM_OBJS) src/utilities/inout.o src/utilities/cheby_pdf.o src/utilities/polygamma.o
+RESUM_OBJS := $(RESUM_OBJS) src/utilities/inout.o src/utilities/polygamma.o
 
 #ttH resummation
 ttH_program := $(RESUM_OBJS) 
 ttH_program := $(ttH_program) src/MC/monte_carlo.o src/MC/tth_vegas.o
-ttH_program := $(ttH_program) src/resum/tth_softanom.o src/kfactors/k_factors_ttH.o
+ttH_program := $(ttH_program) src/resum/tth_softanom.o src/resum/resum_tth.o src/kfactors/k_factors_ttH.o
 ttH_program := $(ttH_program) programs/ttbarh_run.o 
 
 #resummation for higgs and DY
 DYh_program := $(RESUM_OBJS) programs/DYh.o
+#resummation for diboson
+diboson_program := $(RESUM_OBJS) programs/diboson.o
+
+#trySCET
+SCETtry_program := $(RESUM_OBJS) programs/try_scetfunc.o
+#lumnicheck
+lumni_program := $(RESUM_OBJS) programs/lumni_check.o
 
 #PDFfits
 PDF_program := $(RESUM_OBJS) programs/make_mellin_pdf.o
@@ -65,8 +72,21 @@ ttH: $(ttH_program)
 DYh: $(DYh_program)
 	g++ -o DYh $(DYh_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
 	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
+
+diboson: $(diboson_program)
+	g++ -o diboson $(diboson_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
+	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
+	    
+
+SCETtry: $(SCETtry_program)
+	g++ -o SCETtry $(SCETtry_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
+	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options -lboost_math_c99
 	    
 	    
+lumni: $(lumni_program)
+	g++ -o lumni $(lumni_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
+	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
+	    	    
 PDF: $(PDF_program)
 	g++ -o PDF $(PDF_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
 	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options

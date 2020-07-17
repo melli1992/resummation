@@ -122,6 +122,7 @@ if(power==20){
 if(power==21){
 	return (191*alphas_muR*CF*pow(-1 + x,20))/(3990.*M_PI);
 }
+return 0.;
 }
 
 
@@ -196,6 +197,7 @@ if(power==20){
 if(power==21){
 	return (191*alphas_muR*TF*pow(-1 + x,20))/(6840.*M_PI);
 }
+return 0.;
 }
 
 ////////////////////////////////

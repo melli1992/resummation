@@ -59,4 +59,8 @@ std::complex<double> DDxfit_pdfs(int i, std::complex<double> x);
 std::complex<double> fit_pdfs(int i, std::complex<double> x);
 std::complex<double> Dfit_pdfs(int i, std::complex<double> x);
 std::complex<double> xfit_Nspace_pdfs(int i, std::complex<double> N);
+
+// Saddle point
+double newton_raphson_gg(double xn, int n, double tau, double xT2);
+double newton_raphson_qqbar(double xn, int n, double tau, double xT2);
 #endif

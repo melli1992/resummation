@@ -14,6 +14,10 @@ double higgs_NNLO_gg_expansion(double x, int power);
 double logdep_gg_reg(double x);
 double logdep_gg_constant();
 double logdep_gg_plus(double x);
+double logdep_gg_reg2(double x);
+double logdep_gg_reg3(double x);
+
+double nnlo_reg(double z);
 
 // qg (+qbar g)
 double higgs_NNLO_qg_reg(double x);

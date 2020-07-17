@@ -88,14 +88,12 @@ functionint init_vegas_ttH(std::string process){
 			integrand.xl = {0., 0., 0.,0.,0.,0.};
 			integrand.xu = {1., 1., 1.,M_PI, M_PI, 2.*M_PI};
 		}
-
 	else if(process == "resumdefz5"){
 			integrand.G.f =&vegas_ttH_resum_def_z5;
 			integrand.G.dim = 6;
 			integrand.xl = {0., 0., 0.,0.,0.,0.};
 			integrand.xu = {1., 1., 1.,M_PI, M_PI, 2.*M_PI};
 		}
-
 	else if(process == "inv_mass_LO"){
 			integrand.G.f =&vegas_ttH_inv_mass_LO;
 			integrand.G.dim = 7;
@@ -157,13 +155,30 @@ functionint init_vegas_ttH(std::string process){
 				integrand.xl = {0.,0., 0.,0.,0.};
 				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
 			}
+else if(process == "pTresNfix"){
+			integrand.G.f =&vegas_ttH_pT_res_Nfix;
+			integrand.G.dim = 5;
+			integrand.xl = {0.,0., 0.,0.,0.};
+			integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+		}
+ else if(process == "pTresabs"){
+			integrand.G.f =&vegas_ttH_pT_res_abs;
+			integrand.G.dim = 5;
+			integrand.xl = {0.,0., 0.,0.,0.};
+			integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+		}
 	else if(process == "pTresstt"){
 				integrand.G.f =&vegas_ttH_pT_stt_res;
 				integrand.G.dim = 5;
-				integrand.xl = {0.,0., 0.,0.,0.};	
+				integrand.xl = {0.,0., 0.,0.,0.};
 				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
 			}
-
+			else if(process == "pTstt"){
+						integrand.G.f =&vegas_ttH_LO_pT_stt_dist;
+						integrand.G.dim = 4;
+						integrand.xl = {0., 0.,0.,0.};
+						integrand.xu = {1., 1.,M_PI, 2.*M_PI};
+					}
 	else{cout << "this lumi does not exist" << endl;
 exit(0);}
 		return integrand;
@@ -274,7 +289,7 @@ functionint init_vegas_pf(std::string order, std::string power, std::string proc
 //////////////////////////////////////////////////////////
 results call_vegas(functionint integrand, lumni_params params, bool verbal, bool high_prec){
 	  double res(0),err(0);
-	  int MAX_ITER = 10;
+	  int MAX_ITER = 20;
 	  const gsl_rng_type *T;
 	  gsl_rng *r; //the random number generator
 	  gsl_rng_env_setup ();
@@ -283,19 +298,26 @@ results call_vegas(functionint integrand, lumni_params params, bool verbal, bool
 
 
 	  integrand.G.params = &params;
-	  size_t calls = 100000;
+	  size_t calls = 15000;
 
 	  gsl_monte_vegas_state *s = gsl_monte_vegas_alloc (integrand.G.dim);
 	  gsl_monte_vegas_init(s); //whatever, just do it
-      gsl_monte_vegas_integrate (&integrand.G, &integrand.xl[0], &integrand.xu[0], integrand.G.dim,  10000, r, s, &res, &err); //integrate g over dim-dim region defined by lower and upper limits in arrays xl and xu, each of size dim. r is the random number generator. The result is given to res and err. This function is to prepare/warm up the grid (1000 function calls). After this the main run is called with calls/5 function calls.
+		gsl_monte_vegas_params *params_run = (gsl_monte_vegas_params*)malloc( sizeof(gsl_monte_vegas_params) );
+		gsl_monte_vegas_params_get(s, params_run);
+	  params_run->alpha = 2.0;
+	  gsl_monte_vegas_params_set(s, params_run);
+
+		gsl_monte_vegas_integrate (&integrand.G, &integrand.xl[0], &integrand.xu[0], integrand.G.dim,  10000, r, s, &res, &err); //integrate g over dim-dim region defined by lower and upper limits in arrays xl and xu, each of size dim. r is the random number generator. The result is given to res and err. This function is to prepare/warm up the grid (1000 function calls). After this the main run is called with calls/5 function calls.
+		display_results("Initialization - " ,res, err);
 
 	  int n_iter = 0, k = 0;
 	  double chisq;
 	  double minerr = 1.E-2;
-	  display_results("Initialization - " ,res, err);
-      do
+		params_run->alpha = 1.5;
+		gsl_monte_vegas_params_set(s, params_run);
+  	do
        {
-       	gsl_monte_vegas_integrate (&integrand.G, &integrand.xl[0], &integrand.xu[0], integrand.G.dim, calls/5, r, s, &res, &err);
+       	gsl_monte_vegas_integrate (&integrand.G, &integrand.xl[0], &integrand.xu[0], integrand.G.dim, calls, r, s, &res, &err);
 		chisq = gsl_monte_vegas_chisq (s); //gsl_monte_vegas_chisq (s) provides chisq per d.o.f.
 		//gsl_monte_vegas_runval(s, &res, &sigma); //returns raw(unaveraged) values of integral result and error sigma from the most recent iteration of algorithm
 		display_results("Intermediate step - " ,res, err, chisq);

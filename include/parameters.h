@@ -18,9 +18,11 @@ extern std::complex<double> I;
 extern double CMP, phiMP;
 extern int boundary;
 
-extern double tau, s2;
+extern double tau, s2, s34in;
 extern double S;
 extern double S2;
+extern double pT;
+extern double pT2;
 extern double Q;
 extern double Q2;
 extern double muF;
@@ -69,6 +71,7 @@ extern double nF;
 extern double b0;
 extern double b1;
 extern double b2;
+extern double b3;
 extern double beta0;
 extern double beta1;
 extern double beta2;
@@ -97,6 +100,7 @@ extern double INCEULER;
 extern double ISLL;
 extern double ISNLL;
 extern double ISNNLL;
+extern double ISNNNLL;
 extern double ISNLP;
 
 extern double A1q;
@@ -105,6 +109,8 @@ extern double A2q;
 extern double A2g;
 extern double A3q;
 extern double A3g;
+extern double A4q;
+extern double A4g;
 extern double B1q;
 extern double B1g;
 extern double C2qgamma;
@@ -146,9 +152,12 @@ extern std::string setname;
 extern std::vector<LHAPDF::PDF*> pdfs; //pdf vector
 extern double xmin_pdfs, xmax_pdfs; //min x, max x
 extern int use_member; //the member that one needs to use
+extern double *fitcheb_coeff_gg, *fitcheb_coeff_qqbar, *fitcheb_coeff_qqbarU, *fitcheb_coeff_qqbarD;
+extern double s1, sgg, sqqbar;
 struct lumni_params {double z; double pT; double xT; double epeta; double emeta; int power; int flavor; int coefficient;};
 
-extern bool SCET, BN, DY, higgs, hh, WW, ZZ, diff, full, PF, LO, NLO, NNLO, RES, realPDF, fitPDF, SUSY, setdym;
+extern bool INCSQRTZ,SCET, BN, DY, higgs, hh, WW, ZZ, ttH,diff, full, PF, LO, NLO, NNLO, RES, realPDF, fitPDF, chebPDF, SUSY, setdym,highscale, INCHARD;
+extern bool expansion;
 
 void update_defaults(bool printout = true , bool pdfset = true);
 

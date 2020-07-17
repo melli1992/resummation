@@ -9,6 +9,8 @@ void solveLambdaQCD();
 
 // running alphas
 std::complex<double> falphasQ2(std::complex<double> mu2);
+std::complex<double> falphasQ2_LO(std::complex<double> mu2);
+std::complex<double> betaF(std::complex<double> alphas);
 
 // the hard functions
 std::vector<std::complex<double>> hard_higgs(std::complex<double> mu2, std::complex<double> muh2);
@@ -33,8 +35,8 @@ double Deta_z_eta(double z, double eta, double BNsub);
 double DDeta_z_eta(double z, double eta, double BNsub);
 double Deta_tau(double eta);
 double DDeta_tau(double eta);
-double Deta_tau_2nd(double eta, double BNsub);
-double DDeta_tau_2nd(double eta, double BNsub);
+double Deta_tau_2nd(double eta, double BNsub, double INCsqrtZ);
+double DDeta_tau_2nd(double eta, double BNsub, double INCsqrtZ);
 
 // cross sections
 double diff_xsec_DY(double z, double x);

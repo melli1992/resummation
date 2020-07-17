@@ -58,7 +58,8 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
             //PDFstuf
             ("setname", po::value<string>(&setname)->default_value("PDF4LHC15_nnlo_100"), "Name of PDFset")
             ("usemember", po::value<int>(&use_member)->default_value(0),"member of PDFset to use")
-            ("fitPDF", po::value<bool>(&fitPDF)->default_value(false),"use fits to PDF grid")
+            ("fitPDF", po::value<bool>(&fitPDF)->default_value(false),"use own fits to PDF grid")
+            ("chebPDF", po::value<bool>(&chebPDF)->default_value(false),"use cheby fits to PDF grid")
             //process
             ("sqrtS", po::value<double>(&comTeV)->default_value(13.), "center-of-mass energy [TeV]")
             ("process", po::value<string>(&process)->default_value("DY"),"process")
@@ -69,13 +70,16 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
             ("inceuler", po::value<double>(&INCEULER)->default_value(1), "resum euler constant in pQCD")
             ("resum_order", po::value<string>(&resum_order)->default_value("NNLL"), "order to resum to")
             ("NLP", po::value<double>(&ISNLP)->default_value(0.), "include NLP contributions")
+            ("INCSQRTZ", po::value<bool>(&INCSQRTZ)->default_value(false), "include sqrt(z) in SCET")
+            ("INCHARD", po::value<bool>(&INCHARD)->default_value(false), "include hardpart in NLP NNLL SCET")
             //scales
             ("muR", po::value<double>(&muR)->default_value(500.), "renormalization scale [GeV]")
             ("muF", po::value<double>(&muF)->default_value(500.), "factorization scale [GeV]")
             ("Q", po::value<double>(&Q)->default_value(500.), "hard scale [GeV]")
             ("muh", po::value<double>(&muh)->default_value(500.), "SCET hard scale [GeV]")
             ("mus", po::value<double>(&mus)->default_value(500.), "SCET soft scale [GeV]")
-            ("setdym", po::value<bool>(&setdym)->default_value(true), "set soft scale dynamically")
+            ("setdym", po::value<bool>(&setdym)->default_value(true), "set soft scale / factorization scale dynamically")
+            ("highscale", po::value<bool>(&highscale)->default_value(true), "set soft scale / factorization scale dynamically")
             //masses
             ("MZ", po::value<double>(&mZ)->default_value(91.1876), "Z boson mass [GeV]")
             ("MW", po::value<double>(&mW)->default_value(80.419002), "W boson mass [GeV]")
@@ -224,6 +228,13 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
 			   diff = true;
 			   DY = false, hh = false, WW = false, higgs = false;
 		   }
+       else if(process.compare("ttH") == 0){
+         ttH = true;
+  			 ZZ = false;
+  			 full = false;
+  			 diff = false;
+  			 DY = false, hh = false, WW = false, higgs = false;
+       }
 		   else
 			{
 				cout << "Option not available, choose from: DY, higgs, dihiggs, zzfull, zzdiff, wwfull, wwdiff" << endl;

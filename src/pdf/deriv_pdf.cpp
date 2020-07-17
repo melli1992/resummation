@@ -243,8 +243,8 @@ double pdf_sum_qqbarDOWN(double x, double tau_over_z){
 	sum_pdf+= 1./x*1./(tau_over_z/x)*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,tau_over_z/x,muF)+pdfs[use_member]->xfxQ(i,tau_over_z/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
 	i = 3;
 	sum_pdf+= 1./x*1./(tau_over_z/x)*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,tau_over_z/x,muF)+pdfs[use_member]->xfxQ(i,tau_over_z/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
-	//i = 5;
-	//sum_pdf+= 1./x*1./(tau_over_z/x)*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,tau_over_z/x,muF)+pdfs[use_member]->xfxQ(i,tau_over_z/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
+	i = 5;
+	sum_pdf+= 1./x*1./(tau_over_z/x)*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,tau_over_z/x,muF)+pdfs[use_member]->xfxQ(i,tau_over_z/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
 	return 1./x*sum_pdf;
 }
 
@@ -446,6 +446,42 @@ double lumni(string channel, double t, double y){ //checked that this gives same
 		sum_pdf = 1./y*(pdfs[use_member]->xfxQ(0,x,muF)*pdfs[use_member]->xfxQ(0,y/x,muF));
 		return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
 	}
+	else if(channel == "qqbarD"){
+				if(x < y){return 0;}
+				if(x >= 1){return 0;}
+				int i = 1;
+				sum_pdf+= 1./y*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
+				i = 3;
+				sum_pdf+= 1./y*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
+				i = 5;
+				sum_pdf+= 1./y*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
+				return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
+		}
+else if(channel == "qqbarU"){
+			if(x < y){return 0;}
+			if(x >= 1){return 0;}
+			int i = 2;
+			sum_pdf+= 1./y*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
+			i = 4;
+			sum_pdf+= 1./y*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
+			return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
+	}
+else if(channel == "qqbarH"){
+			if(x < y){return 0;}
+			if(x >= 1){return 0;}
+			for(int i = 1; i <=5; i++){
+				sum_pdf+= (pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(-i,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(-i,x,muF));
+		//cout << "in the sum " << sum_pdf << endl;
+		}
+		return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
+	}
+else if(channel=="ggH"){
+		if(x < y){return 0;}
+		if(x >= 1){return 0;}
+		sum_pdf = (pdfs[use_member]->xfxQ(0,x,muF)*pdfs[use_member]->xfxQ(0,y/x,muF));
+		return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
+	}
+	else{cout << "channel " << channel << " not there" << endl;}
 }
 
 vector<double> deriv_to_y_luminosities(string channel, double x, double y){ // returns vector with (lumni, d lumni / dy, d^2 lumni / dy^2 )

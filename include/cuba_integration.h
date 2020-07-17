@@ -15,4 +15,5 @@ std::vector<results_c> call_cuhre_diboson(std::string orde, std::string chan, bo
 std::vector<results_c> call_cuhre_dy_bsm(std::string orde, std::string chan, bool fitted=false, int verbose=0);
 std::vector<results_c> call_cuhre_test(std::string orde, std::string chan, int k, bool fitted=false, int verbose=0);
 std::vector<results_c> call_set_scale(std::string channel, bool fitted=false, int verbose=0);
+std::vector<results_c> call_lumni(std::string channel, bool fitted=false, int verbose=0);
 #endif

@@ -5,6 +5,7 @@
 #include "parameters.h"
 #include "k_factors_dy.h"
 #include "k_factors_higgs.h"
+#include "SCET_functions.h"
 #include "resum_functions.h"
 #include "deriv_pdf.h"
 
@@ -23,25 +24,25 @@ complex<double> invasLambdaQCD(complex<double> lambdaQCD){
 	double b2 = beta2/beta0;
 	complex<double> LLambda = log((mZ2-I*1.E-16)/(lambdaQCD*lambdaQCD));
 	return 4.*M_PI*(1./(beta0*LLambda)-1./(pow(beta0*LLambda,2))*b1*log(LLambda)
-												+1./(pow(beta0*LLambda,3))*(pow(b1,2)*(pow(log(LLambda),2)-log(LLambda)-1.)+b2))
+												+ISNNLL*1./(pow(beta0*LLambda,3))*(pow(b1,2)*(pow(log(LLambda),2)-log(LLambda)-1.)+b2))
 								-pdfs[use_member]->alphasQ(sqrt(mZ2)) ;//+1./(pow(beta0*LLambda,4))*(pow(b1,3)*(-pow(log(LLambda),3)+5./2.*pow(log(LLambda),2)+2.*log(LLambda)-1./2.)-3.*b1*b2*log(LLambda)+b3/2.);
 }
 
 complex<double> DinvasLambdaQCD(complex<double> lambdaQCD){
-	complex<double> delta = lambdaQCD*0.00000001;
-	complex<double> fdp = invasLambdaQCD(lambdaQCD+delta); 
-	complex<double> fdm = invasLambdaQCD(lambdaQCD-delta);   
-	complex<double> fd2p = invasLambdaQCD(lambdaQCD+2.0*delta); 
-	complex<double> fd2m = invasLambdaQCD(lambdaQCD-2.0*delta);  
+	complex<double> delta = lambdaQCD*1.E-3;
+	complex<double> fdp = invasLambdaQCD(lambdaQCD+delta);
+	complex<double> fdm = invasLambdaQCD(lambdaQCD-delta);
+	complex<double> fd2p = invasLambdaQCD(lambdaQCD+2.0*delta);
+	complex<double> fd2m = invasLambdaQCD(lambdaQCD-2.0*delta);
 
 	// derivative
-	return (-fd2p+8.*fdp-8.*fdm+fd2m)/(12.*delta); 
+	return (-fd2p+8.*fdp-8.*fdm+fd2m)/(12.*delta);
 }
 
 void solveLambdaQCD(){
 	int i = 1;
 	complex<double> lambda(0.18,0.);
-	while((abs(invasLambdaQCD(lambda)) > 0.0000001) && (i <=10)){
+	while((abs(invasLambdaQCD(lambda)) > 1.E-16) && (i <=20)){
 		lambda = lambda - invasLambdaQCD(lambda)/DinvasLambdaQCD(lambda);
 		i++;
 	}
@@ -54,14 +55,62 @@ void solveLambdaQCD(){
 
 // https://arxiv.org/pdf/hep-ph/0408244.pdf eqn (2.5)
 // Checked with Leonardo
+complex<double> fourthKG(complex<double> DLR){
+	complex<double> as = 0.;
+	for(int i = 1; i < 20.; i++)
+	 {
+		complex<double> xk0 = DLR*betaF(alphas_muR/(4.*M_PI));
+		complex<double> xk1 = DLR*betaF(alphas_muR/(4.*M_PI)+0.5*xk0);
+		complex<double> xk2 = DLR*betaF(alphas_muR/(4.*M_PI)+0.5*xk1);
+		complex<double> xk3 = DLR*betaF(alphas_muR/(4.*M_PI)+xk2);
+		as = alphas_muR/(4.*M_PI) + 1./6.*(xk0+2.*xk1+2.*xk2+xk3);
+	 }
+	 return as;
+}
+
+
 complex<double> falphasQ2(complex<double> mu2){
+	complex<double> as = 0.;
 	complex<double> LLambda = log((mu2-I*1.E-16)/(LambdaQCD*LambdaQCD));
 	double b1 = beta1/beta0;
 	double b2 = beta2/beta0;
-  complex<double> as = 1./(beta0*LLambda)-1./(pow(beta0*LLambda,2))*b1*log(LLambda)
+/*  complex<double> as = 1./(beta0*LLambda)-1./(pow(beta0*LLambda,2))*b1*log(LLambda)
 												+1./(pow(beta0*LLambda,3))*(pow(b1,2)*(pow(log(LLambda),2)-log(LLambda)-1.)+b2)
 												;//+1./(pow(beta0*LLambda,4))*(pow(b1,3)*(-pow(log(LLambda),3)+5./2.*pow(log(LLambda),2)+2.*log(LLambda)-1./2.)-3.*b1*b2*log(LLambda)+b3/2.);
- 	return 4.*M_PI*as;
+*/
+	if(ISNLL){
+		as = 1./(beta0*LLambda)-1./(pow(beta0*LLambda,2))*b1*log(LLambda)
+				+ISNNLL*1./(pow(beta0*LLambda,3))*(pow(b1,2)*(pow(log(LLambda),2)-log(LLambda)-1.)+b2);
+		return 4.*M_PI*as;}
+	else if(ISLL){
+		LLambda = log((mu2-I*1.E-16)/(muR*muR));
+	 	as = alphas_muR/(1.+alphas_muR*b0*LLambda);
+		// https://arxiv.org/pdf/hep-ph/0408244.pdf eqn (2.5)
+		return as;}
+	return as;
+/*
+ complex<double> as = 0.;
+ complex<double> LLambda = log((mu2-I*1.E-16)/(muR*muR));
+ complex<double> as0 = alphas_muR/(4.*M_PI);
+ complex<double> DLR = LLambda/20.;
+ if(ISNLL){
+	 as = fourthKG(DLR);
+ }
+ else{
+	 as = as0/(1.+beta0*as0*LLambda);
+ }
+   return 4.*M_PI*as;*/
+}
+
+complex<double> falphasQ2_LO(complex<double> mu2){
+	complex<double> LLambda = log((mu2-I*1.E-16)/(muR*muR));
+	complex<double>	as = alphas_muR/(1.+alphas_muR*b0*LLambda);
+	return as;
+}
+
+complex<double> betaF(complex<double> as){
+	//return -alphas*alphas*(ISLL*b0+ISNLL*b1*alphas+ISNNLL*b2*alphas*alphas);
+	return -as*as*(ISLL*beta0+ISNLL*beta1*as+ISNNLL*beta2*as*as);
 }
 
 ///////////////////////
@@ -73,13 +122,14 @@ complex<double> falphasQ2(complex<double> mu2){
 vector<complex<double>> hard_higgs(complex<double> mu2, complex<double> muh2){
 	complex<double> alphas_muh2 = falphasQ2(muh2);
 	complex<double> logH(log(mu2/muh2));
+	complex<double> c1top = CA*4.*11./6.;
 	complex<double> c1L = CA*(-logH*logH + pow(M_PI,2)/6.);
 	complex<double> c2L = pow(CA,2)*(pow(logH,4)/2. + 11./9.*pow(logH,3)+(-67./9.+pow(M_PI,2)/6.)*pow(logH,2)
 																		+ (80./27.-11.*pow(M_PI,2)/9.-2.*zeta3)*logH
 																		+ 5105./162.+67.*pow(M_PI,2)/36.+pow(M_PI,4)/72.-143./9.*zeta3)
 												+CF*TF*nF*(4.*logH-67./3.+16.*zeta3)
 												+CA*TF*nF*(-4./9.*pow(logH,3)+20./9.*pow(logH,2)+(104./27.+4.*pow(M_PI,2)/9.)*logH-1832./81.-5.*pow(M_PI,2)/9.-92./9.*zeta3);
-	vector<complex<double>> hardH = {1.,ISNNLL*(alphas_muh2)/(4.*M_PI)*(c1L+conj(c1L)),pow((alphas_muh2)/(4.*M_PI),2)*(c1L*conj(c1L)+c2L+conj(c2L))};
+	vector<complex<double>> hardH = {1.,ISNNLL*(alphas_muh2)/(4.*M_PI)*(c1top+c1L+conj(c1L)),pow((alphas_muh2)/(4.*M_PI),2)*(c1L*conj(c1L)+c2L+conj(c2L))};
 	return hardH;
 }
 
@@ -92,21 +142,33 @@ double cT_higgs(){
 	complex<double> c1L = 5.*CA-3.*CF;
 	complex<double> c2L = (27./2.*CF*CF+(11.*Lt-100./3.)*CF*CA-(7.*Lt-1063./36.)*CA*CA
 													-4./3.*CF*TF-5./6.*CA*TF-(8.*Lt+5.)*CF*TF*nF-47./9.*CA*TF*nF);
-	if(!ISNNLL){alphas_mus2 = alphas_muf2;}
+	//if(!ISNNLL){alphas_mus2 = alphas_muf2;}
 	// cT at scale mT (O(1),O(alpha),O(alpha2))
 	//complex<double> cT = 1.+(alphas_mut2)/(4.*M_PI)*(c1L+conj(c1L))+pow((alphas_mut2)/(4.*M_PI),2)*(c1L*conj(c1L)+c2L+conj(c2L));
 	//Leonardo:
-	complex<double> cT = real(1.+(alphas_mut2)/(4.*M_PI)*(c1L)+pow((alphas_mut2)/(4.*M_PI),2)*(c2L));
-	cT = cT*cT;
+	complex<double> cT = (1.+(alphas_mut2)/(4.*M_PI)*(c1L)+pow((alphas_mut2)/(4.*M_PI),2)*(c2L));
+	double cT2 = abs(cT*cT);
 	// Is this consistent with counting??
 
 	// beta(alphas)/alphas^2, the evolution factors
-	complex<double> beta_ms_over_alphasms2 = -(beta0/(4.*M_PI) + alphas_mus2/pow(4.*M_PI,2)*beta1 + alphas_mus2*alphas_mus2/(64.*pow(M_PI,3))*beta2);
-	complex<double> beta_mt_over_alphasmt2 = -(beta0/(4.*M_PI) + alphas_mut2/pow(4.*M_PI,2)*beta1 + alphas_mut2*alphas_mut2/(64.*pow(M_PI,3))*beta2);
+	complex<double> beta_ms_over_alphasms2 = -(beta0/(4.*M_PI) + ISNNLL*alphas_mus2/pow(4.*M_PI,2)*beta1);// + alphas_mus2*alphas_mus2/(64.*pow(M_PI,3))*beta2);
+	complex<double> beta_mt_over_alphasmt2 = -(beta0/(4.*M_PI) + ISNNLL*alphas_mut2/pow(4.*M_PI,2)*beta1);// + alphas_mut2*alphas_mut2/(64.*pow(M_PI,3))*beta2);
 
 	// evolution of cT
 	// returns LL, NLL or NNLL (according to leonardo)
-	double result = real(cT*pow(beta_ms_over_alphasms2/beta_mt_over_alphasmt2,2)*pow(alphas_mus2/alphas_muf2,2*ISNNLL));
+	double result = cT2*abs(pow(beta_ms_over_alphasms2/beta_mt_over_alphasmt2,2.)*pow(alphas_mus2/alphas_muf2,2*ISNLL));
+
+	return result;
+}
+
+complex<double> cT_higgs_wo_heavy_top(){
+	complex<double> alphas_mus2 = falphasQ2((complex<double>)mus*mus);
+	complex<double> alphas_muf2 = falphasQ2((complex<double>)muF*muF);
+	complex<double> alphas_muh2 = falphasQ2((complex<double>)muh*muh);
+	complex<double> beta_ms_over_alphasms2 = -(beta0/(4.*M_PI) + ISNNLL*1./(4.*M_PI)*alphas_mus2/(4.*M_PI)*beta1);//+ ISNNLL*1./(4.*M_PI)*pow(alphas_mus2/(4.*M_PI),2)*beta2);
+	complex<double> beta_mh_over_alphasmh2 = -(beta0/(4.*M_PI) + ISNNLL*1./(4.*M_PI)*alphas_muh2/(4.*M_PI)*beta1);//+ ISNNLL*1./(4.*M_PI)*pow(alphas_mus2/(4.*M_PI),2)*beta2);
+
+	complex<double> result = pow(beta_ms_over_alphasms2/beta_mh_over_alphasmh2,2.*ISNLL)*pow(alphas_mus2/alphas_muf2,2*ISNLL);
 
 	return result;
 }
@@ -165,7 +227,7 @@ vector<complex<double>> sudakov(double nu, double mu, vector<double> GammaC){
 
 // Checked with Leonardo
 vector<complex<double>> feta(double nu, double mu, vector<double> gamma)
-{
+{//nu=mus,mu=muF
 		complex<double> alphamu2(falphasQ2((complex<double>)mu*mu));
 		complex<double> alphanu2(falphasQ2((complex<double>)nu*nu));
 		complex<double> eta_NLL(0.);
@@ -206,16 +268,28 @@ vector<double> fsoft_DY(double L){ //contains vector with (non deriv O(1), non d
 // eta derivatives
 ///////////////////
 
-double Deta_z(double z, double eta){ //w.o. z^-eta term
-	// derivative of pow(z,-BN*eta)*2.*eta*pow(1-z,-1+2*eta)*exp[-2*gam_E*eta]/Gamma[1+2eta]
-	return (-2.*pow(1. - z,-1. + 2.*eta)
+double Deta_z(double z, double eta){
+	if(eta > -0.3)// derivative of pow(z,-BN*eta)*2.*eta*pow(1-z,-1+2*eta)*exp[-2*gam_E*eta]/Gamma[1+2eta]
+		{return (-2.*pow(1. - z,-1. + 2.*eta)
 			*(-1. + 2.*eta*M_gammaE - 2.*eta*log(1. - z)
 				+ BN*eta*log(z) + 2.*eta*gsl_sf_psi_n(0,1. + 2.*eta)))/
-   (exp(2.*eta*M_gammaE)*pow(z,BN*eta)*tgamma(1. + 2.*eta));
+   (exp(2.*eta*M_gammaE)*pow(z,BN*eta)*tgamma(1. + 2.*eta));}
+  else if(eta > -0.9) // derivative of z^(-BN*eta)*(2*eta)*(1 + 2 eta)/Gamma[2 + 2 eta]*(1 - z)^(-1 + 2 eta)*Exp[-2*EulerGamma*eta]
+ 		{return ((-(1./tgamma(2.*eta + 2.)))*2.*pow(1. - z,2.*eta - 1.)*
+      (2.*BN*eta*eta*log(z) + BN*eta*log(z) + 4.*M_gammaE*eta*eta -
+         2.*(2.*eta + 1.)*eta*log(1. - z) + 2.*M_gammaE*eta - 4.*eta +
+         2.*(2.*eta + 1.)*eta*gsl_sf_psi_n(0, 2.*eta + 2.) - 1.))/
+   (exp(2.*M_gammaE*eta)*pow(z,BN*eta));}
+	else{
+		cout << "Eta is too large " << eta << " exiting program" << endl;
+		exit(0);
+		return 0;
+	}
 }
 double DDeta_z(double z, double eta){ //w.o. z^-eta term
 	// double derivative of pow(z,-BN*eta)*2.*eta*pow(1-z,-1+2*eta)*exp[-2*gam_E*eta]/Gamma[1+2eta]
-	return (2.*pow(1. - z,-1. + 2.*eta)
+	if(eta > -0.3)
+	{return (2.*pow(1. - z,-1. + 2.*eta)
 						*((2.*M_gammaE - 2.*log(1. - z) + BN*log(z))*(-2. + 2.*eta*M_gammaE - 2.*eta*log(1 - z)
 									+ BN*eta*log(z))
 									+ 4.*(-1. + 2.*eta*M_gammaE - 2.*eta*log(1. - z) + BN*eta*log(z))
@@ -223,6 +297,26 @@ double DDeta_z(double z, double eta){ //w.o. z^-eta term
 									+ 4.*eta*pow(gsl_sf_psi_n(0,1. + 2.*eta),2)
 									- 4.*eta*gsl_sf_psi_n(1,1. + 2.*eta)))
 					/(exp(2.*eta*M_gammaE)*pow(z,BN*eta)*tgamma(1. + 2.*eta));
+				}
+	else if(eta > -0.9) // derivative of z^(-BN*eta)*(2*eta)*(1 + 2 eta)/Gamma[2 + 2 eta]*(1 - z)^(-1 + 2 eta)*Exp[-2*EulerGamma*eta]
+		{return ((1./tgamma(2.*eta + 2.))*2.*pow(1. - z,2.*eta - 1.)*
+      (-(4.*log(1. - z)*(BN*eta*(2.*eta + 1.)*log(z) +
+                 2.*eta*(2.*M_gammaE*eta + M_gammaE - 2.) - 1.)) +
+         BN*log(z)*(BN*eta*(2.*eta + 1.)*log(z) +
+              4.*eta*(2.*M_gammaE*eta + M_gammaE - 2.) - 2.) +
+         4.*gsl_sf_psi_n(0, 2.*eta + 2.)*(eta*(2.*eta + 1.)*
+                (BN*log(z) - 2.*log(1. - z)) + 2.*eta*(2.*M_gammaE*eta +
+                   M_gammaE - 2.) - 1.) +
+     4.*eta*(2.*eta + 1.)*pow(log(1. - z),2) +
+         4.*M_gammaE*(eta*(2.*M_gammaE*eta + M_gammaE - 4.) - 1.) +
+         4.*eta*(2.*eta + 1.)*pow(gsl_sf_psi_n(0, 2.*eta + 2.),2.) -
+         4.*eta*(2.*eta + 1.)*gsl_sf_psi_n(1, 2.*eta + 2.) + 4.))/
+   (exp(2.*M_gammaE*eta)*pow(z,BN*eta));}
+	else{
+		cout << "Eta is too large " << eta << " exiting program" << endl;
+		exit(0);
+		return 0;
+	}
 }
 
 double Deta_z_eta(double z, double eta, double BNsub){
@@ -247,53 +341,100 @@ double DDeta_z_eta(double z, double eta, double BNsub){
 			 		/(exp(2.*eta*M_gammaE)*tgamma(1. + 2.*eta));
 }
 
-double Deta_tau(double eta){
-	// derivative of pow(1-tau,2*eta)/(2eta)*exp[-2*gam_E*eta]/Gamma[2eta]
-	return (-2.*pow(1. - tau,2.*eta)*(M_gammaE - log(1. - tau) + gsl_sf_psi_n(0,1. + 2.*eta)))/
-   (exp(2.*eta*M_gammaE)*tgamma(1. + 2.*eta));
+double Deta_z_eta2(double z, double eta, double BNsub, double INCsqrtZ){
+	// derivative of (-1 - BN*eta+1/2*INCSQRTZ)*(1 - z)^(2 eta)*2*eta*(1+2eta)Exp[-2*M_gammaE*eta]/Gamma[2 + 2 eta]
+ return ((1./tgamma(2.*eta + 2.))*pow(1. - z,2.*eta)*(8.*M_gammaE*BNsub*pow(eta,3.) -
+         12.*BNsub*pow(eta,2) + 4.*M_gammaE*BNsub*pow(eta,2) -
+         2.*(2.*eta + 1.)*eta*log(1. - z)*(2.*BNsub*eta - INCsqrtZ + 2.) +
+         2.*(2.*eta + 1.)*eta*gsl_sf_psi_n(0, 2.*eta + 2.)*
+           (2.*BNsub*eta - INCsqrtZ + 2.) - 4.*BNsub*eta -
+         4.*M_gammaE*pow(eta,2)*INCsqrtZ + 8.*M_gammaE*pow(eta,2) -
+         2.*M_gammaE*eta*INCsqrtZ + 4.*eta*INCsqrtZ +
+     4.*M_gammaE*eta -  8.*eta + INCsqrtZ - 2.))/exp(2.*M_gammaE*eta);
 }
-double DDeta_tau(double eta){
-	// double derivative of pow(1-tau,2*eta)/(2eta)*exp[-2*gam_E*eta]/Gamma[2eta]
-	return (4.*pow(1. - tau,2*eta)
-					*(pow(M_gammaE - log(1. - tau),2)
-						+ 2.*(M_gammaE - log(1. - tau))*gsl_sf_psi_n(0,1. + 2.*eta)
-						+ pow( gsl_sf_psi_n(0,1. + 2.*eta),2)
-						- gsl_sf_psi_n(1,1. + 2.*eta)))
-			 /(exp(2*eta*M_gammaE)*tgamma(1. + 2.*eta));
+double DDeta_z_eta2(double z, double eta, double BNsub, double INCsqrtZ){
+// double derivative of (-1 - BN*eta+1/2*INCSQRTZ)*(1 - z)^(2 eta)*2*eta*(1+2eta)Exp[-2*M_gammaE*eta]/Gamma[2 + 2 eta]
+ return ((1./tgamma(2.*eta + 2.))*4.*pow(1. - z,2.*eta)*
+      ((2.*eta*(2.*M_gammaE*eta + M_gammaE - 2.) - 1.)*
+           (log(1. - z)*(2.*BNsub*eta - INCsqrtZ + 2.) +
+        gsl_sf_psi_n(0, 2.*eta + 2.)*(-(2.*BNsub*eta) + INCsqrtZ - 2.) + BNsub)
+				- eta*(2.*eta + 1.)*
+           (log(1. - z)*(log(1. - z)*(2.*BNsub*eta - INCsqrtZ + 2.) +  2.*BNsub)
+			- 2*gsl_sf_psi_n(0, 2.*eta + 2.)*
+                (log(1. - z)*(2.*BNsub*eta - INCsqrtZ + 2.) + BNsub) +
+              pow(gsl_sf_psi_n(0, 2.*eta + 2.),2)*(2.*BNsub*eta - INCsqrtZ + 2.) +
+        gsl_sf_psi_n(1, 2.*eta + 2.)*(-(2.*BNsub*eta) + INCsqrtZ - 2.)) -
+         (M_gammaE*(eta*(2.*M_gammaE*eta + M_gammaE - 4.) - 1.) + 1.)*
+           (2.*BNsub*eta - INCsqrtZ + 2.)))/exp(2*M_gammaE*eta);
 }
 
-double Deta_tau_2nd(double eta, double BNsub){
-	// derivative of (BNsub*eta+1)*pow(1-tau,1+2*eta)/(1+2eta)*exp[-2*gam_E*eta]/Gamma[2eta]
-	return -1.*(-2.*pow(1. - tau,1. + 2.*eta)
-					*(-1. - 2.*BNsub*eta - 2.*BNsub*pow(eta,2) + 2.*eta*M_gammaE
-							+ 4.*pow(eta,2)*M_gammaE + 2.*BNsub*pow(eta,2)*M_gammaE
-							+ 4.*BNsub*pow(eta,3)*M_gammaE
-							- 2.*eta*(1. + 2.*eta)*(1. + BNsub*eta)*log(1. - tau)
-							+ 2.*eta*(1. + 2.*eta)*(1. + BNsub*eta)*gsl_sf_psi_n(0,1 + 2*eta)))
-					/(exp(2.*eta*M_gammaE)*pow(1. + 2.*eta,2)*tgamma(1. + 2.*eta));
+double Deta_tau(double eta){
+	// derivative of pow(1-tau,2*eta)/(2eta)*exp[-2*gam_E*eta]/Gamma[2eta]
+	if(eta > -0.3){
+		return (-2.*pow(1. - tau,2.*eta)*(M_gammaE - log(1. - tau) + gsl_sf_psi_n(0,1. + 2.*eta)))/
+   (exp(2.*eta*M_gammaE)*tgamma(1. + 2.*eta));}
+	else if (eta > -0.9){
+		return -((2.*pow(1. - tau,2.*eta)*(-((2.*eta + 1.)*log(1. - tau)) +
+            2.*M_gammaE*eta + (2.*eta + 1.)*gsl_sf_psi_n(0, 2.*eta + 2.) +
+            M_gammaE - 1))/(exp(2.*M_gammaE*eta)*tgamma(2.*eta + 2.)));
+	}
+ else{
+	 cout << "Eta is too large " << eta << " exiting program" << endl;
+	 exit(0);
+	 return 0;
  }
- double DDeta_tau_2nd(double eta, double BNsub){
- 	// derivative of (BNsub*eta+1)*pow(1-tau,1+2*eta)/(1+2eta)*exp[-2*gam_E*eta]/Gamma[2eta]
- 	return -1.*(4.*pow(1. - tau,1. + 2.*eta)
-						*(-.2*BNsub*eta*(1. + 2.*eta) + BNsub*pow(1. + 2.*eta,2)
-							+ 4.*eta*(1. + BNsub*eta) - 2.*(1. + 2.*eta)*(1. + BNsub*eta)
-							- 2.*BNsub*eta*pow(1. + 2.*eta,2)*M_gammaE
-							+ 4.*eta*(1. + 2.*eta)*(1. + BNsub*eta)*M_gammaE
-							- 2.*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*M_gammaE
-							+ 2.*eta*(1. + BNsub*eta)*pow(M_gammaE + 2.*eta*M_gammaE,2)
-							+ 2.*BNsub*eta*pow(1. + 2.*eta,2)*log(1. - tau)
-							- 4.*eta*(1. + 2.*eta)*(1. + BNsub*eta)*log(1. - tau)
-							+ 2.*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*log(1. - tau)
-							- 4.*eta*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*M_gammaE*log(1. - tau)
-							+ 2.*eta*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*pow(log(1. - tau),2)
-							- 2.*BNsub*eta*pow(1. + 2.*eta,2)*gsl_sf_psi_n(0,1. + 2.*eta)
-							+ 4.*eta*(1. + 2.*eta)*(1. + BNsub*eta)*gsl_sf_psi_n(0,1. + 2.*eta)
-							- 2.*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*gsl_sf_psi_n(0,1. + 2.*eta)
-							+ 4.*eta*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*M_gammaE*gsl_sf_psi_n(0,1. + 2.*eta)
-							- 4.*eta*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*log(1. - tau)*gsl_sf_psi_n(0,1. + 2.*eta)
-							+ 2.*eta*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*pow(gsl_sf_psi_n(0,1. + 2.*eta),2)
-							- 2.*eta*pow(1. + 2.*eta,2)*(1. + BNsub*eta)*gsl_sf_psi_n(1,1. + 2.*eta)))
-			/(exp(2*eta*M_gammaE)*pow(1. + 2.*eta,3)*tgamma(1. + 2.*eta));
+}
+
+double DDeta_tau(double eta){
+	// double derivative of pow(1-tau,2*eta)/(2eta)*exp[-2*gam_E*eta]/Gamma[2eta]
+ if(eta > -0.3){
+	 return (4.*pow(1. - tau,2*eta)
+						*(pow(M_gammaE - log(1. - tau),2)
+							+ 2.*(M_gammaE - log(1. - tau))*gsl_sf_psi_n(0,1. + 2.*eta)
+							+ pow( gsl_sf_psi_n(0,1. + 2.*eta),2)
+							- gsl_sf_psi_n(1,1. + 2.*eta)))
+				 /(exp(2*eta*M_gammaE)*tgamma(1. + 2.*eta));
+ }
+	else if (eta > -0.9){
+		 		return ((1./tgamma(2.*eta + 2.))*4.*pow(1. - tau,2.*eta)*
+      ((M_gammaE - log(1. - tau))*(-((2.*eta + 1.)*log(1. - tau)) +
+              2.*M_gammaE*eta + M_gammaE - 2.) +
+         2.*gsl_sf_psi_n(0, 2*eta + 2)*(-((2.*eta + 1.)*log(1. - tau)) +
+              2.*M_gammaE*eta + M_gammaE - 1.) +
+         (2.*eta + 1.)*pow(gsl_sf_psi_n(0, 2.*eta + 2.),2.) -
+         (2.*eta + 1.)*gsl_sf_psi_n(1, 2.*eta + 2.)))/exp(2.*M_gammaE*eta);
+		 	}
+	 	else{
+	 		cout << "Eta is too large " << eta << " exiting program" << endl;
+	 		exit(0);
+	 		return 0;
+	 	}
+}
+
+double Deta_tau_2nd(double eta, double BNsub, double INCsqrtZ){
+	// derivative of (-BNsub*eta + INCsqrtZ*1/2 - 1)*(1 - tau)^(1 + 2 eta)* Exp[-2*EulerGamma*eta]*(2 eta)/(Gamma[2 + 2 eta])
+	return ((1./tgamma(2.*eta + 2.))*pow(1. - tau,2.*eta + 1.)*
+      (4.*M_gammaE*BNsub*pow(eta,2) + 2.*eta*log(1. - tau)*
+           (-(2.*BNsub*eta) + INCsqrtZ - 2.) +  2.*eta*
+      gsl_sf_psi_n(0, 2.*eta + 2.)*(2.*BNsub*eta - INCsqrtZ + 2.) -
+         4.*BNsub*eta - 2.*M_gammaE*eta*INCsqrtZ +
+     4.*M_gammaE*eta +
+         INCsqrtZ - 2.))/exp(2.*M_gammaE*eta);
+ }
+ double DDeta_tau_2nd(double eta, double BNsub, double INCsqrtZ){
+	 // double derivative of (-BNsub*eta + INCsqrtZ*1/2 - 1)*(1 - tau)^(1 + 2 eta)* Exp[-2*EulerGamma*eta]*(2 eta)/(Gamma[2 + 2 eta])
+ 	return ((-(1./tgamma(2.*eta + 2.)))*4.*pow(1. - tau,2.*eta + 1.)*
+      (log(1. - tau)*(eta*log(1. - tau)*(2.*BNsub*eta - INCsqrtZ + 2.) -
+        4.*BNsub*eta*(M_gammaE*eta - 1.) + (2.*M_gammaE*eta - 1.)*
+                (INCsqrtZ - 2.)) + gsl_sf_psi_n(0, 2.*eta + 2.)*
+           (2*eta*log(1. - tau)*(-(2.*BNsub*eta) + INCsqrtZ - 2.) +
+              4.*eta*(M_gammaE*BNsub*eta - BNsub + M_gammaE) -
+              2.*M_gammaE*eta*INCsqrtZ + INCsqrtZ - 2.) +
+         eta*pow(gsl_sf_psi_n(0, 2.*eta + 2),2)*(2.*BNsub*eta - INCsqrtZ + 2.) +
+         eta*gsl_sf_psi_n(1, 2.*eta + 2.)*(-(2*BNsub*eta) + INCsqrtZ - 2.) +
+         BNsub*(2.*M_gammaE*eta*(M_gammaE*eta - 2.) + 1.) -
+         M_gammaE*(M_gammaE*eta - 1.)*(INCsqrtZ - 2.)))/
+   exp(2.*M_gammaE*eta);
   }
 ////////////////////
 /// C coefficients
@@ -302,8 +443,8 @@ double Deta_tau_2nd(double eta, double BNsub){
 vector<complex<double>> C_higgs(){
 	complex<double> Ufunc(0.);
 	vector<complex<double>> Ctot;
-	vector<complex<double>> Cs = hard_higgs(-mH2-I*1.E-16, muh*muh);
-	double cT_H = 1.;//cT_higgs();
+	vector<complex<double>> Cs = hard_higgs(-Q*Q-I*1.E-16, muh*muh);
+	complex<double> cT_H = cT_higgs_wo_heavy_top();
 	//cout << "warning cT_h is 1" << endl;
 	vector<complex<double>> Ssud = sudakov(muh, mus, GammaCg);
 	vector<complex<double>> aC = acusp(muh, mus, GammaCg);
@@ -314,7 +455,8 @@ vector<complex<double>> C_higgs(){
 	//cout << "aC: " << aC[0]<<" " <<aC[1]<<" " <<aC[2] << ", tot=" << SaC << endl;
 	//cout << "aphiS: " << aphiS[0]<<" " <<aphiS[1]<<" " <<aphiS[2] << ", tot=" << SaphiS << endl;
 	//cout << "aphiB: " << aphiB[0]<<" " <<aphiB[1]<<" " <<aphiB[2] << ", tot=" << SaphiB << endl;
-	Ufunc = (abs(pow((-mH2-I*1.E-16)/(muh*muh),-2.*SaC)))*abs(exp(4.*SSsud-2.*SaphiS+4.*SaphiB));
+	//complex<double> correction_factor = pow(M_PI,2)*beta0*CA*(falphasQ2(Q2)-falphasQ2(mus*mus))/(4.*M_PI*beta0);
+	Ufunc = (abs(pow((-Q*Q-I*1.E-16)/(muh*muh),-2.*SaC)))*abs(exp(4.*SSsud+-2.*SaphiS+4.*SaphiB));
 	Ctot = {ISLL*Cs[0]*cT_H*Ufunc, //NLL is the same as LL, but then is Ufunc different
 					ISNNLL*(Cs[1])*cT_H*Ufunc};
 	return Ctot;
@@ -330,7 +472,7 @@ vector<complex<double>> C_DY(){
 	vector<complex<double>> aphi = acusp(mus, muF, gammaphi);
 	//cout << "Cv = " << Cv << ", Ssud =" << Ssud << ", aC =" << aC << ", aV =" << aV << ", aphi =" << aphi << endl;
 	complex<double> SSsud = Ssud[0]+Ssud[1]+Ssud[2], SaC = aC[0]+aC[1]+aC[2], SaV = aV[0]+aV[1]+aV[2], Saphi = aphi[0]+aphi[1]+aphi[2];
-  //cout << "hard " << Cv[0] << " " << Cv[1] << endl;
+	//cout << "hard " << Cv[0] << " " << Cv[1] << endl;
 	//cout << "Ssud: " << Ssud[0]<<" " <<Ssud[1]<<" " <<Ssud[2] << ", tot=" << SSsud << endl;
 	//cout << "aC: " << aC[0]<<" " <<aC[1]<<" " <<aC[2] << ", tot=" << SaC << endl;
 	//cout << "aV: " << aV[0]<<" " <<aV[1]<<" " <<aV[2] << ", tot=" << SaV << endl;
@@ -347,26 +489,28 @@ vector<complex<double>> C_DY(){
 complex<double> C_higgs_NLP(){
 	complex<double> Ufunc(0.);
 	complex<double> Ctot;
-	double Cv = 1.;//cT_higgs();
+	vector<complex<double>> Cs = hard_higgs(-Q*Q-I*1.E-16, muh*muh);
 	vector<complex<double>> SsudH = sudakov(muh, Q, GammaCg);
 	vector<complex<double>> SsudS = sudakov(mus, Q, GammaCg);
 	complex<double> alpha_Q2 = falphasQ2(Q*Q);
 	complex<double> alpha_mus2 = falphasQ2(mus*mus);
 	complex<double> SSsud = SsudH[0]-SsudS[0];
 	Ufunc = abs(exp(4.*SSsud));
-	Ctot = Cv*Ufunc*(-8.*CA/beta0)*real(log(alpha_Q2/alpha_mus2));
+	Ctot = (Cs[0]+ISNNLL*INCHARD*Cs[1]+ISNNLL*INCHARD*CA*alpha_mus2/(2.*M_PI)*zeta2)*Ufunc*(-8.*CA/beta0)*real(log(alpha_Q2/alpha_mus2));
 	return Ctot;
 }
 complex<double> C_DY_NLP(){
 	complex<double> Ufunc(0.);
 	complex<double> Ctot;
+
+	vector<complex<double>> Cv = hard_DY(-Q*Q-I*1.E-16, muh*muh);
 	vector<complex<double>> SsudH = sudakov(muh, Q, GammaCq);
 	vector<complex<double>> SsudS = sudakov(mus, Q, GammaCq);
 	complex<double> alpha_Q2 = falphasQ2(Q*Q);
 	complex<double> alpha_mus2 = falphasQ2(mus*mus);
 	complex<double> SSsud = SsudH[0]-SsudS[0];
 	Ufunc = abs(exp(4.*SSsud));
-	Ctot = Ufunc*(-8.*CF/beta0)*real(log(alpha_Q2/alpha_mus2));
+	Ctot = (Cv[0]+ISNNLL*INCHARD*Cv[1]+ISNNLL*INCHARD*CF*alpha_mus2/(2.*M_PI)*zeta2)*Ufunc*(-8.*CF/beta0)*real(log(alpha_Q2/alpha_mus2));
 	return Ctot;
 }
 
@@ -380,7 +524,7 @@ double diff_xsec_DY(double z, double t){
 // setting up	the resummation functions
 		vector<complex<double>> res_eta = feta(mus,muF,GammaCq);
 		double eta = real(res_eta[0]+res_eta[1]);
-		double eulerGam = 2.*eta*exp(-2.*M_gammaE*eta)/tgamma(1.+2.*eta); //to avoid issues when eta = 0.;
+		double eulerGam = 2.*eta*exp(-2.*M_gammaE*INCEULER*eta)/tgamma(1.+2.*eta); //to avoid issues when eta = 0.;
 	  if(eulerGam == 0) eulerGam = 1.;
 		vector<complex<double>> CDY = C_DY();
 
@@ -388,6 +532,7 @@ double diff_xsec_DY(double z, double t){
 				                      DY_LO_factor()*real(CDY[1])}	; //tau*simgaLO*resummedC (no z dependence)
 		vector<double> fsoft = fsoft_DY(log(Q*Q/(mus*mus))); // log should be added, but to compare turn it off
 		double BNfactor = pow(z,-eta*BN);
+		if(INCSQRTZ){BNfactor = BNfactor*pow(z,1./2.);}
 // luminosity
 		//cout << DeltaDY[0] << " " << DeltaDY[1] << endl;
 		//cout << DeltaDY[0] << " " << DeltaDY[1] << endl;
@@ -404,7 +549,7 @@ double diff_xsec_DY(double z, double t){
 																*eulerGam
 																*lumi_at_tau[0]
 															*pow(1.-tau,2.*eta)/(2.*eta); //no integration for z
-		if(eta < -0.5){
+		if(eta < -0.3){
 			wo_eta_deriv = jacobian*(DeltaDY[0]*(fsoft[0])+DeltaDY[1])
 													*eulerGam
 													*((BNfactor*lumi_at_z[0]/z-lumi_at_tau[0])/pow(1.-z,1.-2.*eta)
@@ -427,19 +572,19 @@ double diff_xsec_DY(double z, double t){
 				double one_eta_add_correction = DeltaDY[0]*(fsoft[1])*lumi_at_tau[0]*Deta_tau(eta); //no integration for z
 				double two_eta_add_correction = DeltaDY[0]*(fsoft[2])*lumi_at_tau[0]*DDeta_tau(eta); //no integration for z
 
-				if(eta < -0.5){
+				if(eta < -0.3){
 					one_eta_deriv = jacobian*DeltaDY[0]*fsoft[1]
 															*(lumi_at_z[0]/z*Deta_z(z,eta)-lumi_at_tau[0]*Deta_z_eta(z,eta,0.)
-																-lumi_at_tau[0]*Deta_z_eta(z,eta,BN)-tau*lumi_at_tau[1]*Deta_z_eta(z,eta,0.)); //from z = tau to z = 1
+																+lumi_at_tau[0]*Deta_z_eta2(z, eta, BN, INCSQRTZ)+tau*lumi_at_tau[1]*Deta_z_eta2(z, eta, 0,0)); //from z = tau to z = 1
 					two_eta_deriv = jacobian*DeltaDY[0]*fsoft[2]
 															*(lumi_at_z[0]/z*DDeta_z(z,eta)-lumi_at_tau[0]*DDeta_z_eta(z,eta,0.)
-																-lumi_at_tau[0]*DDeta_z_eta(z,eta,BN)-tau*lumi_at_tau[1]*DDeta_z_eta(z,eta,0.));
-					one_eta_add_correction = DeltaDY[0]*fsoft[1]
+																+lumi_at_tau[0]*DDeta_z_eta2(z, eta, BN, INCSQRTZ)+tau*lumi_at_tau[1]*DDeta_z_eta2(z, eta, 0,0)); // -tau comes from dy/dz with y = tau/z
+					one_eta_add_correction = DeltaDY[0]*fsoft[1]//finite
 																	*(lumi_at_tau[0]*Deta_tau(eta)
-																		+lumi_at_tau[0]*Deta_tau_2nd(eta,BN)+tau*lumi_at_tau[1]*Deta_tau_2nd(eta,0)); //no integration for z
-					two_eta_add_correction = DeltaDY[0]*fsoft[2]
+																		-lumi_at_tau[0]*Deta_tau_2nd(eta,BN,INCSQRTZ)-tau*lumi_at_tau[1]*Deta_tau_2nd(eta,0,0)); //no integration for z
+					two_eta_add_correction = DeltaDY[0]*fsoft[2]//finite
 																	*(lumi_at_tau[0]*DDeta_tau(eta)
-																		+lumi_at_tau[0]*DDeta_tau_2nd(eta,BN)+tau*lumi_at_tau[1]*DDeta_tau_2nd(eta,0)); //no integration for z
+																		-lumi_at_tau[0]*DDeta_tau_2nd(eta,BN, INCSQRTZ)-tau*lumi_at_tau[1]*DDeta_tau_2nd(eta,0,0)); //no integration for z
 
 				}
 
@@ -465,9 +610,8 @@ double xsec_higgs(double z, double t){
 
 // setting up	the resummation functions
 		vector<complex<double>> res_eta = feta(mus,muF,GammaCg);
-		vector<complex<double>> res_eta2 = acusp(mus, muF, GammaCg);
 		double eta = real(res_eta[0]+res_eta[1]);
-		double eulerGam = 2.*eta*exp(-2.*M_gammaE*eta)/tgamma(1.+2.*eta); //to avoid issues when eta = 0.;
+		double eulerGam = 2.*eta*exp(-2.*M_gammaE*INCEULER*eta)/tgamma(1.+2.*eta); //to avoid issues when eta = 0.;
 		if(eulerGam == 0) {eulerGam = 1.;}
 		vector<complex<double>> CHiggs = C_higgs();
 		vector<double> DeltaHiggs = {higgs_LO_factor()*real(CHiggs[0]), //O(1)
@@ -475,6 +619,7 @@ double xsec_higgs(double z, double t){
 		vector<double> fsoft = fsoft_higgs(log(Q*Q/(mus*mus)));
 
 		double BNfactor = pow(z,-eta*BN);
+		if(INCSQRTZ){BNfactor = BNfactor*pow(z,1./2.);}
 // luminosity
 		vector<double> lumi_at_z = deriv_to_y_luminosities("gg", t,tau/z);
 		vector<double> lumi_at_tau = deriv_to_y_luminosities("gg", t,tau);
@@ -489,7 +634,7 @@ double xsec_higgs(double z, double t){
 																	*eulerGam
 																	*lumi_at_tau[0]
 													*pow(1.-tau,2.*eta)/(2.*eta); //no integration for z
-		if(eta < -0.5){
+		if(eta < -0.3){
 				wo_eta_deriv = jacobian*(DeltaHiggs[0]*(fsoft[0])+DeltaHiggs[1])
 													*eulerGam
 													*((BNfactor*lumi_at_z[0]/z-lumi_at_tau[0])/pow(1.-z,1.-2.*eta)
@@ -509,20 +654,19 @@ double xsec_higgs(double z, double t){
 				double two_eta_deriv = jacobian*DeltaHiggs[0]*(fsoft[2])*(lumi_at_z[0]/z*DDeta_z(z,eta)-lumi_at_tau[0]*DDeta_z_eta(z,eta,0.));
 				double one_eta_add_correction = DeltaHiggs[0]*(fsoft[1])*lumi_at_tau[0]*Deta_tau(eta); //no integration for z
 				double two_eta_add_correction = DeltaHiggs[0]*(fsoft[2])*lumi_at_tau[0]*DDeta_tau(eta); //no integration for z
-
-				if(eta < -0.5){
+				if(eta < -0.3){
 					one_eta_deriv = jacobian*DeltaHiggs[0]*fsoft[1]
 															*(lumi_at_z[0]/z*Deta_z(z,eta)-lumi_at_tau[0]*Deta_z_eta(z,eta,0.)
-																-lumi_at_tau[0]*Deta_z_eta(z,eta,BN)-tau*lumi_at_tau[1]*Deta_z_eta(z,eta,0.)); //from z = tau to z = 1
+																+lumi_at_tau[0]*Deta_z_eta2(z, eta, BN, INCSQRTZ)+tau*lumi_at_tau[1]*Deta_z_eta2(z, eta, 0,0)); //from z = tau to z = 1
 					two_eta_deriv = jacobian*DeltaHiggs[0]*fsoft[2]
 															*(lumi_at_z[0]/z*DDeta_z(z,eta)-lumi_at_tau[0]*DDeta_z_eta(z,eta,0.)
-																-lumi_at_tau[0]*DDeta_z_eta(z,eta,BN)-tau*lumi_at_tau[1]*DDeta_z_eta(z,eta,0.));
-					one_eta_add_correction = DeltaHiggs[0]*fsoft[1]
+																+lumi_at_tau[0]*DDeta_z_eta2(z, eta, BN, INCSQRTZ)+tau*lumi_at_tau[1]*DDeta_z_eta2(z, eta, 0,0)); // -tau comes from dy/dz with y = tau/z
+					one_eta_add_correction = DeltaHiggs[0]*fsoft[1]//finite
 																	*(lumi_at_tau[0]*Deta_tau(eta)
-																		+lumi_at_tau[0]*Deta_tau_2nd(eta,BN)+tau*lumi_at_tau[1]*Deta_tau_2nd(eta,0)); //no integration for z
-					two_eta_add_correction = DeltaHiggs[0]*fsoft[2]
+																		-lumi_at_tau[0]*Deta_tau_2nd(eta,BN,INCSQRTZ)-tau*lumi_at_tau[1]*Deta_tau_2nd(eta,0,0)); //no integration for z
+					two_eta_add_correction = DeltaHiggs[0]*fsoft[2]//finite
 																	*(lumi_at_tau[0]*DDeta_tau(eta)
-																		+lumi_at_tau[0]*DDeta_tau_2nd(eta,BN)+tau*lumi_at_tau[1]*DDeta_tau_2nd(eta,0)); //no integration for z
+																		-lumi_at_tau[0]*DDeta_tau_2nd(eta,BN, INCSQRTZ)-tau*lumi_at_tau[1]*DDeta_tau_2nd(eta,0,0)); //no integration for z
 
 				}
 

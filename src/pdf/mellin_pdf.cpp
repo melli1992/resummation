@@ -476,3 +476,38 @@ complex<double> xfit_Nspace_pdfs(int i, complex<double> N){
 	return (A*Gamma(x3 + 1.)*(Gamma(N + x4)*Gamma(N + x3 + x4 + 3./2.)*((x5 + 1.)*Gamma(N + x3 + x4 + 2.) + x6*(9.*N + x3 + 9.*x4 + 1.)*Gamma(N + x3 + x4 + 1.)) - 2.*(x5 + 4.*x6)*Gamma(N + x4 + 1./2.)*Gamma(N + x3 + x4 + 1.)*Gamma(N + x3 + x4 + 2.)))/(Gamma(N + x3 + x4 + 1.)*Gamma(N + x3 + x4 + 3./2.)*Gamma(N + x3 + x4 + 2.))
 	+ B*Gamma(x7 + 1.)*((C*Gamma(N + x8 + x9))/Gamma(N + x7 + x8 + x9 + 1.) + Gamma(N + x8)/Gamma(N + x7 + x8 + 1.));
 }
+
+
+double Lum(double x, string channel){
+	if(channel == "gg")
+	{return real(log(fit_mellin_pdf_sum_gg(x)));}
+	if(channel == "qqbar")
+	{return real(log(fit_mellin_pdf_sum_qqbar(x)));}
+	return 0;
+}
+
+double DLum(double x, string channel){
+	double eps = 1.E-3;
+	return (Lum(x+eps,channel)-Lum(x-eps,channel))/(2.*eps);
+}
+
+double DDLum(double x, string channel){
+	double eps = 1.E-3;
+	return (DLum(x+eps,channel)-DLum(x-eps,channel))/(2.*eps);
+}
+
+double newton_raphson_gg(double xn, int n, double tau, double xT2){
+	double xn1 = xn-(DLum(xn,"gg")-log(tau/xT2))/DDLum(xn,"gg");
+	n++;
+	if(abs((xn1 - xn)) < 1.E-8) return xn1;
+	if(n > 100) return xn1;
+	return newton_raphson_gg(xn1,n,tau,xT2);
+}
+
+double newton_raphson_qqbar(double xn, int n, double tau, double xT2){
+	double xn1 = xn-(DLum(xn,"qqbar")-log(tau/xT2))/DDLum(xn,"qqbar");
+	n++;
+	if(abs((xn1 - xn)) < 1.E-8) return xn1;
+	if(n > 100) return xn1;
+	return newton_raphson_qqbar(xn1,n,tau,xT2);
+}

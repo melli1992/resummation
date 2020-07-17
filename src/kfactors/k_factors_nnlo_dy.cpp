@@ -98,6 +98,7 @@ double DY_NNLO_qqbar_NS_expansion(double x, int power){
 	if(power==21){
 		return (4.624756929942094e-21*pow(alphas_muR,2)*CF*pow(-1 + x,20)*(-5.016437580478922e18*CA + 1.0942400880300922e20*CF + 1.345176155413112e19*nF - 5.175371907174269e18*CA*zeta2 - 2.091825713266249e19*CF*zeta2 + 2.5876859535871345e18*beta0*log(muR2/muF2) + 5.229564283165622e18*CF*pow(log(Q2/muF2),2) - 1.0552343319674237e19*CA*log(1 - x) + 1.546014403994688e20*CF*log(1 - x) + 6.900495876232358e18*nF*log(1 - x) + 5.973354643646951e19*CF*pow(log(1 - x),2) + log(Q2/muF2)*(-5.52132764646467e18*CA + 3.774839763246948e19*CF + 3.450247938116179e18*nF + 5.19704885757081e19*CF*log(1 - x))))/pow(M_PI,2);
 	}
+	return 0.;
 }
 
 double DY_NNLO_BB_full(double x){
@@ -168,6 +169,8 @@ double DY_NNLO_BB_expansion(double x, int power){
 	if(power==21){
 		return (0.03007453965787299*pow(alphas_muR,2)*CF*pow(-1. + x,20))/pow(M_PI,2);
 	}
+
+	return 0.;
 }
 
 double DY_NNLO_BC_full(double x){
@@ -238,6 +241,7 @@ double DY_NNLO_BC_expansion(double x, int power){
 	if(power==21){
 		return (0.03474305433512218*pow(alphas_muR,2)*(CA - 2.*CF)*CF*pow(-1. + x,20))/pow(M_PI,2);
 	}
+	return 0.;
 }
 
 
@@ -315,7 +319,7 @@ double DY_NNLO_CC_expansion(double x, int power){
 	if(power==21){
 		return (9.711989552878396e-20*pow(alphas_muR,2)*CF*TF*pow(-1 + x,20)*(1.5653478268779334e19 - 6.864367625571456e18*zeta2 + 1.5941590604123185e18*pow(log(Q2/muF2),2) + 8.415888167436029e18*log(1 - x) + 6.376636241649274e18*pow(log(1 - x),2) + log(Q2/muF2)*(4.2079440837180145e18 + 6.376636241649274e18*log(1 - x))))/pow(M_PI,2);
 	}
-
+	return 0.;
 }
 double DY_NNLO_CD_full(double x){
 	return (pow(alphas_muR,2)*CF*TF*(160*(-1 + x) - 24*(-6 + 4/x + x)*zeta3 - 16*(5 + 4*x)*log(x) + 8*(10 + x)*zeta2*log(x) - 52*x*pow(log(x),2) - (16*x*pow(log(x),3))/3. + 8*(5 - 4*x)*li2(1 - x) - 8*(-10 + x)*log(x)*li2(1 - x) + 32*(5/x + 2*x)*log(x)*li2(-x) + 40*(1 + x)*(zeta2 + 2*log(x)*log(1 + x) + 2*li2(-x)) + 8*(-6 + 4/x + 3*x)*Li3(1 - x) - 16*(-10 + 10/x + 3*x)*Li3(-x) - (8*(2 + 2*x + pow(x,2))*(log(1 + x)*(6*zeta2 - 5*pow(log(x),2) + 6*log(x)*log(1 + x) + 12*li2(-x)) - 4*S12(1 - x) + 12*S12(-x)))/x))/(16.*pow(M_PI,2));
@@ -385,6 +389,7 @@ double DY_NNLO_CD_expansion(double x, int power){
 	if(power==21){
 		return (-0.24868434358668168*pow(alphas_muR,2)*CF*TF*pow(-1. + x,20)*(-33.72113251511357 + 1.*zeta2 + 24.126971217665876*zeta3))/pow(M_PI,2);
 	}
+	return 0.;
 }
 double DY_NNLO_CE_full(double x){
 	return (pow(alphas_muR,2)*CF*(-CA/2. + CF)*(2*(-9 + 7*x)*log(x) - 4*(1 + 3*x)*pow(log(x),2) + 8*(3 + x)*li2(1 - x) + 4*(1 + x)*(zeta2 + 4*log(1 - x)*log(x) + 2*log(x)*log(1 + x) + 2*li2(-x)) + log(Q2/muF2)*(-16*(-1 + x) + 8*(1 + x)*log(x) - (4*(1 + pow(x,2))*(2*zeta2 - pow(log(x),2) + 4*log(x)*log(1 + x) + 4*li2(-x)))/(1 + x)) + (1 - x)*(-34 + 8*zeta3 + 32*log(1 - x) + 4*zeta2*log(x) - (2*pow(log(x),3))/3. - (4*pow(M_PI,2)*log(1 + x))/3. + 4*pow(log(x),2)*log(1 + x) - 8*log(x)*pow(log(1 + x),2) - 16*log(1 + x)*li2(-x) + 8*Li3(-x) - 16*S12(-x)) - (4*(1 + pow(x,2))*(3*zeta3 + 12*zeta2*log(1 - x) - 9*zeta2*log(x) - 6*log(1 - x)*pow(log(x),2) + 2*pow(log(x),3) + 6*zeta2*log(1 + x) + 24*log(1 - x)*log(x)*log(1 + x) - 21*pow(log(x),2)*log(1 + x) + 6*log(x)*pow(log(1 + x),2) - 18*log(x)*li2(1 - x) + 24*log(1 - x)*li2(-x) - 24*log(x)*li2(-x) + 12*log(1 + x)*li2(-x) + 24*Li3(1 - x) + 6*Li3(-x) - 24*Li3((1 - x)/(1 + x)) + 24*Li3((-1 + x)/(1 + x)) - 24*S12(1 - x) + 12*S12(-x)))/(3.*(1 + x))))/(16.*pow(M_PI,2));
@@ -454,7 +459,7 @@ double DY_NNLO_CE_expansion(double x, int power){
 	if(power==21){
 		return (-1.8994604598634037e-24*pow(alphas_muR,2)*(CA - 2.*CF)*CF*pow(-1. + x,20)*(4.258117266154896e22 - 1.3998211020194622e22*zeta2 - 6.2759553078222e16*zeta3 + (1.7283545239026034e22 - 1.25519106156444e17*zeta2)*log(Q2/muF2) + (3.456709047805207e22 - 2.51038212312888e17*zeta2)*log(1. - 1.*x)))/pow(M_PI,2);
 	}
-
+	return 0.;
 }
 
 double DY_NNLO_CF_full(double x){
@@ -462,7 +467,6 @@ double DY_NNLO_CF_full(double x){
 }
 
 double DY_NNLO_CF_expansion(double x, int power){
-
 	if(power==1){
 		return 0;
 	}
@@ -526,7 +530,7 @@ double DY_NNLO_CF_expansion(double x, int power){
 	if(power==21){
 		return (-0.04592676852536536*pow(alphas_muR,2)*(CA - 2.*CF)*CF*pow(-1. + x,20))/pow(M_PI,2);
 	}
-
+	return 0.;
 }
 
 
@@ -604,7 +608,7 @@ double DY_NNLO_gg_expansion(double x, int power){
 	if(power==21){
 		return (1.3488874378997772e-21*pow(alphas_muR,2)*pow(-1 + x,20)*(-6.5693280641250935e19 + 5.59989012129939e19*pow(CA,2) + 3.7663701313990753e18*(-1. + pow(CA,2))*pow(log(Q2/muF2),2) + 1.5065480525596301e19*(-1. + pow(CA,2))*log(Q2/muF2)*(1.6766970404865198 + 1.*log(1 - x)) + 1.5065480525596301e19*(-1. + pow(CA,2))*log(1 - x)*(3.3533940809730396 + 1.*log(1 - x))))/((-1. + pow(CA,2))*pow(M_PI,2));
 	}
-
+	return 0.;
 }
 
 
@@ -682,4 +686,5 @@ double DY_NNLO_qg_expansion(double x, int power){
 	if(power==21){
 		return (2.6977748757995544e-21*pow(alphas_muR,2)*TF*pow(-1. + x,20)*(1.3735126513108405e20*CA + 1.4833590242307667e20*CF + 2.5876859535871345e18*beta0*log(muR2/muF2) + (5.812132325072674e19*CA + 7.844346424748433e18*CF)*pow(log(Q2/muF2),2) + 3.4673025266897755e20*CA*log(1. - 1.*x) + 1.6756776488602645e20*CF*log(1. - 1.*x) + 2.4801140872442977e20*CA*pow(log(1. - 1.*x),2) + 5.466655928127794e19*CF*pow(log(1. - 1.*x),2) + log(Q2/muF2)*(1.5361173195609712e20*CA + 5.4326130954681025e19*CF + (2.428360368172555e20*CA + 5.207887332769081e19*CF)*log(1. - 1.*x))))/pow(M_PI,2);
 	}
+	return 0.;
 }

@@ -33,7 +33,7 @@ double higgs_LO_factor(){
 	for(int i = 0; i<2; i++){AQtot = AQtot + AQ(4.*pow(quarkmasses[i],2)/pow(mH,2));}
 	AQtot = norm(AQtot);
 	AQtot = 1;
-	return pbunits*alphas_muR*alphas_muR*Q2*sqrt(2)*GF/576./M_PI/S2;//*real(AQtot);
+	return pbunits*alphas_muR*alphas_muR*Q2*sqrt(2.)*GF/576./M_PI/S2;//*real(AQtot);
 }
 // this factor is checked, get the same pb as the results in 0809.4283 fig 1 (also changed higgs mass to check it)
 complex<double> AQ(double x){
@@ -125,6 +125,7 @@ if(power==20){
 if(power==21){
 	return (alphas_muR*pow(-1 + x,20)*(31.50921673785451 + 12*log(Q2/muF2) + 24*log(1 - x)))/(2.*M_PI);
 }
+return 0.;
 }
 
 ///////////////////////////
@@ -199,6 +200,7 @@ if(power==20){
 if(power==21){
 	return (alphas_muR*pow(-1 + x,20)*(11.18569547067999 + 4*log(Q2/muF2) + 8*log(1 - x)))/(3.*M_PI);
 }
+return 0.;
 }
 
 
@@ -273,5 +275,5 @@ double higgs_NLO_qqbar_expansion(double x, int power){
 	if(power==21){
 		return (32*alphas_muR*pow(-1 + x,20))/(27.*M_PI);
 	}
-
+	return 0.;
 }

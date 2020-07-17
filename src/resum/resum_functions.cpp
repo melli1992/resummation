@@ -2,6 +2,7 @@
 #include <fstream>
 #include <gsl/gsl_math.h>
 #include "parameters.h"
+#include "SCET_functions.h"
 #include "resum_functions.h"
 #include "polygamma.hpp"
 
@@ -31,18 +32,38 @@ complex<double> h1NLP(double A1, complex<double> N, complex<double>lambda){
 // (checked with mathematica)
 complex<double> g2(double A1,double A2,complex<double>lambda){
 	double INCeuler = 0.;
-	if(INCEULER == 0) INCeuler = 1.;
+	if(INCEULER == 0) {INCeuler = 1.;}
 	return 1./(2.*M_PI*b0)*(-A2/(M_PI*b0)+A1*log(Q2/muR2))*(2.*lambda+log(1.-2.*lambda))
 	+ A1*b1/(2.*M_PI*pow(b0,3))*(2.*lambda+log(1.-2.*lambda)+1./2.*pow(log(1.-2.*lambda),2))
 	- A1/(M_PI*b0)*lambda*log(Q2/muF2)
-	- INCeuler*2*M_gammaE*log(1.-2.*lambda)*A1/(2.*M_PI*b0);
+	- INCeuler*2.*M_gammaE*log(1.-2.*lambda)*A1/(2.*M_PI*b0);
 }
+
+/*complex<double> g2(double A1,double A2,complex<double>lambda){
+	double INCeuler = 0.;
+	if(INCEULER == 0) {INCeuler = 1.;}
+	return 1./(2.*M_PI*b0)*(-A2/(M_PI*b0)+A1*log(Q2/muR2))*(2.*lambda+log(1.-2.*lambda))
+	+ A1*b1/(2.*M_PI*pow(b0,3))*(2.*lambda+log(1.-2.*lambda)+1./2.*pow(log(1.-2.*lambda),2))
+	- A1/(M_PI*b0)*lambda*log(Q2/muF2)
+	- INCeuler*2.*M_gammaE*log(1.-2.*lambda)*A1/(2.*M_PI*b0);
+}*/
 
 ////////////////////////////////////////////////////////////////////////
 // LP NNLL function g3 hep-ph/0306211 eqn 41 (checked with mathematica)
 // checked with Richards code as well (for Nbar => N)
+// checked also the output numerically with mathematica
 complex<double> g3(double A1,double A2,double A3,complex<double>lambda){
 	double INCeuler = 0.;
+	/*cout << -((1./(4.*pow(M_PI,3)*pow(b0,4)*(2.*lambda - 1.)))*
+      (2.*lambda*(2.*(M_PI*(M_PI*A1*(2*pow(b0,4)*zeta2 - b0*b2*lambda + b0*b2 +
+                 pow(b1,2)*lambda) - A2*b0*b1*(lambda + 1.)) + A3*pow(b0,2)*lambda) +
+        2.*M_PI*pow(b0,2)*LQ2muR2*(M_PI*A1*b1 - A2*b0) +
+        pow(M_PI,2)*A1*pow(b0,4)*(2.*lambda - 1.)*pow(LmuF2muR2,2) +
+              pow(M_PI,2)*A1*pow(b0,4)*pow(LQ2muR2,2) +
+        2.*M_PI*A2*pow(b0,3)*(1. - 2.*lambda)*LmuF2muR2) +
+         2.*M_PI*log(1. - 2.*lambda)*(M_PI*A1*pow(b0,2)*b1*LQ2muR2 +
+              M_PI*A1*(-(2.*b0*b2*lambda) + b0*b2 + 2*pow(b1,2)*lambda) -
+        A2*b0*b1) + pow(M_PI,2)*A1*pow(b1,2)*pow(log(1. - 2.*lambda),2))) << endl;*/
 	if(INCEULER == 0) INCeuler = 1.;
 	return 2.*A1/M_PI*zeta2*lambda/(1.-2.*lambda)
 	+A1*pow(b1,2)/(2.*M_PI*pow(b0,4)*(1.-2.*lambda))*(2.*pow(lambda,2)+2.*lambda*log(1.-2.*lambda)+1./2.*pow(log(1.-2.*lambda),2))
@@ -60,6 +81,56 @@ complex<double> g3(double A1,double A2,double A3,complex<double>lambda){
 + ((A1/(M_PI*b0)*INCeuler*M_gammaE)*(-2.*lambda/(1.-2.*lambda)))*log(Q2/muR2));
 }
 
+//taken from TROLL
+complex<double> g4(double A1, double A2, double A3, double A4, double D2, double D3, complex<double> lambda){
+	A1 = A1/M_PI;
+	A2 = A2/M_PI/M_PI;
+	A3 = A3/M_PI/M_PI/M_PI;
+	D2 = D2/M_PI/M_PI;
+	D3 = D3/M_PI/M_PI/M_PI;
+	double D1 = 0.;
+	double EG = M_gammaE;
+	if(INCEULER) EG = 0.;
+	complex<double> z = -2.*lambda;
+	return -(-6*A3*b1/b0*z + 6*A2*pow(b1/b0,2)*z - 6*A1*b1/b0*b2/b0*z + 6*A1*b3/b0*z + 6*b0*b1/b0*D2*z - 6*b0*D3*z +
+      24*A3*b0*EG*z - 24*A2*b0*b1/b0*EG*z - 24*pow(b0,2)*D2*EG*z +
+      48*A2*pow(b0,2)*pow(EG,2)*z - 24*pow(b0,3)*D1*pow(EG,2)*z +
+      32*A1*pow(b0,3)*pow(EG,3)*z - 6*A4*pow(z,2) + 3*A3*b1/b0*pow(z,2) +
+      3*A2*pow(b1/b0,2)*pow(z,2) - 9*A1*b1/b0*b2/b0*pow(z,2) + 9*A1*b3/b0*pow(z,2) -
+      3*b0*pow(b1/b0,2)*D1*pow(z,2) + 3*b0*b2/b0*D1*pow(z,2) + 3*b0*b1/b0*D2*pow(z,2) -
+      3*b0*D3*pow(z,2) + 12*A3*b0*EG*pow(z,2) - 12*A2*b0*b1/b0*EG*pow(z,2) +
+      12*A1*b0*pow(b1/b0,2)*EG*pow(z,2) - 12*A1*b0*b2/b0*EG*pow(z,2) -
+      12*pow(b0,2)*D2*EG*pow(z,2) + 24*A2*pow(b0,2)*pow(EG,2)*pow(z,2) -
+      12*pow(b0,3)*D1*pow(EG,2)*pow(z,2) +
+      16*A1*pow(b0,3)*pow(EG,3)*pow(z,2) - 4*A4*pow(z,3) + 4*A3*b1/b0*pow(z,3) -
+      4*A2*pow(b1/b0,2)*pow(z,3) + 4*A1*pow(b1/b0,3)*pow(z,3) + 4*A2*b2/b0*pow(z,3) -
+      8*A1*b1/b0*b2/b0*pow(z,3) + 4*A1*b3/b0*pow(z,3) + 48*A2*pow(b0,2)*z*zeta2 -
+      24*pow(b0,3)*D1*z*zeta2 + 96*A1*pow(b0,3)*EG*z*zeta2 +
+      24*A2*pow(b0,2)*pow(z,2)*zeta2 - 12*pow(b0,3)*D1*pow(z,2)*zeta2 +
+      48*A1*pow(b0,3)*EG*pow(z,2)*zeta2 + 64*A1*pow(b0,3)*z*zeta3 +
+      32*A1*pow(b0,3)*pow(z,2)*zeta3 - 16*A1*pow(b0,3)*z*(2.+z)*pow(log(Q/muR),3) +
+      24*A3*b0*z*pow(1.+z,2)*log(muF/muR) -
+      24*pow(b0,2)*(2*A2 + A1*b1/b0)*z*pow(1.+z,2)*pow(log(muF/muR),2) +
+      32*A1*pow(b0,3)*z*pow(1.+z,2)*pow(log(muF/muR),3) + 6*A3*b1/b0*log(1.+z) -
+      6*A2*pow(b1/b0,2)*log(1.+z) + 6*A1*b1/b0*b2/b0*log(1.+z) - 6*A1*b3/b0*log(1.+z) -
+      6*b0*b1/b0*D2*log(1.+z) + 24*A2*b0*b1/b0*EG*log(1.+z) -
+      12*pow(b0,2)*b1/b0*D1*EG*log(1.+z) +
+      24*A1*pow(b0,2)*b1/b0*pow(EG,2)*log(1.+z) + 12*A1*b1/b0*b2/b0*z*log(1.+z) -
+      12*A1*b3/b0*z*log(1.+z) - 6*A1*pow(b1/b0,3)*pow(z,2)*log(1.+z) +
+      12*A1*b1/b0*b2/b0*pow(z,2)*log(1.+z) - 6*A1*b3/b0*pow(z,2)*log(1.+z) +
+      24*A1*pow(b0,2)*b1/b0*zeta2*log(1.+z) - 6*A2*pow(b1/b0,2)*pow(log(1.+z),2) +
+      3*b0*pow(b1/b0,2)*D1*pow(log(1.+z),2) - 12*A1*b0*pow(b1/b0,2)*EG*pow(log(1.+z),2) +
+      2*A1*pow(b1/b0,3)*pow(log(1.+z),3) +
+      12*pow(b0,2)*pow(log(Q/muR),2)*((2*A2 - b0*D1 + 4*A1*b0*EG)*z*(2.+z) +
+         2*A1*b1/b0*log(1.+z)) - 12*b0*log(Q/muR)*
+       (z*(-2*b0*D2 - 4*pow(b0,2)*D1*EG + 8*A1*pow(b0,2)*pow(EG,2) +
+            A1*pow(b1/b0,2)*z - A1*b2/b0*z - b0*D2*z - 2*pow(b0,2)*D1*EG*z +
+            4*A1*pow(b0,2)*pow(EG,2)*z + A3*(2.+z) - A2*(b1/b0 - 4*b0*EG)*(2.+z) +
+            8*A1*pow(b0,2)*zeta2 + 4*A1*pow(b0,2)*z*zeta2) +
+         b1/b0*(2*A2 - b0*D1 + 4*A1*b0*EG)*log(1.+z) - A1*pow(b1/b0,2)*pow(log(1.+z),2)))/
+   (12.*pow(b0,2)*pow(1.+z,2));
+}
+
 // wide angle contribution
 complex<double> wideangle(double D2,complex<double>lambda){
 	return -D2/(pow(M_PI,2)*b0)*lambda/(1.-2.*lambda);
@@ -67,32 +138,41 @@ complex<double> wideangle(double D2,complex<double>lambda){
 
 ///////////////////////////////////////////////////////////////////
 // matching functions to NLO and NNLO (checked with mathematica)
+// obtained from expanding D12 like in ref below
+// see https://arxiv.org/pdf/1009.5691.pdf (appendix D13 en 14)
+// checked also the output numerically with mathematica
 
-//https://arxiv.org/pdf/1009.5691.pdf (appendix D13 en 14)
-complex<double> NLOmatch(complex<double> N, double plusone, double A1, double g0){
-	return 1.
-					+ g0
-					+ 2.*alphas_muR/M_PI
-						*(A1*log(N*exp(M_gammaE*INCEULER)+plusone)
-								*(ISNLP/N+ISLL*log(N*exp(M_gammaE*INCEULER)+plusone)-ISNLL*log(Q2/muF2)));
+complex<double> NLOmatch(complex<double> N, double A1, double g01){
+double as = alphas_muR;
+double LQmuF2 = log(Q2/muF2);
+complex<double> lnN = log(N*exp(M_gammaE*INCEULER));
+complex<double> LPpiece = as*((2.*A1*ISLL*pow(lnN,2))/M_PI
+													- (2.*A1*ISNLL*lnN*LQmuF2)/M_PI
+													+ (g01/as*M_PI*ISNNLL)/M_PI)
+ 												+ 1.;
+ complex<double> NLPpiece = ((A1*as*ISNLP*lnN)/(M_PI*N));
+return LPpiece + NLPpiece;
 }
-complex<double> NNLOmatch(complex<double> N, double plusone, double A1, double A2, double D2, double g0){
-	return 1.
-				+ g0
-				+ 2.*alphas_muR/(M_PI)
-						*(A1*log(N*exp(M_gammaE*INCEULER)+plusone)
-								*(ISNLP/N+ISLL*log(N*exp(M_gammaE*INCEULER)+plusone)-ISNLL*log(Q2/muF2)))
-				+ pow(alphas_muR,2)/(3.*pow(M_PI,2))*log(N*exp(M_gammaE*INCEULER)+plusone)
-						*(6.*pow(A1,2)*log(N*exp(M_gammaE*INCEULER)+plusone)
-								*pow(ISNLP/N + ISLL*log(N*exp(M_gammaE*INCEULER)+plusone) - ISNLL*log(Q2/muF2),2)
-							+ -3.*D2*ISNNLL+6.*A2*ISNLL*log(N*exp(M_gammaE*INCEULER)+plusone)
-							+ 6.*ISNLP*A1*b0*log(N*exp(M_gammaE*INCEULER)+plusone)*M_PI/N
-							+ 4.*A1*b0*ISLL*pow(log(N*exp(M_gammaE*INCEULER)+plusone),2)*M_PI
-							+ 2.*A1*b0*ISNNLL*pow(M_PI,3)
-							- 3.*ISNNLL*A1*b0*M_PI*pow(log(Q2/muF2),2)
-							- 6.*ISNLL*A1*b0*log(N*exp(M_gammaE*INCEULER)+plusone)*M_PI*log(Q2/muR2)
-							- 6.*ISNNLL*log(Q2/muF2)*(A2 - A1*b0*M_PI*log(Q2/muR2)))
-				;
+
+complex<double> NNLOmatch(complex<double> N, double A1, double A2, double D2, double g01, double g02){
+double as = alphas_muR;
+double LQmuF2 = log(Q2/muF2);
+complex<double> lnN = log(N*exp(M_gammaE*INCEULER));
+//cout << "./lnN->" << lnN << "/.A1->"<< A1<<"/.A2->"<< A2<< "/.D2->"<< D2<<"/.b0->"<< b0<<"/.LQmuF2->" << LQmuF2 << "/.g01->" << g01/as*M_PI << "/.g02->" << g02/as/as*M_PI*M_PI << "/.as->" << as << endl;
+complex<double> LPpiece = as*as*(LQmuF2*(-4.*A1*A1*ISLL*ISNLL*pow(lnN,3)/pow(M_PI,2) + lnN*(-2.*A1*g01/as*M_PI*ISNLL*ISNNLL/pow(M_PI,2) - 2.*A2*ISNNLL/pow(M_PI,2)) - 2.*A1*b0*ISNLL*lnN*lnN/M_PI)
+		+ LQmuF2*LQmuF2*((2*A1*A1*ISNLL*lnN*lnN)/pow(M_PI,2) + (A1*b0*ISNNLL*lnN)/M_PI)
+		+ (2.*A1*A1*ISLL*pow(lnN,4))/pow(M_PI,2)
+		+ pow(lnN,3)*((4.*A1*b0*ISLL)/(3.*M_PI))
+		+ pow(lnN,2)*((2.*A1*g01/as*M_PI*ISLL*ISNNLL)/pow(M_PI,2) + (2.*A2*ISNLL)/pow(M_PI,2))
+		+ lnN*((4.*A1*b0*ISNNLL*zeta2)/M_PI - (D2*ISNNLL)/pow(M_PI,2))
+		+ (g02/as/as*M_PI*M_PI*ISNNLL)/pow(M_PI,2))
+ + as*((2.*A1*ISLL*pow(lnN,2))/M_PI
+		- (2.*A1*ISNLL*lnN*LQmuF2)/M_PI
+		+ (g01/as*M_PI*ISNNLL)/M_PI)
+ + 1.;
+ complex<double> NLPpiece = ((A1*as*ISNLP*lnN*(A1*as*lnN*(4.*ISLL*lnN*N - 4.*ISNLL*LQmuF2*N + ISNLP) +
+             2.*N*(M_PI*as*b0*lnN + as*g01/as*M_PI*ISNNLL + M_PI)))/(2.*pow(M_PI,2)*N*N));
+return LPpiece+NLPpiece;
 }
 
 /////////////////////
@@ -128,6 +208,29 @@ double higgs_g01(){
 	return alphas_muR/M_PI*CA/3.*(
 					11./2.+6.*zeta2+(33.-2.*nF)/6.*log(muR2/muF2)
 					+6.*pow(INCeuler*M_gammaE,2)+pow(M_PI,2)-6.*INCeuler*M_gammaE*log(Q2/muF2));
+}
+
+//https://arxiv.org/pdf/hep-ph/0306211.pdf, eqn 45 and 46
+// checked with code, slightly different so using own implementation!
+double higgs_g02(){
+	//double INCeuler = 0.;
+	/*if(INCEULER == 0) INCeuler = 1.;
+	double delGgg2 = 11399./144.+133./2.*zeta2-9./20.*zeta2*zeta2-165./4.*zeta3
+									+(19./8.+2./3.*nF)*log(Q2/mt2)+nF*(-1189./144.-5./3.*zeta2+5./6.*zeta3)
+									+pow(33.-2.*nF,2)/48.*pow(log(muF2/muR2),2)-18.*zeta2*pow(log(Q2/muF2),2)
+									+(169./4.+171./2.*zeta3-19./6.*nF+(33.-2.*nF)*zeta2)*log(Q2/muF2)
+									+(-465./8.+13./3.*nF-3./2.*(33.-2.*nF)*zeta2)*log(Q2/muR2);
+	double Cgg2 = delGgg2 + INCeuler*M_gammaE*(101./3.-14./9.*nF-63./2.*zeta3)+pow(INCeuler*M_gammaE,2)*(133./2.-5./3.*nF+21./2.*M_PI*M_PI)+pow(INCeuler*M_gammaE,3)*(11.-2./3.*nF)+18.*pow(INCeuler*M_gammaE,4)
+								+133./12.*pow(M_PI,2)-5./18.*nF*pow(M_PI,2)+29./20.*pow(M_PI,4)+22.*zeta3-4./3.*zeta3*nF+pow(log(Q2/muF2),2)*(-165./4.*INCeuler*M_gammaE+18.*pow(INCeuler*M_gammaE,2)+5./2.*nF*INCeuler*M_gammaE+3.*pow(M_PI,2))
+								+3./2.*INCeuler*M_gammaE*(33.-2.*nF)*log(Q2/muF2)*log(Q2/muR2)-1./4.*(33.-2.*nF)*(6.*pow(INCeuler*M_gammaE,2)+pow(M_PI,2))*log(Q2/muR2)
+								+log(Q2/muF2)*(-36.*pow(INCeuler*M_gammaE,3)+(33.-2.*nF)*pow(INCeuler*M_gammaE,2)+INCeuler*M_gammaE*(-133./2.+5./3.*nF-21./2.*pow(M_PI,2))
+																+11./2.*pow(M_PI,2)-nF*pow(M_PI,2)/3.-72.*zeta3);
+	return pow(alphas_muR/M_PI,2)*(Cgg2);*/
+	double Lt = log(Q2/mt2);
+	//cout << "/.Lt->" << Lt << "/.as->" <<alphas_muR << "/.nF->" << nF << "/.Q2->" << Q2 << "/.muF2->" << muF2 << endl;
+	return pow(alphas_muR/M_PI,2)*((2.*Lt*nF)/3. + (19.*Lt)/8. + ((pow(M_PI,2)*nF)/3. + (11.*nF)/6. + (27.*zeta3)/2. -(11.*pow(M_PI,2))/2. - 27./2.)*log(Q2/muF2)
+																- (nF*zeta3)/2. - (1189.*nF)/144. - (5.*pow(M_PI,2)*nF)/9. - (77.*zeta3)/4. + (23.*pow(M_PI,4))/16. + (133.*pow(M_PI,2))/6. + 11399./144.);
+
 }
 //dihiggs: https://arxiv.org/pdf/1807.03704.pdf eqn 11
 double Cgg1_dihiggs(double Q2)
@@ -223,4 +326,32 @@ complex<double> NLP_LL_function_full(complex<double> N, double Col_Fac){
 return alphas_muR/M_PI*Col_Fac*2./N*(
 				2.*pGamma(0,N+1.)+ 2.*M_gammaE
 				);
+}
+
+// without alphas expansion, see notes
+complex<double> g1_alphas(double A1,complex<double> N){
+	complex<double> N2 = pow(N,2);
+	complex<double> alphasQ2 = falphasQ2(Q2);
+	complex<double> alphasQ2_N2 = falphasQ2(Q2/N2);
+	return A1/(2.*M_PI*pow(b0,2))*(1./alphasQ2-1./alphasQ2_N2+1./alphasQ2_N2*log(alphasQ2/alphasQ2_N2));
+}
+
+
+complex<double> h1_alphas(double A1,complex<double> N){
+	//complex<double> N2 = pow(N,2);
+	//complex<double> alphasQ2_N2 = falphasQ2(Q2/N2);
+	//derivative from g1 //works (returns same as h1NLP), its 1/2*D[g1,N].
+	complex<double> delta = 1.E-4;
+	/*complex<double> g1p = 1./alphas_muR*g1(A1,alphas_muR*b0*log(N+delta));
+	complex<double> g1m = 1./alphas_muR*g1(A1,alphas_muR*b0*log(N-delta));;
+	return 1./2.*(g1p-g1m)/(2.*delta);*/
+	//derivative from g1_alphas (returns same as h1NLP), its 1/N*beta(alphas)*D[g1_alphas,alphas].
+	complex<double> N2 = pow(N,2);
+	complex<double> alphasQ2 = falphasQ2(Q2);
+	complex<double> alphasQ2_N2 = falphasQ2(Q2/N2);
+	complex<double> alphasQ2_N2p = alphasQ2_N2*(1.+delta);
+	complex<double> alphasQ2_N2m = alphasQ2_N2*(1.-delta);
+	complex<double> g1p =  A1/(2.*M_PI*pow(b0,2))*(1./alphasQ2-1./alphasQ2_N2p+1./alphasQ2_N2p*log(alphasQ2/alphasQ2_N2p));
+	complex<double> g1m =  A1/(2.*M_PI*pow(b0,2))*(1./alphasQ2-1./alphasQ2_N2m+1./alphasQ2_N2m*log(alphasQ2/alphasQ2_N2m));
+	return 1./N*b0*alphasQ2_N2*alphasQ2_N2*(g1p-g1m)/(2.*alphasQ2_N2*delta);
 }
