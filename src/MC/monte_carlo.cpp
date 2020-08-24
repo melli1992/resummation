@@ -34,12 +34,6 @@ functionint init_vegas_ttH(std::string process){
 			integrand.xl = {0.,0., 0.,0.,0.,0.};
 			integrand.xu = {1.,1., 1.,M_PI, M_PI, 2.*M_PI};
 		}
-	else if(process == "LO1st"){
-			integrand.G.f =&vegas_ttH_LO1st;
-			integrand.G.dim = 8;
-			integrand.xl = {0., 0.,0., 0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
 	else if(process == "LO2nd"){
 			integrand.G.f =&vegas_ttH_LO2nd;
 			integrand.G.dim = 8;
@@ -58,128 +52,106 @@ functionint init_vegas_ttH(std::string process){
 			integrand.xl = {0., 0., 0.,0.,0.,0.};
 			integrand.xu = {1., 1., 1.,M_PI, M_PI, 2.*M_PI};
 		}
-	else if(process == "resum2nd"){
-			integrand.G.f =&vegas_ttH_resum_2nd;
-			integrand.G.dim = 8;
-			integrand.xl = {0., 0.,0., 0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "resum2ndz5"){
-			integrand.G.f =&vegas_ttH_resum_2nd_z5;
-			integrand.G.dim = 8;
-			integrand.xl = {0., 0.,0., 0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "resum2nd_def"){
-			integrand.G.f =&vegas_ttH_resum_2nd_def;
-			integrand.G.dim = 8;
-			integrand.xl = {0., 0.,0., 0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "resum2nd_defz5"){
-			integrand.G.f =&vegas_ttH_resum_2nd_def_z5;
-			integrand.G.dim = 8;
-			integrand.xl = {0., 0.,0., 0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "resum_def"){
-			integrand.G.f =&vegas_ttH_resum_def;
-			integrand.G.dim = 6;
-			integrand.xl = {0., 0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "resumdefz5"){
-			integrand.G.f =&vegas_ttH_resum_def_z5;
-			integrand.G.dim = 6;
-			integrand.xl = {0., 0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "inv_mass_LO"){
-			integrand.G.f =&vegas_ttH_inv_mass_LO;
-			integrand.G.dim = 7;
-			integrand.xl = {0., 0.,0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "inv_mass_res"){
-			integrand.G.f =&vegas_ttH_inv_mass_res;
-			integrand.G.dim = 7;
-			integrand.xl = {0., 0.,0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "inv_mass_res_s34"){
-			integrand.G.f =&vegas_ttH_inv_mass_res_s34;
-			integrand.G.dim = 7;
-			integrand.xl = {0., 0.,0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
-	else if(process == "inv_mass_LO_s34"){
-			integrand.G.f =&vegas_ttH_inv_mass_LO_s34;
-			integrand.G.dim = 7;
-			integrand.xl = {0., 0.,0., 0.,0.,0.,0.};
-			integrand.xu = {1., 1.,1., 1.,M_PI, M_PI, 2.*M_PI};
-		}
 	else if(process == "LOpT"){
-				integrand.G.f =&vegas_ttH_LO_pT;
-				integrand.G.dim = 5;
-				integrand.xl = {0.,0., 0.,0.,0.};
-				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
-			}
-	else if(process == "LOpTfull"){
-				integrand.G.f =&vegas_ttH_LO_pTfull;
+			integrand.G.f =&vegas_ttH_LO_pT;
+			integrand.G.dim = 5;
+			integrand.xl = {0.,0., 0.,0.,0.};
+			integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+		}
+	//else if(process == "QLO"){
+	//		integrand.G.f =&vegas_ttH_LO_Q;
+	//		integrand.G.dim = 7;
+	//		integrand.xl = {0., 0.,0., 0.,0.,0.,0.};
+	//		integrand.xu = {1., 1.,1., 1.,M_PI, M_PI, 2.*M_PI};
+//		}
+	else if(process == "pTstt"){
+			integrand.G.f =&vegas_ttH_LO_pT_stt_dist;
+			integrand.G.dim = 4;
+			integrand.xl = {0., 0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, 2.*M_PI};
+		}
+	else if(process == "tot_N1"){
+		integrand.G.f =&vegas_ttH_N1;
+		if(fitPDF){
 				integrand.G.dim = 6;
-				// x1, x2, pT, s34, thetatt, phitt
-				integrand.xl = {0.,0.,0., 0.,0.,0.};
-				integrand.xu = {1.,1.,1., 1.,M_PI, 2.*M_PI};
-			}
-	else if(process == "LOpTN"){
-					integrand.G.f =&vegas_ttH_LO_pT_N;
-					integrand.G.dim = 5;
-					integrand.xl = {0.,0., 0.,0.,0.};
-					integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
-				}
-	else if(process == "LOpTsttN"){
-					integrand.G.f =&vegas_ttH_LO_pT_stt_N;
-					integrand.G.dim = 5;
-					integrand.xl = {0.,0., 0.,0.,0.};
-					integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
-				}
-	else if(process == "LOpTsttdefN"){
-					integrand.G.f =&vegas_ttH_LO_pT_stt_defN;
-					integrand.G.dim = 5;
-					integrand.xl = {0.,0., 0.,0.,0.};
-					integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
-				}
-	else if(process == "pTres"){
-				integrand.G.f =&vegas_ttH_pT_res;
-				integrand.G.dim = 5;
-				integrand.xl = {0.,0., 0.,0.,0.};
-				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
-			}
-else if(process == "pTresNfix"){
-			integrand.G.f =&vegas_ttH_pT_res_Nfix;
-			integrand.G.dim = 5;
-			integrand.xl = {0.,0., 0.,0.,0.};
-			integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+			  integrand.xl = {0., 0.,0.,0.,0.,0.};
+			  integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.};
 		}
- else if(process == "pTresabs"){
-			integrand.G.f =&vegas_ttH_pT_res_abs;
-			integrand.G.dim = 5;
-			integrand.xl = {0.,0., 0.,0.,0.};
-			integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
-		}
-	else if(process == "pTresstt"){
-				integrand.G.f =&vegas_ttH_pT_stt_res;
-				integrand.G.dim = 5;
-				integrand.xl = {0.,0., 0.,0.,0.};
-				integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
+		else{
+			  integrand.G.dim = 8;
+				integrand.xl = {0., 0.,0.,0.,0.,0.,0.,0.};
+				integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.,1.,1.};
 			}
-			else if(process == "pTstt"){
-						integrand.G.f =&vegas_ttH_LO_pT_stt_dist;
-						integrand.G.dim = 4;
-						integrand.xl = {0., 0.,0.,0.};
-						integrand.xu = {1., 1.,M_PI, 2.*M_PI};
-					}
-	else{cout << "this lumi does not exist" << endl;
+		}
+	else if(process == "tot_N2"){
+			integrand.G.f =&vegas_ttH_N2;
+			integrand.G.dim = 6;
+			integrand.xl = {0., 0.,0.,0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.};
+		}
+	else if(process == "tot_N3"){
+			integrand.G.f =&vegas_ttH_N3;
+			integrand.G.dim = 6;
+			integrand.xl = {0., 0.,0.,0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.};
+		}
+	else if(process == "tot_N4"){
+			integrand.G.f =&vegas_ttH_N4;
+			integrand.G.dim = 6;
+			integrand.xl = {0., 0.,0.,0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.};
+		}
+	else if(process == "tot_N5"){
+			integrand.G.f =&vegas_ttH_N5;
+			integrand.G.dim = 6;
+			integrand.xl = {0., 0.,0.,0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.};
+		}
+	else if(process == "inv_mass_N1"){
+			integrand.G.f =&vegas_ttH_inv_mass_N1;
+			integrand.G.dim = 5;
+			integrand.xl = {0., 0.,0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI};
+		}
+	else if(process == "inv_mass_N2"){
+			integrand.G.f =&vegas_ttH_inv_mass_N2;
+			integrand.G.dim = 5;
+			integrand.xl = {0., 0.,0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI};
+		}
+	else if(process == "inv_mass_N3"){
+			integrand.G.f =&vegas_ttH_inv_mass_N3;
+			integrand.G.dim = 5;
+			integrand.xl = {0., 0.,0.,0.,0.};
+			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI};
+		}
+	else if(process == "pT_N4"){
+			integrand.G.f =&vegas_ttH_pT_N4;
+			integrand.G.dim = 5;
+			integrand.xl = {0., 0.,0.,0.,0.};
+			integrand.xu = {1., 1.,1., M_PI, 2.*M_PI};
+		}
+	else if(process == "pT_N5"){
+			integrand.G.f =&vegas_ttH_pT_N5;
+			integrand.G.dim = 5;
+			integrand.xl = {0., 0.,0.,0.,0.};
+			integrand.xu = {1., 1.,1., M_PI, 2.*M_PI};
+		}
+	else if(process == "sttpT_N4"){
+			integrand.G.f =&vegas_ttH_sttpT_N4;
+			integrand.G.dim = 4;
+			integrand.xl = {0., 0.,0.,0.};
+			integrand.xu = {1., 1., M_PI, 2.*M_PI};
+		}
+	else if(process == "sttpT_N5"){
+			integrand.G.f =&vegas_ttH_sttpT_N5;
+			integrand.G.dim = 4;
+			integrand.xl = {0., 0.,0.,0.};
+			integrand.xu = {1., 1., M_PI, 2.*M_PI};
+		}
+
+
+	else{cout << "this option does not exist" << endl;
 exit(0);}
 		return integrand;
 

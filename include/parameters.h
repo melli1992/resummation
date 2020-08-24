@@ -24,6 +24,7 @@ extern double S2;
 extern double pT;
 extern double pT2;
 extern double Q;
+extern double M2;
 extern double Q2;
 extern double muF;
 extern double muF2;
@@ -157,7 +158,7 @@ extern double s1, sgg, sqqbar;
 struct lumni_params {double z; double pT; double xT; double epeta; double emeta; int power; int flavor; int coefficient;};
 
 extern bool INCSQRTZ,SCET, BN, DY, higgs, hh, WW, ZZ, ttH,diff, full, PF, LO, NLO, NNLO, RES, realPDF, fitPDF, chebPDF, SUSY, setdym,highscale, INCHARD;
-extern bool expansion;
+extern bool expansion, deform, diagsoft;
 
 void update_defaults(bool printout = true , bool pdfset = true);
 

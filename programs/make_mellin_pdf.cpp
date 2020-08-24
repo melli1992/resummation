@@ -29,6 +29,7 @@ int main(int argc, char* argv[]){
 	/// predefinition of everything, setting it up
 	//////////////////////////////////////////////
 	configure(argc, argv, to_string2("input.cfg"), false);
+	cout << muF << endl;
 	LHAPDF::PDFSet setk(setname);
 	int nmem(0.); //number of members
 	vector<int> pids; //number of flavors, span from -5 to 5 with 0 = 21 gluon
@@ -44,9 +45,9 @@ int main(int argc, char* argv[]){
 	string Qstring  = x_convert.str();
 	x_convert << alphas_muF;
 	string asstring  = x_convert.str();
-	//string q2_str = "fit_pdfs/"+setname+"/muF" + Qstring +"_"+setname;
-	string q2_str = "fit_pdfs/"+setname+"/muF" + to_string((int) muF) +"_"+setname;
-	
+	string q2_str = "fit_pdfs/"+setname+"/muF" + Qstring +"_"+setname;
+	//string q2_str = "fit_pdfs/"+setname+"/muF" + muF +"_"+setname;
+	cout << q2_str << endl;
 	q2_str = q2_str + "_pdfoutput.txt";
 	
 	output2.open(q2_str.c_str()); //.c_str() needed to do a constant string conversion

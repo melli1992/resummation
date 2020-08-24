@@ -39,6 +39,7 @@ double pT(500.);
 double s34in(4.*175.*175.);
 double pT2(pow(pT,2));
 double Q(500.);
+double M2;
 double Q2(pow(Q,2.));
 double S(13000.);
 double S2(pow(S,2.));
@@ -128,7 +129,7 @@ double ISNNLL(1);
 double ISNNNLL(1);
 double ISNLP(1);
 bool INCSQRTZ = false,highscale=false,setdym = false, SCET=false, BN = false, DY=true, ttH=false,higgs=false, hh=false, WW=false, ZZ=false, full=true, diff=false, LO=true, NLO=true, NNLO=true, RES=true, realPDF=false, fitPDF=true, chebPDF = false, SUSY = false, INCHARD=false;
-bool expansion = true;
+bool expansion = true, deform = false, diagsoft;
 
 // anomalous dimensions for dQCD
 double A1q(CF); // 1405.4827 eq. 12
@@ -240,9 +241,9 @@ void update_defaults(bool printout , bool pdfset){
                    lumchan = "qqbarH"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_qqbar = coeff;}
 		}
   tau = Q2/S2;
-	alphas_muF = pdfs[use_member]->alphasQ(muF);
-	alphas_Q = pdfs[use_member]->alphasQ(Q);
-	alphas_muR = pdfs[use_member]->alphasQ(muR);
+	alphas_muF = pdfs[use_member]->alphasQ2(muF*muF);
+	alphas_Q = pdfs[use_member]->alphasQ2(Q*Q);
+	alphas_muR = pdfs[use_member]->alphasQ2(muR*muR);
 	if(printout){
 		cout << "=========================================" << endl;
 		cout << "PDFset: 				" << setname << endl
