@@ -32,7 +32,7 @@ RESUM_OBJS := $(RESUM_OBJS) src/pdf/fit_coefficients.o src/pdf/deriv_pdf.o src/p
 #resummation functions
 RESUM_OBJS := $(RESUM_OBJS) src/resum/resum_functions.o src/resum/SCET_functions.o 
 #kfactor files
-RESUM_OBJS := $(RESUM_OBJS) src/kfactors/k_factors_higgs.o src/kfactors/k_factors_nnlo_higgs.o  
+RESUM_OBJS := $(RESUM_OBJS) src/kfactors/k_factors_higgs.o src/kfactors/k_factors_nnlo_higgs.o src/kfactors/NNLOpl.o  
 RESUM_OBJS := $(RESUM_OBJS) src/kfactors/k_factors_dy.o src/kfactors/k_factors_nnlo_dy.o
 RESUM_OBJS := $(RESUM_OBJS) src/kfactors/k_factors_dihiggs.o src/kfactors/k_factors_diboson.o
 RESUM_OBJS := $(RESUM_OBJS) src/kfactors/k_factors_prompt_photon.o 
@@ -45,10 +45,14 @@ RESUM_OBJS := $(RESUM_OBJS) src/utilities/inout.o src/utilities/polygamma.o
 ttH_program := $(RESUM_OBJS) 
 ttH_program := $(ttH_program) src/MC/monte_carlo.o src/MC/tth_vegas.o
 ttH_program := $(ttH_program) src/resum/tth_softanom.o src/resum/resum_tth.o src/kfactors/k_factors_ttH.o
+ttH_program2 := $(ttH_program) programs/ttbarh_run2.o 
 ttH_program := $(ttH_program) programs/ttbarh_run.o 
+
 
 #resummation for higgs and DY
 DYh_program := $(RESUM_OBJS) programs/DYh.o
+#resummation for higgs and DY
+DYh_program_coeff := $(RESUM_OBJS) programs/DYh_coeff.o
 #resummation for diboson
 diboson_program := $(RESUM_OBJS) programs/diboson.o
 
@@ -60,6 +64,9 @@ lumni_program := $(RESUM_OBJS) programs/lumni_check.o
 #PDFfits
 PDF_program := $(RESUM_OBJS) programs/make_mellin_pdf.o
 
+
+#TROLL comparison
+TROLL_program := $(RESUM_OBJS) programs/try_TROLL.o
 # -- Rules for building the main binaries --
 # If not all libraries are needed for a specific binary, just remove the
 # -l flag for that library here.
@@ -67,10 +74,24 @@ PDF_program := $(RESUM_OBJS) programs/make_mellin_pdf.o
 ttH: $(ttH_program)
 	g++ -o ttH $(ttH_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
 	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
+
+
+ttH2: $(ttH_program2)
+	g++ -o ttH2 $(ttH_program2) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
+	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
 	    
-	    
+	    	    
 DYh: $(DYh_program)
 	g++ -o DYh $(DYh_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
+	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
+
+DYh_coeff: $(DYh_program_coeff)
+	g++ -o DYh_coeff $(DYh_program_coeff) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
+	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
+
+
+TROLL: $(TROLL_program)
+	g++ -o TROLL $(TROLL_program) $(CXXFLAGS) $(LDFLAGS) -lgsl -lgslcblas -lm  \
 	    -lcuba -lLHAPDF -looptools -lgfortran -lboost_program_options
 
 diboson: $(diboson_program)
@@ -109,10 +130,12 @@ clean:
 #  a dependency file for the source being compiled)
 # The suffixes statement tells make that this is a general rule, and that
 # .cpp and .o are file extensions.
-.SUFFIXES: .cpp .o
+.SUFFIXES: .cpp .o .f
 .cpp.o:
 	g++ -c $< -o $@ $(CXXFLAGS)
 
+.f.o:
+	gfortran -o $@ -c $<
 # Include dependency files here to make changes to header files
 #  cause proper recompilation of source files using them
 #-include $(TRYLOOP_OBJS:.o=.d)
