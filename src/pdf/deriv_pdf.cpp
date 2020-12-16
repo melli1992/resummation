@@ -440,10 +440,29 @@ double lumni(string channel, double t, double y){ //checked that this gives same
 		}
 		return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
 	}
+	else if(channel=="qg_charge"){
+		if(x < y){return 0;}
+		if(x >= 1){return 0;}
+		double eq[5] = {-1./3.,2./3,-1./3.,2./3.,-1./3.}; //these are the charges
+		for(int i = 1; i <=5; i++){
+			sum_pdf+= eq[i-1]*eq[i-1]*1./y*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(0,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(0,x,muF));
+			sum_pdf+= eq[i-1]*eq[i-1]*1./y*(pdfs[use_member]->xfxQ(-i,x,muF)*pdfs[use_member]->xfxQ(0,y/x,muF)+pdfs[use_member]->xfxQ(-i,y/x,muF)*pdfs[use_member]->xfxQ(0,x,muF));
+		}
+		return -log(y)*sum_pdf;
+	}
 	else if(channel=="gg"){
 		if(x < y){return 0;}
 		if(x >= 1){return 0;}
 		sum_pdf = 1./y*(pdfs[use_member]->xfxQ(0,x,muF)*pdfs[use_member]->xfxQ(0,y/x,muF));
+		return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
+	}
+	else if(channel=="qg"){
+		if(x < y){return 0;}
+		if(x >= 1){return 0;}
+		for(int i = 1; i <=5; i++){
+			sum_pdf+= 1./y*(pdfs[use_member]->xfxQ(i,x,muF)*pdfs[use_member]->xfxQ(0,y/x,muF)+pdfs[use_member]->xfxQ(i,y/x,muF)*pdfs[use_member]->xfxQ(0,x,muF));
+			sum_pdf+= 1./y*(pdfs[use_member]->xfxQ(-i,x,muF)*pdfs[use_member]->xfxQ(0,y/x,muF)+pdfs[use_member]->xfxQ(-i,y/x,muF)*pdfs[use_member]->xfxQ(0,x,muF));
+		}
 		return -log(y)*sum_pdf; //log(y) is jacobian left after dx/x -> dt, -1* to integrate from 0 to 1
 	}
 	else if(channel == "qqbarD"){

@@ -34,12 +34,13 @@ using namespace std;
 complex<double> I(0,1);
 double CMP(2.5), phiMP(3./4.*M_PI);
 int boundary = 0;
-
+string result_map = "/home/mbeekveld/DY_numerical_NE/Numerical_Code_try/results";
 double pT(500.);
 double s34in(4.*175.*175.);
 double pT2(pow(pT,2));
 double Q(500.);
 double M2;
+double res_s;
 double Q2(pow(Q,2.));
 double S(13000.);
 double S2(pow(S,2.));
@@ -58,7 +59,7 @@ double fbunits(0.38937966*pow(10.,12.));
 
 //double pbunits(0.389379323*pow(10.,9.)); //check this again // Jort!
 //double fbunits(0.389379323*pow(10.,12.));
-double quarkmasses[2] = {4.18,173.0};
+double quarkmasses[2] = {4.18,172.5};
 double mt(172.5);//mt(173.0);
 double mt2(pow(mt,2));
 double mb(4.7);// should it be in MSbar?
@@ -81,12 +82,13 @@ double zeta5(1.03692775514337);
 double CF(4./3.);
 double CA(3.);
 double TF(1./2.);
-//double alphaEM(1./127.940);
-double alphaEM(1./132.5070);
+double alphaEM(1./127.940);
+//double alphaEM(1./132.5070); // to match with Leonardo
 double GF(1.1663790E-5); //GeV-2
 double alphas_muF(0);
 double alphas_muR(0);
 double alphas_Q(0);
+double alphas_mt(0);
 double LambdaQCD(0.208364837218848);
 double nF(5); //4 for Richard!
 
@@ -129,7 +131,7 @@ double ISNNLL(1);
 double ISNNNLL(1);
 double ISNLP(1);
 bool INCSQRTZ = false,highscale=false,setdym = false, SCET=false, BN = false, DY=true, ttH=false,higgs=false, hh=false, WW=false, ZZ=false, full=true, diff=false, LO=true, NLO=true, NNLO=true, RES=true, realPDF=false, fitPDF=true, chebPDF = false, SUSY = false, INCHARD=false;
-bool expansion = true, deform = false, diagsoft;
+bool expansion = true, deform = true, diagsoft, Nfixed = false;
 
 // anomalous dimensions for dQCD
 double A1q(CF); // 1405.4827 eq. 12
@@ -198,9 +200,11 @@ std::vector<LHAPDF::PDF*> pdfs;
 double xmin_pdfs(0.), xmax_pdfs(0.); //min x, max x and alphas
 int use_member(0);
 double s1(0.), sgg(0.), sqqbar(0.);
-double  *fitcheb_coeff_gg, *fitcheb_coeff_qqbar, *fitcheb_coeff_qqbarU, *fitcheb_coeff_qqbarD;
+double  *fitcheb_coeff_gg, *fitcheb_coeff_qg_charge, *fitcheb_coeff_qg, *fitcheb_coeff_qqbar, *fitcheb_coeff_qqbarU, *fitcheb_coeff_qqbarD;
 std::unordered_map<double, std::vector<std::vector<double>>> fitcoeff;
+bool toy_pdfs = false;
 
+string observable;
 ///////////////////////////////////////
 /// update defaults of the programm
 ///////////////////////////////////////
@@ -208,6 +212,7 @@ void update_defaults(bool printout , bool pdfset){
     Q2 = pow(Q,2);
     muF2 = muF*muF;
     muR2 = muR*muR;
+    mt2 = mt*mt;
     tau = Q2/S2;
 	  Lt = log(muR2/mt2);
     if(pdfset){
@@ -232,18 +237,32 @@ void update_defaults(bool printout , bool pdfset){
 	}
 	if(chebPDF){
   	double *coeff   = new double[11];
-    if(higgs || hh){ string lumchan = "gg"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_gg = coeff;}
-    if(DY){ string lumchan = "qqbar"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_qqbar = coeff;}
-    if(WW|| ZZ){ string lumchan = "qqbarU"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_qqbarU = coeff;
-                  double *coeff2   = new double[11];
-                  lumchan = "qqbarD"; ApproxLuminosity(coeff2, Q2/S2, 10, lumchan); fitcheb_coeff_qqbarD = coeff2;}
-    if(ttH){string lumchan = "gg"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_gg = coeff;
-                   lumchan = "qqbarH"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_qqbar = coeff;}
-		}
+    if(higgs || hh){
+        string lumchan = "gg"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_gg = coeff;
+        double *coeff2   = new double[11];
+        lumchan = "qg"; ApproxLuminosity(coeff2, Q2/S2, 10, lumchan); fitcheb_coeff_qg = coeff2;
+      }
+    if(DY){
+      string lumchan = "qqbar"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_qqbar = coeff;
+      double *coeff2   = new double[11];
+      lumchan = "qg_charge"; ApproxLuminosity(coeff2, Q2/S2, 10, lumchan); fitcheb_coeff_qg_charge = coeff2;
+    }
+    if(WW|| ZZ){
+      string lumchan = "qqbarU"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_qqbarU = coeff;
+      double *coeff2   = new double[11];
+      lumchan = "qqbarD"; ApproxLuminosity(coeff2, Q2/S2, 10, lumchan); fitcheb_coeff_qqbarD = coeff2;
+    }
+    if(ttH){
+      string lumchan = "gg"; ApproxLuminosity(coeff, Q2/S2, 10, lumchan); fitcheb_coeff_gg = coeff;
+      double *coeff2   = new double[11];
+      lumchan = "qqbarH"; ApproxLuminosity(coeff2, Q2/S2, 10, lumchan); fitcheb_coeff_qqbar = coeff2;
+    }
+	}
   tau = Q2/S2;
 	alphas_muF = pdfs[use_member]->alphasQ2(muF*muF);
 	alphas_Q = pdfs[use_member]->alphasQ2(Q*Q);
 	alphas_muR = pdfs[use_member]->alphasQ2(muR*muR);
+  alphas_mt = pdfs[use_member]->alphasQ2(mt2);
 	if(printout){
 		cout << "=========================================" << endl;
 		cout << "PDFset: 				" << setname << endl
@@ -278,6 +297,7 @@ void update_defaults(bool printout , bool pdfset){
 		else{
 			cout << "alphas_mZ:			 	" << pdfs[use_member]->alphasQ(sqrt(mZ2)) << endl;
 			cout << "alphas_muR: 		 		" << alphas_muR << endl;
+			cout << "alphas_mt: 		 		" << alphas_mt << endl;
 		}
     if(ttH && setdym) {
       cout << "Calculating ttH soft scale" << endl;

@@ -328,11 +328,30 @@ complex<double> fit_mellin_pdf_sum_qqbar_charge_weighted(complex<double> Nint){
 	}
 	return sum_pdf;
 }
+complex<double> fit_mellin_pdf_sum_qg_charge_weighted(complex<double> Nint){
+	complex<double> sum_pdf(0);
+	double eq[5] = {-1./3.,2./3,-1./3.,2./3.,-1./3.};
+	for(int i = 1; i <=5; i++){
+		sum_pdf+= 2.*eq[i-1]*eq[i-1]*(xfit_Nspace_pdfs(5-i,Nint)*xfit_Nspace_pdfs(5,Nint));
+		sum_pdf+= 2.*eq[i-1]*eq[i-1]*(xfit_Nspace_pdfs(5+i,Nint)*xfit_Nspace_pdfs(5,Nint));
+	}
+	return sum_pdf;
+}
+
 
 complex<double> fit_mellin_pdf_sum_qqbar(complex<double> Nint){
 	complex<double> sum_pdf(0,0);
 	for(int i = 1; i <=5; i++){
 		sum_pdf+= 2.*(xfit_Nspace_pdfs(5-i,Nint)*xfit_Nspace_pdfs(5+i,Nint));
+	}
+	return sum_pdf;
+}
+
+complex<double> fit_mellin_pdf_sum_qg(complex<double> Nint){
+	complex<double> sum_pdf(0);
+	for(int i = 1; i <=5; i++){
+		sum_pdf+= 2.*(xfit_Nspace_pdfs(5-i,Nint)*xfit_Nspace_pdfs(5,Nint));
+		sum_pdf+= 2.*(xfit_Nspace_pdfs(5+i,Nint)*xfit_Nspace_pdfs(5,Nint));
 	}
 	return sum_pdf;
 }

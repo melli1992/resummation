@@ -46,8 +46,10 @@ double fit_quark_d2PDF(double x1, double x2);
 
 //Mellin space
 std::complex<double> fit_mellin_pdf_sum_gg(std::complex<double> Nint);
+std::complex<double> fit_mellin_pdf_sum_qg(std::complex<double> Nint);
 std::complex<double> fit_mellin_pdf_sum_qqbar(std::complex<double> Nint);
 std::complex<double> fit_mellin_pdf_sum_qqbar_charge_weighted(std::complex<double> Nint);
+std::complex<double> fit_mellin_pdf_sum_qg_charge_weighted(std::complex<double> Nint);
 std::complex<double> fit_mellin_pdf_sum_qqbarUP(std::complex<double> Nint);
 std::complex<double> fit_mellin_pdf_sum_qqbarDOWN(std::complex<double> Nint);
 std::complex<double> fit_mellin_pdf_sum_qqbarNI(std::complex<double> Nint);

@@ -24,8 +24,27 @@ complex<double> SH_gg_LO_c(complex<double>  s, complex<double> t13, complex<doub
 	return H22_gg_c(s, t13, t14, t23, t24)*(S22_gg()+S11_gg()/(pow(CA,2))) + H33_gg_c(s, t13, t14, t23, t24)*S33_gg();
 }
 
+// LP LL function h0 (or g1) hep-ph/0306211 eqn 39 (note that gammaE is not part there of lambda and the factor 2 (as they have 2*h0 = g1!) or 1905.11771 eqn 6
+complex<double> g1_M2(double A1,complex<double>lambda){
+	return A1/(2.*M_PI*pow(b0,2))*(2.*lambda+(1.-2.*lambda)*log(1.-2.*lambda));
+}
+
+/////////////////////////////////////////////////////////////
+// LP NLL function h1 (or g2) hep-ph/0306211 (note factor 2 and gammaE) eqn 40 or 1905.11771 eqn 61
+// (checked with mathematica)
+complex<double> g2_M2(double A1,double A2,complex<double>lambda){
+	double INCeuler = 0.;
+	if(INCEULER == 0) {INCeuler = 1.;}
+	return 1./(2.*M_PI*b0)*(-A2/(M_PI*b0)+A1*log(M2/muR2))*(2.*lambda+log(1.-2.*lambda))
+	+ A1*b1/(2.*M_PI*pow(b0,3))*(2.*lambda+log(1.-2.*lambda)+1./2.*pow(log(1.-2.*lambda),2))
+	- A1/(M_PI*b0)*lambda*log(M2/muF2)
+	- INCeuler*2.*M_gammaE*log(1.-2.*lambda)*A1/(2.*M_PI*b0);
+}
+
+//expanded version of the wide-angle
 complex<double> delidelj_exp(complex<double> N, double A1){
-	return alphas_muR*2.*A1/M_PI*log(N)*(log(N)-ISNLL*log(M2/muF2)+ISNLL*INCEULER*M_gammaE);
+	//if(!INCEULER)
+	return alphas_muR*2.*A1/M_PI*log(N)*(log(N)-ISNLL*log(M2/muF2));//+ISNLL*INCEULER*M_gammaE);
 }
 
 complex<double> full_qq_res_abs(complex<double> N, double s, double t13, double t14, double t23, double t24){
@@ -34,7 +53,7 @@ complex<double> full_qq_res_abs(complex<double> N, double s, double t13, double 
 	complex<double> H22qq = H22_qq_c(s, t13, t14, t23, t24);
 	double S22qq = S22_qq();
 	complex<double> result = H22qq*S22qq*exp(wide_soft)
-														*exp(2.*(1./alphas_muR*ISLL*g1(A1q,lambda)+ISNLL*g2(A1q,A2q,lambda)));
+														*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1q,lambda)+ISNLL*g2_M2(A1q,A2q,lambda)));
 	if(expansion){
 		 	complex<double> wide_soft2 = 1.-ISNLL*CA*(-1.)*alphas_muR*log(N)/(M_PI);
 			complex<double> exponent = delidelj_exp(N,A1q);
@@ -54,7 +73,7 @@ complex<double> full_gg_res_abs(complex<double> N, double s, double t13, double 
 	double S33gg = S33_gg();
 
 	complex<double> result = (H22gg*(S22gg*exp(wide_soft)+S11gg/(pow(CA,2)))+ exp(wide_soft)*H33gg*S33gg)
-														*exp(2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)));
+														*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1g,lambda)+ISNLL*g2_M2(A1g,A2g,lambda)));
 	if(expansion){
 		complex<double> wide_soft2 = 1.-ISNLL*CA*(-1.)*alphas_muR*log(N)/(M_PI);
 		//cout << "difference in result gg " << result << " " << ((H22gg*(S22gg*wide_soft2+S11gg/(pow(CA,2)))+ wide_soft2*H33gg*S33gg)
@@ -71,7 +90,7 @@ complex<double> pT_qq_res_abs(complex<double> N, double pT2, complex<double> s, 
 	complex<double> H22qq = H22_qq_c(s, t13, t14, t23, t24);
 	double S22qq = S22_qq();
 	complex<double> result = H22qq*S22qq*exp(wide_soft)
-														*exp(2.*(1./alphas_muR*ISLL*g1(A1q,lambda)+ISNLL*g2(A1q,A2q,lambda)));
+														*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1q,lambda)+ISNLL*g2_M2(A1q,A2q,lambda)));
 	if(expansion){
 		 	complex<double> wide_soft2 = 1.-ISNLL*CA*(log(1.+pT2/(4.*mt2))-1.)*alphas_muR*log(N)/(M_PI);
 			complex<double> exponent = delidelj_exp(N,A1q);
@@ -92,7 +111,7 @@ complex<double> pT_gg_res_abs(complex<double> N, double pT2, complex<double> s, 
 	double S33gg = S33_gg();
 
 	complex<double> result = (H22gg*(S22gg*exp(wide_soft)+S11gg/(pow(CA,2)))+ exp(wide_soft)*H33gg*S33gg)
-														*exp(2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)));
+														*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1g,lambda)+ISNLL*g2_M2(A1g,A2g,lambda)));
 	if(expansion){
 		complex<double> wide_soft2 = 1.-ISNLL*CA*(log(1.+pT2/(4.*mt2))-1.)*alphas_muR*log(N)/(M_PI);
 		//cout << "difference in result gg " << result << " " << ((H22gg*(S22gg*wide_soft2+S11gg/(pow(CA,2)))+ wide_soft2*H33gg*S33gg)
@@ -139,7 +158,7 @@ complex<double> qq_res(complex<double> N, complex<double> s, complex<double> t13
 	vector<vector<complex<double>>> resumE = {{0,0},{0,0}};
 	vector<vector<complex<double>>> resumEC = {{0,0},{0,0}};
 	vector<vector<complex<double>>> ID = {{1.,0},{0,1.}};
-	
+
 	complex<double> lambda = b0*alphas_muR*log(N);
 	complex<double> evol_factor = ISNLL*log(1.-2.*lambda)/(2.*M_PI*b0);
 	resum[0][0] = exp(ISNLL*evol_factor*M_PI/alphas_muR*eval[0]);
@@ -150,10 +169,10 @@ complex<double> qq_res(complex<double> N, complex<double> s, complex<double> t13
 	resumE[1][1] = 1. - ISNLL*alphas_muR/M_PI*log(N)*(M_PI/alphas_muR*(eval[1]));
 	resumEC[0][0] = 1. - ISNLL*alphas_muR/M_PI*log(N)*(M_PI/alphas_muR*(conj(eval[0])));
 	resumEC[1][1] = 1. - ISNLL*alphas_muR/M_PI*log(N)*(M_PI/alphas_muR*(conj(eval[1])));
-	
+
 	if((real(eval[0])==0.)||(real(eval[1])==0.)){//works
 			complex<double> omega = omega_qq(H_IJ,resumC,S_IJ,resum); //trace(S*Ubar*H*U)
-			complex<double> result = omega*exp(2.*(1./alphas_muR*ISLL*g1(A1q,lambda)+ISNLL*g2(A1q,A2q,lambda)));
+			complex<double> result = omega*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1q,lambda)+ISNLL*g2_M2(A1q,A2q,lambda)));
 			if(expansion){
 				complex<double> omegaE = omega_qq(H_IJ,resumEC,S_IJ,resumE);
 				complex<double> omega0 = omega_qq(H_IJ,ID,S_IJ,ID);
@@ -166,17 +185,17 @@ complex<double> qq_res(complex<double> N, complex<double> s, complex<double> t13
 		GammaR_IJ[0][1] = 0;
 		GammaR_IJ[1][0] = 0;
 		GammaR_IJ[1][1] = eval[1];
-		
+
 		vector<vector<complex<double>>> R = R_qq(evec);
 		vector<vector<complex<double>>> Rdag = Rdag_qq(R);
 		vector<vector<complex<double>>> Rinv = Rinv_qq(evec);
 		vector<vector<complex<double>>> Rinvdag = Rdag_qq(Rinv);
-		
+
 		HR_IJ = mult_qq(Rinv,H_IJ,Rinvdag);
 		SR_IJ = mult_qq(Rdag,S_IJ,R);
 		//GammaR_IJ = mult_qq(Rinv,Gamma_IJ,R);
 		complex<double> omega = omega_qq(HR_IJ,resumC,SR_IJ,resum); //trace(S*H)
-		complex<double> result = omega*exp(2.*(1./alphas_muR*ISLL*g1(A1q,lambda)+ISNLL*g2(A1q,A2q,lambda)));
+		complex<double> result = omega*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1q,lambda)+ISNLL*g2_M2(A1q,A2q,lambda)));
 		if(expansion){
 			//cout << "exponent differences qq " << exp(2.*(1./alphas_muR*ISLL*g1(A1q,lambda)+ISNLL*g2(A1q,A2q,lambda))) << " " << 1.+delidelj_exp(N,A1q) << endl;
 			complex<double> omegaE = omega_qq(HR_IJ,resumEC,SR_IJ,resumE);
@@ -257,7 +276,7 @@ complex<double> gg_res(complex<double> N, complex<double> s, complex<double> t13
 	resumC[0][0] = exp(ISNLL*evol_factor*M_PI/alphas_muR*(conj(eval[0])));
 	resumC[1][1] = exp(ISNLL*evol_factor*M_PI/alphas_muR*(conj(eval[1])));
 	resumC[2][2] = exp(ISNLL*evol_factor*M_PI/alphas_muR*(conj(eval[2])));
-
+  //cout << eval[0] << " " << eval[1] << " " << eval[2] << endl;
 	resumE[0][0] = 1. - ISNLL*alphas_muR/M_PI*log(N)*(M_PI/alphas_muR*(eval[0]));
 	resumE[1][1] = 1. - ISNLL*alphas_muR/M_PI*log(N)*(M_PI/alphas_muR*(eval[1]));
 	resumE[2][2] = 1. - ISNLL*alphas_muR/M_PI*log(N)*(M_PI/alphas_muR*(eval[2]));
@@ -269,7 +288,7 @@ complex<double> gg_res(complex<double> N, complex<double> s, complex<double> t13
 
 	if(abs(real(eval[0])) == 0){//works
 			complex<double> omega = omega_gg(H_IJ,resumC,S_IJ,resum); //trace(S*H)
-			complex<double> result = omega*exp(2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)));
+			complex<double> result = omega*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1g,lambda)+ISNLL*g2_M2(A1g,A2g,lambda)));
 			if(expansion){
 				vector<vector<complex<double>>> HtimesSE = mult_gg(H_IJ,S_IJ,resumE);
 				vector<vector<complex<double>>> HtimesS0 = mult_gg(H_IJ,S_IJ,ID);
@@ -288,7 +307,7 @@ complex<double> gg_res(complex<double> N, complex<double> s, complex<double> t13
 		SR_IJ = mult_gg(Rdag,S_IJ,R);
 
 		complex<double> omega = omega_gg(HR_IJ,resumC,SR_IJ,resum);
-		complex<double> result =  omega*exp(2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)));
+		complex<double> result =  omega*exp(2.*(1./alphas_muR*ISLL*g1_M2(A1g,lambda)+ISNLL*g2_M2(A1g,A2g,lambda)));
 		if(expansion){
 			//cout << "exponent differences gg " << exp(2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda))) << " " << 1.+delidelj_exp(N,A1g) << endl;
 			complex<double> omegaE = omega_gg(HR_IJ,resumEC,SR_IJ,resumE);

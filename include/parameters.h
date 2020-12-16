@@ -14,6 +14,9 @@
 #ifndef PARAM_H //need this otherwise compiler error that things were predefined (called a guard)
 #define PARAM_H
 
+extern std::string result_map;
+extern std::string observable;
+
 extern std::complex<double> I;
 extern double CMP, phiMP;
 extern int boundary;
@@ -25,6 +28,7 @@ extern double pT;
 extern double pT2;
 extern double Q;
 extern double M2;
+extern double res_s;
 extern double Q2;
 extern double muF;
 extern double muF2;
@@ -64,6 +68,7 @@ extern double TF;
 extern double alphas_muF;
 extern double alphas_muR;
 extern double alphas_Q;
+extern double alphas_mt;
 extern double alphaEM;
 extern double LambdaQCD;
 extern double GF;
@@ -153,12 +158,12 @@ extern std::string setname;
 extern std::vector<LHAPDF::PDF*> pdfs; //pdf vector
 extern double xmin_pdfs, xmax_pdfs; //min x, max x
 extern int use_member; //the member that one needs to use
-extern double *fitcheb_coeff_gg, *fitcheb_coeff_qqbar, *fitcheb_coeff_qqbarU, *fitcheb_coeff_qqbarD;
+extern double *fitcheb_coeff_gg, *fitcheb_coeff_qg_charge, *fitcheb_coeff_qg, *fitcheb_coeff_qqbar, *fitcheb_coeff_qqbarU, *fitcheb_coeff_qqbarD;
 extern double s1, sgg, sqqbar;
 struct lumni_params {double z; double pT; double xT; double epeta; double emeta; int power; int flavor; int coefficient;};
 
 extern bool INCSQRTZ,SCET, BN, DY, higgs, hh, WW, ZZ, ttH,diff, full, PF, LO, NLO, NNLO, RES, realPDF, fitPDF, chebPDF, SUSY, setdym,highscale, INCHARD;
-extern bool expansion, deform, diagsoft;
+extern bool expansion, deform, diagsoft, toy_pdfs, Nfixed;
 
 void update_defaults(bool printout = true , bool pdfset = true);
 

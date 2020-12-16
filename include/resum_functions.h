@@ -3,9 +3,12 @@
 
 // the resummation coefficients
 std::complex<double> g1(double A1, std::complex<double>lambda);
+std::complex<double> g1_TROLL(double A1, std::complex<double>lambda);
 std::complex<double> h1NLP(double A1, std::complex<double> N, std::complex<double>lambda);
 std::complex<double> g2(double A1,double A2,std::complex<double>lambda);
+std::complex<double> g2_TROLL(double A1,double A2, std::complex<double>lambda);
 std::complex<double> g3(double A1,double A2,double A3,std::complex<double>lambda);
+std::complex<double> g3_TROLL(double A1,double A2,double A3,double D2, std::complex<double>lambda);
 std::complex<double> g4(double A1,double A2,double A3,double A4,double D2, double D3,std::complex<double>lambda);
 std::complex<double> wideangle(double D2,std::complex<double>lambda);
 
@@ -18,6 +21,9 @@ double higgs_g02();
 double DY_g01();
 double DY_g02();
 
+std::complex<double> DY_NLP_LL_qg(int power, std::complex<double> N);
+std::complex<double> higgs_NLP_LL_qg(int power, std::complex<double> N);
+std::complex<double> NLP_expansions(int power, double A1, std::complex<double> n);
 // expansions of the resummed functions for large N at LL only (LP and NLP)
 std::complex<double> LP_LL_function_expanded_LP(std::complex<double> N, double Col_Fac);
 std::complex<double> LP_LL_function_expanded_NLP(std::complex<double> N, double Col_Fac);

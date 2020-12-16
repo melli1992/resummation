@@ -42,7 +42,7 @@ int NCOMP = 2; //number of components in integral
 // nvec, userdata and core are optional in integrand function, not in the cuhre and vegas functions
 void* USERDATA = NULL;
 int NVEC = 1;
-double EPSREL = 1.e-4;
+double EPSREL = 1.e-5;
 double EPSABS = 1.e-32;
 int VERBOSE = 0; //bit 0-1 is verbosity (so 0,1,2,3) , bit 2 = samples, bit 3 can improve smoothing, bit 4 = state file, bit 5 = vegas specific, bit 8 and higher is random number
 int LAST = 4;
@@ -68,6 +68,10 @@ int kin = 1;
 std::string power = "0";
 bool fitted_pdfs = true;
 int MAX_POW = 10;
+
+double toy_pdf(double x){
+  return x*(1.-x);
+}
 
 
 //fixing the scale
@@ -105,6 +109,10 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
   if(order == "LO"){
       if(!fitted_pdfs) ff[0] = DY_LO_factor()*(pdf_sum_qqbar_charge_weighted(tau+(1.-tau)*xx[0],tau))*(1.-tau);
       if(fitted_pdfs) ff[0] = DY_LO_factor()*(real(fit_sum_qqbar_charge_weighted(tau+(1.-tau)*xx[0],tau)))*(1.-tau);
+      if(toy_pdfs){
+        double x = tau+(1.-tau)*xx[0];
+        ff[0] = DY_LO_factor()*(toy_pdf(x)*toy_pdf(tau/x)/x)*(1.-tau);
+      }
   }
   else if(order == "LOfullZ"){ // Z full xsec
 	  double q2 = xx[0]*xx[1]*S2;
@@ -120,18 +128,41 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
         else{ff[0] = result;}
   }
   else if(order == "test"){
-	  phiMP = M_PI/2;
-	  CMP = 0.;
+      phiMP = 3.*M_PI/4.;
+      CMP = 2.2;
       complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(I*phiMP);
       complex<double> Njac = 1./pow(1.-xx[0],2)*exp(I*phiMP);
-      double result =  2.*imag(1./(2*M_PI)*Njac*pow(1.5,-Nint)*-1.*pow(5.,2.+Nint)/(2.+Nint));
+	    if(power == "1")
+      {
+      double result =  2.*imag(1./(2*M_PI)*Njac*pow(Q,-Nint)*((-log(Njac)-M_gammaE)/Njac));
+      //double result =  2.*imag(1./(2*M_PI)*Njac*pow(1.5,-Nint)*-1.*pow(5.,2.+Nint)/(2.+Nint));
       if(isnan(result)){ff[0] = 0;}
       if(xx[0]==0){ff[0]=0;}
       else{ff[0] = result;}
       }
+	    if(power == "2")
+      {
+      double result =  2.*imag(1./(2*M_PI)*Njac*pow(Q,-Nint)*((-log(Njac)-M_gammaE)/Njac-1./2.*pow(Njac,-2)));
+      if(isnan(result)){ff[0] = 0;}
+      if(xx[0]==0){ff[0]=0;}
+      else{ff[0] = result;}
+      }
+      if(power == "3")
+      {
+      double result =  2.*imag(1./(2*M_PI)*Njac*pow(Q,-Nint)*((-log(Njac)-M_gammaE)/Njac-1./2.*pow(Njac,-2)+1./12.*pow(Njac,-3)));
+      if(isnan(result)){ff[0] = 0;}
+      if(xx[0]==0){ff[0]=0;}
+      else{ff[0] = result;}
+    }if(power == "4")
+      {
+      double result =  2.*imag(1./(2*M_PI)*Njac*pow(Q,-Nint)*((-log(Njac)-M_gammaE)/Njac-1./2.*pow(Njac,-2)+1./12.*pow(Njac,-3)-1./120.*pow(Njac,-5)));
+      if(isnan(result)){ff[0] = 0;}
+      if(xx[0]==0){ff[0]=0;}
+      else{ff[0] = result;}
+      }
+  }
   else if (order == "NLO"){
     if (process == "qqbar"){
-
     if (power == "reg"){
         double z =  tau+(1.-tau)*xx[0];
       	double jacobian = (1.-tau)*(1.-tau/z);
@@ -139,14 +170,23 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
         double result = 0;
         if(!fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_reg(z)*jacobian*real(pdf_sum_qqbar_charge_weighted(x,tau/z))/z+DY_NLO_qqbar_plus(z)*(jacobian*real(pdf_sum_qqbar_charge_weighted(x,tau/z))/z-pow(1.-tau,2)*real(pdf_sum_qqbar_charge_weighted(tau+xx[1]*(1.-tau),tau))));
         if(fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_reg(z)*jacobian*real(fit_sum_qqbar_charge_weighted(x,tau/z))/z+DY_NLO_qqbar_plus(z)*(jacobian*real(fit_sum_qqbar_charge_weighted(x,tau/z))/z-pow(1.-tau,2)*real(fit_sum_qqbar_charge_weighted(tau+xx[1]*(1.-tau),tau))));
+        if(toy_pdfs){
+        	double x2 = tau+xx[1]*(1.-tau);
+          result = DY_LO_factor()*(DY_NLO_qqbar_reg(z)*jacobian*toy_pdf(x)*toy_pdf(tau/x/z)/x
+                                  +DY_NLO_qqbar_plus(z)*(jacobian*(toy_pdf(x)*toy_pdf(tau/x/z)/x-pow(1.-tau,2)*(toy_pdf(x2)*toy_pdf(tau/x2)/x2))));
+        }
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
       }
     else if (power == "delta"){
+        double jacobian = (1.-tau);
         double x = tau+xx[0]*(1.-tau);
         double result = 0;
-        if(!fitted_pdfs) result = DY_LO_factor()*DY_NLO_qqbar_delta()*real(pdf_sum_qqbar_charge_weighted(x,tau));
-        if(fitted_pdfs) result = DY_LO_factor()*DY_NLO_qqbar_delta()*real(fit_sum_qqbar_charge_weighted(x,tau));
+        if(!fitted_pdfs) result = jacobian*DY_LO_factor()*DY_NLO_qqbar_delta()*real(pdf_sum_qqbar_charge_weighted(x,tau));
+        if(fitted_pdfs) result = jacobian*DY_LO_factor()*DY_NLO_qqbar_delta()*real(fit_sum_qqbar_charge_weighted(x,tau));
+        if(toy_pdfs){
+          result = DY_LO_factor()*DY_NLO_qqbar_delta()*(toy_pdf(x)*toy_pdf(tau/x)/x)*jacobian;
+        }
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
         }
@@ -158,6 +198,11 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
       	double result =  0;
         if(!fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_plus(z))*(jacobian*pdf_sum_qqbar_charge_weighted(x,tau/z)/z - pow(1.-tau,2)*pdf_sum_qqbar_charge_weighted(tau+xx[1]*(1.-tau),tau));
         if(fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_plus(z))*(jacobian*real(fit_sum_qqbar_charge_weighted(x,tau/z))/z - pow(1.-tau,2)*real(fit_sum_qqbar_charge_weighted(tau+xx[1]*(1.-tau),tau)));
+        if(toy_pdfs){
+          double x2 = tau+xx[1]*(1.-tau);
+          result = DY_LO_factor()*(DY_NLO_qqbar_plus(z))*(jacobian*toy_pdf(x)*toy_pdf(tau/x/z)/x - pow(1.-tau,2)*toy_pdf(x2)*toy_pdf(tau/x2)/x);
+        }
+
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
         }
@@ -168,6 +213,7 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
       	double result =  0;
         if(!fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_plus(z))*jacobian*(-pdf_sum_qqbar_charge_weighted(x,tau));
         if(fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_plus(z))*jacobian*(-real(fit_sum_qqbar_charge_weighted(x,tau)));
+        if(toy_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_plus(z))*jacobian*(-toy_pdf(x)*toy_pdf(tau/x/z)/x);
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
         }
@@ -180,6 +226,7 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
         for(int i = 0; i < NCOMP; i++){
           if(!fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_expansion(z, i+1))*jacobian*(pdf_sum_qqbar_charge_weighted(x,tau/z)/z);
           if(fitted_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_expansion(z, i+1))*jacobian*(real(fit_sum_qqbar_charge_weighted(x,tau/z)/z));
+          if(toy_pdfs) result = DY_LO_factor()*(DY_NLO_qqbar_expansion(z, i+1))*jacobian*(-toy_pdf(x)*toy_pdf(tau/x/z)/x);
           if(isnan(result)){ff[i] = 0;}
           else{ff[i] = result;}
           }
@@ -528,6 +575,7 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
       complex<double> lumni = 0;
       if(chebPDF){string lumchan = "qqbar"; lumni = (complex<double>)LumN(Nint, 10, lumchan);}
       else if(fitted_pdfs){lumni = fit_mellin_pdf_sum_qqbar_charge_weighted(Nint-1.);}
+      else if(toy_pdfs){lumni = pow(1./(Nint*Nint+3.*Nint+2.),2);}
       result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)
             *(1+ISNNLL*DY_g01()+ISNNLL*DY_g02())
             *DY_LO_factor()
@@ -542,6 +590,23 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
       if(isnan(result)){ff[0] = 0;}
       else{ff[0] = result;}
       }
+    else if(power == "offdiag"){
+    	    complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
+          complex<double> Njac = 1./pow(1.-xx[0],2)*exp(phiMP*I);
+          complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE*INCEULER));
+          double result = 0.;
+          complex<double> lumni = 0.;
+          if(chebPDF){string lumchan = "qg_charge"; lumni = (complex<double>) LumN(Nint, 10, lumchan);}
+          if(fitted_pdfs){lumni = fit_mellin_pdf_sum_qg_charge_weighted(Nint-1.);}
+          for(int i = 0; i < NCOMP; i++){
+            result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)
+    									*DY_LO_factor()
+    									*DY_NLP_LL_qg(i, Nint)
+    							  	*lumni);
+          if(isnan(result)){ff[i] = 0;}
+          else{ff[i] = result;}
+          }
+        }
     else if(power == "pQCDNLO"){
       complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
       complex<double> Njac = 1./pow(1.-xx[0],2)*exp(phiMP*I);
@@ -583,6 +648,26 @@ static int dy_integrand(const int *ndim, const cubareal xx[],const int *ncomp, c
   	  if(isnan(result)){ff[0] = 0;}
       else{ff[0] = result;}
       }
+      else if(power == "NLPexp"){
+      complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
+      complex<double> Njac = 1./pow(1.-xx[0],2)*exp(phiMP*I);
+      complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE*INCEULER));
+      complex<double> lumni = 0.;
+      if(chebPDF){string lumchan = "qqbar"; lumni = (complex<double>) LumN(Nint, 10, lumchan);}
+      if(fitted_pdfs){lumni = fit_mellin_pdf_sum_qqbar_charge_weighted(Nint-1.);}
+      double result = 0;
+      for(int i = 0; i < NCOMP; i++){
+        result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)
+                           *DY_LO_factor()
+                           *(NLP_expansions(i+1,A1q,Nint)*((1.+ISNNLL*DY_g01()+ISNNLL*DY_g02())*exp(ISNNLL*alphas_muR*wideangle(D2DY,lambda)
+  										                                                    +2.*(1./alphas_muR*ISLL*g1(A1q,lambda)
+  										                                                              +ISNLL*g2(A1q,A2q,lambda)
+  										                                                              +ISNNLL*alphas_muR*g3(A1q,A2q,A3q,lambda))))
+                          )*lumni);
+        if(isnan(result)){ff[i] = 0;}
+        else{ff[i] = result;}
+        }
+      }
     else if(power == "SCET"){
         double z = tau+(1.-tau)*xx[0];
       	double x = xx[1];
@@ -608,22 +693,23 @@ static int higgs_integrand(const int *ndim, const cubareal xx[],const int *ncomp
   }
   else if (order == "NLO"){
     if (process == "gg"){
-
+// see notes 29/09/2020 on how this goes with the plus distribution
       if (power == "reg"){
         double z =  tau+(1.-tau)*xx[0];
       	double jacobian = (1.-tau)*(1.-tau/z);
       	double x = tau/z+xx[1]*(1.-tau/z);
         double result = 0;
-        if(!fitted_pdfs) result = higgs_LO_factor()*(higgs_NLO_gg_reg(z)*jacobian*real(pdf_sum_gg(x,tau/z))/z+higgs_NLO_gg_plus(z)*(jacobian*real(pdf_sum_gg(x,tau/z))/z-pow(1.-tau,2)*real(pdf_sum_gg(tau+xx[1]*(1.-tau),tau))));
+        if(!fitted_pdfs) result = higgs_LO_factor()*((higgs_NLO_gg_reg(z)+higgs_NLO_gg_plus(z))*jacobian*real(pdf_sum_gg(x,tau/z))/z-higgs_NLO_gg_plus(z)*pow(1.-tau,2)*real(pdf_sum_gg(tau+xx[1]*(1.-tau),tau)));
         if(fitted_pdfs) result = higgs_LO_factor()*(higgs_NLO_gg_reg(z)*jacobian*real(fit_sum_gg(x,tau/z))/z+higgs_NLO_gg_plus(z)*(jacobian*real(fit_sum_gg(x,tau/z))/z-pow(1.-tau,2)*real(fit_sum_gg(tau+xx[1]*(1.-tau),tau))));
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
       }
       else if (power == "delta"){
+        double jacobian = (1.-tau);
         double x = tau+xx[0]*(1.-tau);
         double result = 0;
-        if(!fitted_pdfs) result = higgs_LO_factor()*higgs_NLO_gg_delta()*real(pdf_sum_gg(x,tau));
-        if(fitted_pdfs) result = higgs_LO_factor()*higgs_NLO_gg_delta()*real(fit_sum_gg(x,tau));
+        if(!fitted_pdfs) result = jacobian*higgs_LO_factor()*higgs_NLO_gg_delta()*real(pdf_sum_gg(x,tau));
+        if(fitted_pdfs) result = jacobian*higgs_LO_factor()*higgs_NLO_gg_delta()*real(fit_sum_gg(x,tau));
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
         }
@@ -748,10 +834,11 @@ static int higgs_integrand(const int *ndim, const cubareal xx[],const int *ncomp
         else{ff[0] = result;}
       }
       else if (power == "delta"){
+        double jacobian = (1.-tau);
         double x = tau+xx[0]*(1.-tau);
         double result = 0;
-        if(!fitted_pdfs) result = higgs_LO_factor()*higgs_NNLO_gg_delta()*real(pdf_sum_gg(x,tau));
-        if(fitted_pdfs) result = higgs_LO_factor()*higgs_NNLO_gg_delta()*real(fit_sum_gg(x,tau));
+        if(!fitted_pdfs) result = jacobian*higgs_LO_factor()*higgs_NNLO_gg_delta()*real(pdf_sum_gg(x,tau));
+        if(fitted_pdfs) result = jacobian*higgs_LO_factor()*higgs_NNLO_gg_delta()*real(fit_sum_gg(x,tau));
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
         }
@@ -995,7 +1082,7 @@ static int higgs_integrand(const int *ndim, const cubareal xx[],const int *ncomp
                 if(isnan(result)){ff[0] = 0;}
                 else{ff[0] = result;}
                 }
-    if(power == "testexp"){
+    else if(power == "testexp"){
           complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(I*phiMP);
           complex<double> Njac = 1./pow(1.-xx[0],2)*exp(I*phiMP);
           complex<double> lambda = alphas_muR*b0*log(Nint*exp(INCEULER*M_gammaE));
@@ -1028,7 +1115,7 @@ static int higgs_integrand(const int *ndim, const cubareal xx[],const int *ncomp
           else{ff[8] = result;}
           }
     else if(power == "pQCD"){
-	  complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
+	    complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
       complex<double> Njac = 1./pow(1.-xx[0],2)*exp(phiMP*I);
       complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE*INCEULER));
       double result = 0.;
@@ -1036,7 +1123,7 @@ static int higgs_integrand(const int *ndim, const cubareal xx[],const int *ncomp
       if(chebPDF){string lumchan = "gg"; lumni = (complex<double>) LumN(Nint, 10, lumchan);}
       if(fitted_pdfs){lumni = fit_mellin_pdf_sum_gg(Nint-1.);}
       result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*
-									(1.+ISNNLL*higgs_g01()+ISNNLL*higgs_g02())
+									(1.+ISNNLL*higgs_g01()+ISNNNLL*higgs_g02())
 									*higgs_LO_factor()
 									*exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)
 										+2.*(1./alphas_muR*ISLL*g1(A1g,lambda)
@@ -1047,6 +1134,23 @@ static int higgs_integrand(const int *ndim, const cubareal xx[],const int *ncomp
 								*lumni);
       if(isnan(result)){ff[0] = 0;}
       else{ff[0] = result;}
+      }
+    else if(power == "offdiag"){
+  	    complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
+        complex<double> Njac = 1./pow(1.-xx[0],2)*exp(phiMP*I);
+        complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE*INCEULER));
+        double result = 0.;
+        complex<double> lumni = 0.;
+        if(chebPDF){string lumchan = "qg"; lumni = (complex<double>) LumN(Nint, 10, lumchan);}
+        if(fitted_pdfs){lumni = fit_mellin_pdf_sum_qg(Nint-1.);}
+        for(int i = 0; i < NCOMP; i++){
+              result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)
+  									*higgs_LO_factor()
+  									*higgs_NLP_LL_qg(i, Nint)
+  							  	*lumni);
+        if(isnan(result)){ff[i] = 0;}
+        else{ff[i] = result;}
+        }
       }
     else if(power == "pQCDNLO"){
       complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
@@ -1088,7 +1192,27 @@ static int higgs_integrand(const int *ndim, const cubareal xx[],const int *ncomp
       if(isnan(result)){ff[0] = 0;}
       else{ff[0] = result;}
       }
-    else if (power == "SCET"){
+      else if(power == "NLPexp"){
+      complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(phiMP*I);
+      complex<double> Njac = 1./pow(1.-xx[0],2)*exp(phiMP*I);
+      complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE*INCEULER));
+      complex<double> lumni = 0.;
+      if(chebPDF){string lumchan = "gg"; lumni = (complex<double>) LumN(Nint, 10, lumchan);}
+      if(fitted_pdfs){lumni = fit_mellin_pdf_sum_gg(Nint-1.);}
+      double result = 0;
+      for(int i = 0; i < NCOMP; i++){
+        result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)
+                           *higgs_LO_factor()
+                           *(NLP_expansions(i+1,A1g,Nint)*((1.+ISNNLL*higgs_g01()+ISNNLL*higgs_g02())*exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)
+  										                                                    +2.*(1./alphas_muR*ISLL*g1(A1g,lambda)
+  										                                                              +ISNLL*g2(A1g,A2g,lambda)
+  										                                                              +ISNNLL*alphas_muR*g3(A1g,A2g,A3g,lambda))))
+                          )*lumni);
+        if(isnan(result)){ff[i] = 0;}
+        else{ff[i] = result;}
+        }
+      }
+      else if (power == "SCET"){
           double z = tau+(1.-tau)*xx[0];
         	double x = xx[1];
         	double result = 0;
@@ -1284,7 +1408,10 @@ static int dihiggs_integrand(const int *ndim, const cubareal xx[], const int *nc
       double result = 0;
       complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(I*phiMP);
       complex<double> Njac = 1./pow(1.-xx[0],2)*exp(I*phiMP);
-      result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)*dihiggs_LO_factor_SM(tau*S2,ctheta)/tau*fit_mellin_pdf_sum_gg(Nint)/S2);
+      complex<double> lumni = 0.;
+      if(chebPDF){string lumchan = "gg"; lumni = (complex<double>) LumN(Nint+1., 10, lumchan);}
+      if(fitted_pdfs){lumni = fit_mellin_pdf_sum_gg(Nint);}
+      result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)*dihiggs_LO_factor_SM(tau*S2,ctheta)/tau*lumni/S2);
       if(isnan(result)){ff[0] = 0;}
       else{ff[0] = result;}
       }
@@ -1297,7 +1424,11 @@ static int dihiggs_integrand(const int *ndim, const cubareal xx[], const int *nc
         double scale2 = 4.*mH2/xx[1];
         // extra factpr of 2 is jacobian
         double ctheta = -1.+2.*xx[2];
-        double result = 2.*2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*pow(xx[1],Nint-1.)*dihiggs_LO_factor_approx(scale2,ctheta)*fit_mellin_pdf_sum_gg(Nint));
+
+        complex<double> lumni = 0.;
+        if(chebPDF){string lumchan = "gg"; lumni = (complex<double>) LumN(Nint+1., 10, lumchan);}
+        if(fitted_pdfs){lumni = fit_mellin_pdf_sum_gg(Nint);}
+        double result = 2.*2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*pow(xx[1],Nint-1.)*dihiggs_LO_factor_approx(scale2,ctheta)*lumni);
         if(scale2 >= S2){ff[0]=0;}
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
@@ -1310,7 +1441,12 @@ static int dihiggs_integrand(const int *ndim, const cubareal xx[], const int *nc
         double scale2 = 4.*mH2/xx[1];
         complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE));
         double ctheta = -1.+2.*xx[2];
-        double result = 2.*2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*pow(xx[1],Nint-1.)*dihiggs_LO_factor_approx(scale2,ctheta)*exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)+2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)+ISNNLL*alphas_muR*g3(A1g,A2g,A3g,lambda)+ISNLP*h1NLP(A1g,Nint,lambda)))*fit_mellin_pdf_sum_gg(Nint));
+        complex<double> lumni = 0.;
+        if(chebPDF){string lumchan = "gg"; lumni = (complex<double>) LumN(Nint+1., 10, lumchan);}
+        if(fitted_pdfs){lumni = fit_mellin_pdf_sum_gg(Nint);}
+        double result = 2.*2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*pow(xx[1],Nint-1.)*dihiggs_LO_factor_approx(scale2,ctheta)
+                              *exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)+2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)+ISNNLL*alphas_muR*g3(A1g,A2g,A3g,lambda)+ISNLP*h1NLP(A1g,Nint,lambda)))
+                              *lumni);
         if(scale2 >= S2){ff[0]=0;}
         if(isnan(result)){ff[0] = 0;}
         else{ff[0] = result;}
@@ -1337,41 +1473,34 @@ static int dihiggs_integrand(const int *ndim, const cubareal xx[], const int *nc
           complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(I*phiMP);
           complex<double> Njac = 1./pow(1.-xx[0],2)*exp(I*phiMP);
           complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE));
-          if(chebPDF){string lumchan = "gg";
-              result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)
+
+          complex<double> lumni = 0.;
+          if(chebPDF){string lumchan = "gg"; lumni = (complex<double>) LumN(Nint+1., 10, lumchan);}
+          if(fitted_pdfs){lumni = fit_mellin_pdf_sum_gg(Nint);}
+          result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)
                               *dihiggs_LO_factor_SM(tau*S2,ctheta)/tau
-                              *LumN(Nint+1., 10, lumchan)/S2
+                              *lumni/S2
                               *exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)+2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)+ISNNLL*alphas_muR*g3(A1g,A2g,A3g,lambda)+ISNLP*h1NLP(A1g,Nint,lambda))));
-          }
-          if(fitted_pdfs){
-            result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)
-                              *dihiggs_LO_factor_SM(tau*S2,ctheta)/tau
-                              *exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)+2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)+ISNNLL*alphas_muR*g3(A1g,A2g,A3g,lambda)+ISNLP*h1NLP(A1g,Nint,lambda)))
-                              *fit_mellin_pdf_sum_gg(Nint)/S2);
-          }
           if(tau*S2 < 4.*mH2){ff[0] = 0;}
           if(isnan(result)){ff[0] = 0;}
           else{ff[0] = result;}
           }
-      else if(order == "SMapprox"){
+    else if(order == "SMapprox"){
                 double jacobian = 2.;
                 double ctheta = -1.+2.*xx[1];
                 double result = 0;
                 complex<double> Nint = CMP+xx[0]/(1.-xx[0])*exp(I*phiMP);
                 complex<double> Njac = 1./pow(1.-xx[0],2)*exp(I*phiMP);
                 complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE));
-                if(chebPDF){string lumchan = "gg";
-                    result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)
+
+                complex<double> lumni = 0.;
+                if(chebPDF){string lumchan = "gg"; lumni = (complex<double>) LumN(Nint+1., 10, lumchan);}
+                if(fitted_pdfs){lumni = fit_mellin_pdf_sum_gg(Nint);}
+
+                result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)
                                     *dihiggs_LO_factor_approx(tau*S2,ctheta)/tau
-                                    *LumN(Nint+1., 10, lumchan)/S2
+                                    *lumni/S2
                                     *exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)+2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)+ISNNLL*alphas_muR*g3(A1g,A2g,A3g,lambda)+ISNLP*h1NLP(A1g,Nint,lambda))));
-                }
-                if(fitted_pdfs){
-                  result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*jacobian*sqrt(tau*S2)
-                                    *dihiggs_LO_factor_approx(tau*S2,ctheta)/tau
-                                    *exp(ISNNLL*alphas_muR*wideangle(D2higgs,lambda)+2.*(1./alphas_muR*ISLL*g1(A1g,lambda)+ISNLL*g2(A1g,A2g,lambda)+ISNNLL*alphas_muR*g3(A1g,A2g,A3g,lambda)+ISNLP*h1NLP(A1g,Nint,lambda)))
-                                    *fit_mellin_pdf_sum_gg(Nint)/S2);
-                }
                 if(tau*S2 < 4.*mH2){ff[0] = 0;}
                 if(isnan(result)){ff[0] = 0;}
                 else{ff[0] = result;}
@@ -1685,7 +1814,7 @@ static int diboson_integrand(const int *ndim, const cubareal xx[], const int *nc
 		  double result = 0;
 		  complex<double> Nint = 1.+CMP+xx[0]/(1.-xx[0])*exp(I*phiMP);
 		  complex<double> Njac = 1./pow(1.-xx[0],2)*exp(I*phiMP);
-      complex<double> lambda = alphas_muR*b0*log(Nint*exp(M_gammaE));
+      complex<double> lambda = alphas_muR*b0*log(Nint*exp(INCEULER*M_gammaE));
       if(chebPDF){string lumchan = "qqbarD";
           result = 2.*imag(1./(2*M_PI)*Njac*pow(tau,-Nint)*2.*sqrt(tau*S2)
                           *partonic_down_zz(tau*S2)
@@ -1939,7 +2068,7 @@ vector<results_c> call_cuhre_higgs(std::string orde, std::string chan, std::stri
   else{
     Vegas(NDIM, NCOMP, higgs_integrand, USERDATA, NVEC,
       EPSREL, EPSABS, VERBOSE, SEED,
-      MINEVAL, MAXEVAL*5, NSTART, NINCREASE, NBATCH,
+      MINEVAL, MAXEVAL*10, NSTART, NINCREASE, NBATCH,
       GRIDNO, STATEFILE, SPIN,
       &neval, &fail, integral, error, prob);
   }

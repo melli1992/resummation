@@ -17,7 +17,17 @@ double logdep_gg_plus(double x);
 double logdep_gg_reg2(double x);
 double logdep_gg_reg3(double x);
 
+double higgs_scale_factor(double LO, double NLO);
+
 double nnlo_reg(double z);
+double FO_1_log_PL(double z);
+double FO_1_nonlog(double z);
+double FO_1_delta_const();
+double FO_2_log(double z);
+double FO_2_delta_const();
+double FO_2_nonlog(double z);
+
+
 
 // qg (+qbar g)
 double higgs_NNLO_qg_reg(double x);

@@ -97,6 +97,16 @@ double higgs_NNLO_gg_plus(double x){
 //https://arxiv.org/pdf/hep-ph/0302135.pdf also checked with this (appendix has scale dep terms)
 //n_NNLO_D0_L() +n_NNLO_D1_L()+ n_NNLO_D2_L()
 // n_NNLO_D0_L2()+ n_NNLO_D1_L2()
+/*( 72. * pow(log(1.-z),3)/(1.-z)
+								+ (2.*nf - 33.) * pow(log(1.-z),2)/(1.-z)
+								+ (67. - 90.*zeta2 - 10./3.*nf) * log(1.-z)/(1.-z)
+								+ (-101./3. + 33.*zeta2 + 351./2.*zeta3 + nf*(14./9.-2.*zeta2))/(1.-z)
+								)
+							+( 108*lf*pow(log(1.-z),2)/(1.-z)
+								+ (36.*lf*lf - (33.-2.*nf)*lf)* log(1.-z)/(1.-z)
+								+ (-(33.-2.*nf)/4.*lf*lf + (67./2.-5./3.*nf-5.*CA*CA*zeta2)*lf)/(1.-z) )
+							+ W1*(4.*CA*log(1.-z)/(1.-z) + 2.*CA*1./(1.-z)*lf)*/
+
 double logdep_gg_plus(double z){
 	double L = log(muF2/Q2);
 	double L2 = L*L;
@@ -111,8 +121,11 @@ double logdep_gg_plus(double z){
 // https://arxiv.org/pdf/hep-ph/0207004.pdf eqn. 47 and 48 (note that there is no scale dependeCAe now)
 // Lt = log(muR2/mt2)
 // same as in Mathematica code
+
+
+
 double higgs_NNLO_gg_delta(){
-	Lt = log(Q2/mt2);
+	Lt = log(muF2/Q2*Q2/mt2);
 	return logdep_gg_constant()+ pow(alphas_muR/M_PI,2)*(
 		(11399./144.+133./2.*zeta2-165./4.*zeta3-9./20.*pow(zeta2,2)+19./8.*Lt)
 		+nF*(-1189./144.+5./6.*zeta3-5./3.*zeta2+2./3.*Lt));
@@ -123,6 +136,11 @@ double higgs_NNLO_gg_delta(){
 // also https://arxiv.org/pdf/hep-ph/0302135.pdf appendix B!!
 // n_NNLO_delta_L()*_log_muf_mh_sq
 //+ n_NNLO_delta_L2()*pow(_log_muf_mh_sq,2.)
+double higgs_scale_factor(double LO, double NLO){
+	double lrf = 2.*log(muR/muF);
+	return alphas_muR/M_PI*(alphas_muR/M_PI*2*b1*M_PI*M_PI*LO + 3*b0*M_PI*NLO) *lrf
+					- pow(alphas_muR/M_PI,2)*3.*pow(b0*M_PI,2)*LO*lrf*lrf;
+}
 
 double logdep_gg_constant(){
 	double L = log(muF2/Q2);
@@ -200,6 +218,82 @@ double higgs_NNLO_gg_expansion(double x, int power){
 	return 0.;
 }
 
+double C1reg_pointlike_gg(double z) {
+  double lf = -2.*log(muF/Q);
+  double smallx = - 11./2.*pow(1.-z,3.)/z;
+  double res = CA * 2.*( (1./z-2.+z*(1.-z))*(2.*log(1.-z)-log(z)) -log(z)/(1.-z) ) + smallx;
+  return res + 2.*CA*(1./z-2.+z-z*z)*lf;
+}
+
+extern "C" {
+  double c2reghk_(double *z, int *nf, double *muf_mu_rat, double *mur_muf_rat);
+}
+double C2reg_pointlike_HK(double z) {
+	int nf = (int) nF;
+	double muf_mu_ratio = muF/Q;
+	double mur_muf_ratio = muR/muF;
+	return c2reghk_(&z, &nf, &muf_mu_ratio, &mur_muf_ratio);
+}
+double C2reg_pointlike_gg(double z) {
+	double C2 = C2reg_pointlike_HK(z)/z;
+	double lf = -2.*log(muF/Q);
+  double W1 = 11./2.;
+  C2 += ( 72. * pow(log(1.-z),3) + (2.*nF - 33. + 108*lf) * pow(log(1-z),2)
+	  + (12.*W1 + 67. - 90.*zeta2 - 10./3.*nF + 36.*lf*lf - (33.-2.*nF)*lf) * log(1.-z)
+	  - 101./3. + 33.*zeta2 + 351.*zeta3/2. + nF*(14./9.-2.*zeta2) -(33.-2.*nF)/4.*lf*lf + (2.*CA*W1+67./2.-5./3.*nF-5.*CA*CA*zeta2)*lf
+	  ) /z;
+  C2 -= W1* C1reg_pointlike_gg(z);
+  return C2;
+}
+
+double FO_1_log_PL(double z) {
+		double lf = -2.*log(muF/Q);
+    return (4.*CA*log(1.-z)/(1.-z) + 2.*CA*1./(1.-z)*lf);
+  }
+double FO_1_nonlog(double z) {
+  double lf = -2.*log(muF/Q);
+  double smallx = - 11./2.*pow(1.-z,3.)/z;
+  double nonlog = CA * 2.*( (1./z-2.+z*(1.-z))*(2.*log(1.-z)-log(z)) -log(z)/(1.-z) ) + smallx;
+  nonlog += 2.*CA*(1./z-2.+z-z*z)*lf;
+  return nonlog;
+}
+double FO_1_delta_const() {
+  double W1 = 11./2.;
+  double cd1 = 2.*CA * zeta2;
+  double c = cd1+W1;
+  return c;
+}
+double FO_2_log(double z) {
+  double W1 = 11./2.;
+	double lf = -2.*log(muF/Q);
+	double Clog = ( 72. * pow(log(1.-z),3)/(1.-z)
+									+ (2.*nF - 33.) * pow(log(1.-z),2)/(1.-z)
+									+ (67. - 90.*zeta2 - 10./3.*nF) * log(1.-z)/(1.-z)
+									+ (-101./3. + 33.*zeta2 + 351./2.*zeta3 + nF*(14./9.-2.*zeta2))/(1.-z)
+									)
+								+( 108*lf*pow(log(1.-z),2)/(1.-z)
+									+ (36.*lf*lf - (33.-2.*nF)*lf)* log(1.-z)/(1.-z)
+									+ (-(33.-2.*nF)/4.*lf*lf + (67./2.-5./3.*nF-5.*CA*CA*zeta2)*lf)/(1.-z) )
+								+ W1*(4.*CA*log(1.-z)/(1.-z) + 2.*CA*1./(1.-z)*lf);
+	return Clog;
+}
+double FO_2_delta_const() {
+	double lHt = 2.*log(muF/Q*Q/mt);
+	double lf = -2.*log(muF/Q);
+  double W1 = 11./2.;
+  double W2 = 121./16. + 2777./144. + 19./8.*lHt + (-67./48. + 2./3.*lHt)*nF;
+	double cd1 = 2.*CA * zeta2;
+  double cd2 = ( 837./16. + 67./2.*zeta2 - 9./20.*zeta2*zeta2 - 165./4.*zeta3
+	   + nF  * ( 5./6.*zeta3 - 5./3.*zeta2 - 247./36. )
+	   -18.*zeta2*lf*lf + (-27./2. + 171./2.*zeta3 + 11./6.*nF - (33.-2.*nF)/2.*zeta2)*lf );
+  double c = cd2 + W2 + cd1*W1;
+  return c;
+}
+
+double FO_2_nonlog(double z) {
+  double nonlog = C2reg_pointlike_gg(z) + 11./2.*C1reg_pointlike_gg(z);
+  return nonlog;
+}
 
 ///////////////////////////
 /// qg channel

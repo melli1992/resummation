@@ -43,7 +43,7 @@ double DY_LO_factor(){
 /// Nucl.Phys. B359 (1991) 343-405 - B.4 - non constant piece
 /////////////////////////////////////////////////////////////////
 double DY_NLO_qqbar_reg(double x){
-	return (alphas_muR*CF*(-4*(1 + x)*log(Q2/muF2) - 8*(1 + x)*log(1 - x) + (4*(1 + pow(x,2))*log(x))/(-1 + x)))/(4.*M_PI);
+	return (alphas_muR*CF*(-4.*(1. + x)*log(Q2/muF2) - 8*(1. + x)*log(1. - x) + (4.*(1. + pow(x,2))*log(x))/(-1. + x)))/(4.*M_PI);
 }
 ///////////////////////////////////////////////////////////
 /// Nucl.Phys. B359 (1991) 343-405 - B.3 - plus dist
@@ -60,7 +60,7 @@ double DY_NLO_qqbar_delta(){
 // power expansions
 double DY_NLO_qqbar_expansion(double x, int power){
 if(power==1){
-	return (-2*alphas_muR*CF*(-1 + log(Q2/muF2) + 2*log(1 - x)))/M_PI;
+	return (-2.*alphas_muR*CF*(-1. + log(Q2/muF2) + 2.*log(1. - x)))/M_PI;
 }
 if(power==2){
 	return -((alphas_muR*CF*(-1 + x)*(-1 + log(Q2/muF2) + 2*log(1 - x)))/M_PI);

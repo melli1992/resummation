@@ -162,8 +162,8 @@ complex<double> omega_qq(vector<vector<complex<double>>> HR_IJ, vector<vector<co
 }
 
 complex<double> omega_gg(vector<vector<complex<double>>> H, vector<vector<complex<double>>> RC, vector<vector<complex<double>>> S, vector<vector<complex<double>>> R){
-	return H[0][0]*R[0][0]*RC[0][0]*S[0][0] + H[0][1]*R[0][0]*RC[1][1]*S[1][0] + H[0][2]*R[0][0]*RC[2][2]*S[2][0] 
-			+ H[1][0]*R[1][1]*RC[0][0]*S[0][1] + H[1][1]*R[1][1]*RC[1][1]*S[1][1] + H[1][2]*R[1][1]*RC[2][2]*S[2][1] 
+	return H[0][0]*R[0][0]*RC[0][0]*S[0][0] + H[0][1]*R[0][0]*RC[1][1]*S[1][0] + H[0][2]*R[0][0]*RC[2][2]*S[2][0]
+			+ H[1][0]*R[1][1]*RC[0][0]*S[0][1] + H[1][1]*R[1][1]*RC[1][1]*S[1][1] + H[1][2]*R[1][1]*RC[2][2]*S[2][1]
 			+ H[2][0]*R[2][2]*RC[0][0]*S[0][2] + H[2][1]*R[2][2]*RC[1][1]*S[1][2] + H[2][2]*R[2][2]*RC[2][2]*S[2][2];
 }
 

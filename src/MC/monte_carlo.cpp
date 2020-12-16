@@ -52,18 +52,18 @@ functionint init_vegas_ttH(std::string process){
 			integrand.xl = {0., 0., 0.,0.,0.,0.};
 			integrand.xu = {1., 1., 1.,M_PI, M_PI, 2.*M_PI};
 		}
+	else if(process == "LO_deform_s34"){
+			integrand.G.f =&vegas_ttH_Nspace_deform_s34;
+			integrand.G.dim = 6;
+			integrand.xl = {0., 0., 0.,0.,0.,0.};
+			integrand.xu = {1., 1., 1.,M_PI, M_PI, 2.*M_PI};
+		}
 	else if(process == "LOpT"){
 			integrand.G.f =&vegas_ttH_LO_pT;
 			integrand.G.dim = 5;
 			integrand.xl = {0.,0., 0.,0.,0.};
 			integrand.xu = {1.,1., 1.,M_PI, 2.*M_PI};
 		}
-	//else if(process == "QLO"){
-	//		integrand.G.f =&vegas_ttH_LO_Q;
-	//		integrand.G.dim = 7;
-	//		integrand.xl = {0., 0.,0., 0.,0.,0.,0.};
-	//		integrand.xu = {1., 1.,1., 1.,M_PI, M_PI, 2.*M_PI};
-//		}
 	else if(process == "pTstt"){
 			integrand.G.f =&vegas_ttH_LO_pT_stt_dist;
 			integrand.G.dim = 4;
@@ -85,9 +85,16 @@ functionint init_vegas_ttH(std::string process){
 		}
 	else if(process == "tot_N2"){
 			integrand.G.f =&vegas_ttH_N2;
+			if(fitPDF){
 			integrand.G.dim = 6;
 			integrand.xl = {0., 0.,0.,0.,0.,0.};
 			integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.};
+			}
+			else{
+				  integrand.G.dim = 8;
+					integrand.xl = {0., 0.,0.,0.,0.,0.,0.,0.};
+					integrand.xu = {1., 1.,M_PI, M_PI, 2.*M_PI,1.,1.,1.};
+				}
 		}
 	else if(process == "tot_N3"){
 			integrand.G.f =&vegas_ttH_N3;
@@ -270,7 +277,7 @@ results call_vegas(functionint integrand, lumni_params params, bool verbal, bool
 
 
 	  integrand.G.params = &params;
-	  size_t calls = 15000;
+	  size_t calls = 17500;
 
 	  gsl_monte_vegas_state *s = gsl_monte_vegas_alloc (integrand.G.dim);
 	  gsl_monte_vegas_init(s); //whatever, just do it
@@ -285,7 +292,7 @@ results call_vegas(functionint integrand, lumni_params params, bool verbal, bool
 	  int n_iter = 0, k = 0;
 	  double chisq;
 	  double minerr = 1.E-2;
-		params_run->alpha = 1.5;
+		params_run->alpha = 1.8;
 		gsl_monte_vegas_params_set(s, params_run);
   	do
        {

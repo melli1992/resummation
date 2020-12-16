@@ -55,14 +55,19 @@ int configure(int ac, char* av[], string configfile, bool runupdate = true)
         po::options_description hidden("Hidden options");
         hidden.add_options()
             ("input-file", po::value< vector<string> >(), "input file")
+            //output
+            ("output", po::value<string>(&result_map)->default_value("/home/mbeekveld/DY_numerical_NE/Numerical_Code_try/results"), "output directory")
             //PDFstuf
             ("setname", po::value<string>(&setname)->default_value("PDF4LHC15_nnlo_100"), "Name of PDFset")
             ("usemember", po::value<int>(&use_member)->default_value(0),"member of PDFset to use")
             ("fitPDF", po::value<bool>(&fitPDF)->default_value(false),"use own fits to PDF grid")
+            ("toy_pdfs", po::value<bool>(&toy_pdfs)->default_value(false),"use toy PDFs")
             ("chebPDF", po::value<bool>(&chebPDF)->default_value(false),"use cheby fits to PDF grid")
+            ("Nfix", po::value<bool>(&Nfixed)->default_value(false),"Use a fixed value for N in the resummation functions")
             //process
             ("sqrtS", po::value<double>(&comTeV)->default_value(13.), "center-of-mass energy [TeV]")
             ("process", po::value<string>(&process)->default_value("DY"),"process")
+            ("observable", po::value<string>(&observable)->default_value("Qinv"),"observable")
             //perturbative order
             ("fixed_order", po::value<int>(&order)->default_value(2), "order of calculation")
             //resummation

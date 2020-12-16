@@ -181,9 +181,12 @@ std::complex<double> LumN(std::complex<double> MelMoment, unsigned int N, std::s
  std::complex<double> lumniN = 0.;
  double *fitcheb_coeff;
  if (LumChannel == "gg"){fitcheb_coeff = fitcheb_coeff_gg;}
+ else if (LumChannel == "qg"){fitcheb_coeff = fitcheb_coeff_qg;}
+ else if (LumChannel == "qg_charge"){fitcheb_coeff = fitcheb_coeff_qg_charge;}
  else if (LumChannel == "qqbar"){fitcheb_coeff = fitcheb_coeff_qqbar;}
  else if (LumChannel == "qqbarU"){fitcheb_coeff = fitcheb_coeff_qqbarU;}
  else if (LumChannel == "qqbarD"){fitcheb_coeff = fitcheb_coeff_qqbarD;}
+ else if (LumChannel == "qqbarH"){fitcheb_coeff = fitcheb_coeff_qqbar;}
  else{ std::cout << "Channel not implemented " << std::endl; exit(0);}
 	for(unsigned int p = 0; p<=N; p++){
 		lumniN += fitcheb_coeff[p]/pow(MelMoment-1.,p+1.);

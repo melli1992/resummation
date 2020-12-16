@@ -34,6 +34,8 @@ double higgs_LO_factor(){
 	AQtot = norm(AQtot);
 	AQtot = 1;
 	return pbunits*alphas_muR*alphas_muR*Q2*sqrt(2.)*GF/576./M_PI/S2;//*real(AQtot);
+	//return pbunits*alphas_mt*alphas_mt*Q2*sqrt(2.)*GF/576./M_PI/S2;//*real(AQtot);
+	//return pbunits*alphas_Q*alphas_Q*Q2*sqrt(2.)*GF/576./M_PI/S2;//*real(AQtot);
 }
 // this factor is checked, get the same pb as the results in 0809.4283 fig 1 (also changed higgs mass to check it)
 complex<double> AQ(double x){
@@ -59,7 +61,8 @@ double higgs_NLO_gg_plus(double x){
 }
 //https://arxiv.org/pdf/0809.4283.pdf eqn. 7 (see eqn. 1)
 double higgs_NLO_gg_delta(){
-	return alphas_muR/M_PI*(11./2.+pow(M_PI,2));
+	double mur_dep_term = 2.*alphas_muR/M_PI*b0*M_PI*2.*log(muR/muF);
+	return alphas_muR/M_PI*(11./2.+pow(M_PI,2))+mur_dep_term;
 }
 double higgs_NLO_gg_expansion(double x, int power){
 	if(power==1){
