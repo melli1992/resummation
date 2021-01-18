@@ -5,6 +5,7 @@
 #include "cuba_integration.h"
 #include <sstream>
 #include "deriv_pdf.h"
+#include "mellin_pdf.h"
 #include "monte_carlo.h"
 #include <chrono>
 #include <gsl/gsl_sf_dilog.h>
@@ -25,6 +26,7 @@
 #include <string.h>
 #include <sstream>
 #include "inout.h"
+#include "cheb_pdf.h"
 
 using namespace std;
 
@@ -58,186 +60,37 @@ int main(int argc, char* argv[]){
 	/// predefinition of everything, setting it up
 	//////////////////////////////////////////////
 	configure(argc, argv, to_string2("DYh.cfg"), true);
-	bool PDFmemuse = false;
-
+  bool PDFmemuse = false;
+	double z = 0.5;
 	cout.precision(16);
-	/*complex<double> N = 2.1;
-	Q2 = 500.*500.;
-	muF2 = 500.*500./4.;
-	muR2 = 500.*500./4.;
-	cout << "/.Lt->"<< log(Q2/mt2) << "/.as->" << alphas_muR << "/.lnN->" << log(N*exp(M_gammaE)) << "/.x->0.1/.CA->3/.CF->4/3/.LQmuF2->"<< log(Q2/muF2) << endl;
-	cout << "DY NLO: " << DY_NLO_qqbar_delta() << " " << DY_NLO_qqbar_plus(0.1) << endl;
-	cout << "DY NNLO: " << DY_NNLO_qqbar_delta() << " " << DY_NNLO_qqbar_plus(0.1) << endl;
-	cout << "DY g01 g02 " << DY_g01() << " " << DY_g02() << endl;
-	cout << "Higgs NLO: " << higgs_NLO_gg_delta() << " " << higgs_NLO_gg_plus(0.1) << endl;
-	cout << "Higgs NNLO: " << higgs_NNLO_gg_delta() << " " << higgs_NNLO_gg_plus(0.1) << endl;
-	cout << "Higgs g01 g02 " << higgs_g01() << " " << higgs_g02() << endl;
 
-	cout << "NNLO match at LP NNLL " << endl;
-	ISLL = 1;
-	ISNLL = 1;
-	ISNNLL = 1;
-	ISNLP = 0;
-	cout << "DY " << NNLOmatch(N, A1q, A2q, D2DY, DY_g01(), DY_g02()) << endl;
-	cout << "Higgs " << NNLOmatch(N, A1g, A2g, D2higgs, higgs_g01(), higgs_g02()) << endl;
-	cout << "NNLO match at NLP NNLL " << endl;
-	ISLL = 1;
-	ISNLL = 1;
-	ISNNLL = 1;
-	ISNLP = 1;
-	cout << "DY " << NNLOmatch(N, A1q, A2q, D2DY, DY_g01(), DY_g02()) << endl;
-	cout << "Higgs " << NNLOmatch(N, A1g, A2g, D2higgs, higgs_g01(), higgs_g02()) << endl;
-
-	exit(0);*/
-	//////////////////////
-	/// TEST FUNCTIONS
-	//////////////////////
-	//cout << "REMEMBER THAT M2 was introduced for tth!!!! " << endl;
-	bool TEST = false;
-	bool MAKECOEF = false;
-	bool doexpansions = false;
-	if(MAKECOEF){
-		Q = 125.;
-		muF = 125.;
-		muR = 125.;
-		int Nsteps = 10000;
-		ofstream output2;
-		string q_str2 = "COEFFICIENTS_DY.txt";
-		output2.open(q_str2.c_str()); //.c_str() needed to do a constant string conversion
-		cout << q_str2 << endl;
-
-		update_defaults();
-		output2 << "x NLOqqbar NLOqg NNLOqqbarNS NNLOqg NNLOgg NNLOB2 NNLOBC NNLOC2 NNLOCD NNLOCE NNLOCF" << endl;
-		for(int i=1;i<Nsteps;i++)
-		{
-			double x = double(float(i)/double(Nsteps));
-			output2 << x << " ";
-			output2 << /*M_PI/(alphas_muR)**/(DY_NLO_qqbar_reg(x)+DY_NLO_qqbar_plus(x)) << "," << /*M_PI/(alphas_muR)**/(DY_NLO_qqbar_plus(x)) << "," << /*M_PI/(alphas_muR)**/(DY_NLO_qqbar_plus(x)+DY_NLO_qqbar_expansion(x, 1)) << "," << /*M_PI/(alphas_muR)**/(DY_NLO_qqbar_plus(x)+DY_NLO_qqbar_expansion(x, 1)+DY_NLO_qqbar_expansion(x, 2)) << " ";
-			output2 << /*M_PI/(alphas_muR)**/(DY_NLO_qg_full(x)) << "," << /*M_PI/(alphas_muR)**/(0) << "," << /*M_PI/(alphas_muR)**/(DY_NLO_qg_expansion(x, 1)) << "," << /*M_PI/(alphas_muR)**/(DY_NLO_qg_expansion(x, 1)+DY_NLO_qg_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_qqbar_NS(x)+DY_NNLO_qqbar_plus(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_qqbar_plus(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_qqbar_plus(x)+DY_NNLO_qqbar_NS_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_qqbar_plus(x)+DY_NNLO_qqbar_NS_expansion(x, 1)+DY_NNLO_qqbar_NS_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_qg_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_qg_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_qg_expansion(x, 1)+DY_NNLO_qg_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_gg_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_gg_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_gg_expansion(x, 1)+DY_NNLO_gg_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_BB_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_BB_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_BB_expansion(x, 1)+DY_NNLO_BB_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_BC_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_BC_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_BC_expansion(x, 1)+DY_NNLO_BC_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CC_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CC_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CC_expansion(x, 1)+DY_NNLO_CC_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CD_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CD_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CD_expansion(x, 1)+DY_NNLO_CD_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CE_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CE_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CE_expansion(x, 1)+DY_NNLO_CE_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CF_full(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CF_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(DY_NNLO_CF_expansion(x, 1)+DY_NNLO_CF_expansion(x, 2)) << " ";
-			output2 << endl;
-		}
-		output2.close();
-
-		q_str2 = "COEFFICIENTS_HIGGS.txt";
-		output2.open(q_str2.c_str()); //.c_str() needed to do a constant string conversion
-		cout << q_str2 << endl;
-
-		output2 << "x NLOgg NLOqg NLOqqbar NNLOgg NNLOqg NNLOqq NNLOqqp NNLOqqbar" << endl;
-		for(int i=1;i<Nsteps;i++)
-		{
-			double x = double(float(i)/double(Nsteps));
-			output2 << x << " ";
-			output2 << /*M_PI/(alphas_muR)**/(higgs_NLO_gg_reg(x)+higgs_NLO_gg_plus(x)) << "," << /*M_PI/(alphas_muR)**/(higgs_NLO_gg_plus(x)) << "," << /*M_PI/(alphas_muR)**/(higgs_NLO_gg_plus(x)+higgs_NLO_gg_expansion(x, 1)) << "," << /*M_PI/(alphas_muR)**/(higgs_NLO_gg_plus(x)+higgs_NLO_gg_expansion(x, 1)+higgs_NLO_gg_expansion(x, 2)) << " ";
-			output2 << /*M_PI/(alphas_muR)**/(higgs_NLO_qg_full(x)) << "," << /*M_PI/(alphas_muR)**/(0) << "," << /*M_PI/(alphas_muR)**/(higgs_NLO_qg_expansion(x, 1)) << "," << /*M_PI/(alphas_muR)**/(higgs_NLO_qg_expansion(x, 1)+higgs_NLO_qg_expansion(x, 2)) << " ";
-			output2 << /*M_PI/(alphas_muR)**/(higgs_NLO_qqbar_full(x)) << "," << /*M_PI/(alphas_muR)**/(0) << "," << /*M_PI/(alphas_muR)**/(higgs_NLO_qqbar_expansion(x, 1)) << "," << /*M_PI/(alphas_muR)**/(higgs_NLO_qqbar_expansion(x, 1)+higgs_NLO_qqbar_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_gg_reg(x)+higgs_NNLO_gg_plus(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_gg_plus(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_gg_plus(x)+higgs_NNLO_gg_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_gg_plus(x)+higgs_NNLO_gg_expansion(x, 1)+higgs_NNLO_gg_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qg_reg(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qg_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qg_expansion(x, 1)+higgs_NNLO_qg_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qq_reg(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qq_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qq_expansion(x, 1)+higgs_NNLO_qq_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qqp_reg(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qqp_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qqp_expansion(x, 1)+higgs_NNLO_qqp_expansion(x, 2)) << " ";
-			output2 << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qqbar_reg(x)) << "," << /*pow(M_PI/(alphas_muR),2)**/(0) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qqbar_expansion(x, 1)) << "," << /*pow(M_PI/(alphas_muR),2)**/(higgs_NNLO_qqbar_expansion(x, 1)+higgs_NNLO_qqbar_expansion(x, 2)) << " ";
-			output2 << endl;
-		}
-		output2.close();
-		exit(0);
-	}
-	if(TEST){
-		double z = 0.5;
-		ofstream output2;
-		string q_str2 = "COMPARISON_CODES.txt";
-		output2.open(q_str2.c_str()); //.c_str() needed to do a constant string conversion
-		cout << q_str2 << endl;
-		output2 << "============================================================" << endl;
-		output2 << "DY coefficients" << endl;
-		output2 << "============================================================" << endl;
-		output2 << "z=" << z <<", Q=" << Q << " GeV, muF=" << muF << " GeV, muR=" << muR << " GeV, tau=" << tau << ", alphas(muR2)=" << alphas_muR << endl;
-		output2 << "LO factor (tau*sigma0): " << DY_LO_factor() << endl;
-		output2 << "===============NLO-qqbar==========================" << endl;
-		output2 << "NLO qqbar LP (*alphas/(4pi)): " << DY_LO_factor()*DY_NLO_qqbar_plus(z) << endl;
-		output2 << "NLO qqbar z-regular: " << DY_LO_factor()*DY_NLO_qqbar_reg(z) << endl;
-		output2 << "NLO qqbar delta: " << DY_LO_factor()*DY_NLO_qqbar_delta() << endl;
-
-		output2 << "===============NLO-qg==========================" << endl;
-		output2 << "NLO qg full: " << DY_LO_factor()*DY_NLO_qg_full(z) << endl;
-
-		output2 << "===============NNLO-qqbar/qq/qbarqbar==========================" << endl;
-		output2 << "NNLO qqbar LP (*alphas/(4pi))**2: " << DY_LO_factor()*DY_NNLO_qqbar_plus(z) << endl;
-		output2 << "NNLO qqbar NS: " << DY_LO_factor()*DY_NNLO_qqbar_NS(z) << endl;
-		output2 << "NNLO qqbar delta: " << DY_LO_factor()*DY_NNLO_qqbar_delta() << endl;
-		output2 << "NNLO delta BB: " << DY_LO_factor()*DY_NNLO_BB_full(z) << endl;
-		output2 << "NNLO delta BC: " << DY_LO_factor()*DY_NNLO_BC_full(z) << endl;
-		output2 << "NNLO delta CC: " << DY_LO_factor()*DY_NNLO_CC_full(z) << endl;
-		output2 << "NNLO delta CD: " << DY_LO_factor()*DY_NNLO_CD_full(z) << endl;
-		output2 << "NNLO delta CE: " << DY_LO_factor()*DY_NNLO_CE_full(z) << endl;
-		output2 << "NNLO delta CF: " << DY_LO_factor()*DY_NNLO_CF_full(z) << endl;
-		output2 << "===============NNLO-qg==========================" << endl;
-		output2 << "NNLO qg full: " << DY_LO_factor()*DY_NNLO_qg_full(z) << endl;
-		output2 << "===============NNLO-gg==========================" << endl;
-		output2 << "NNLO gg full: " << DY_LO_factor()*DY_NNLO_gg_full(z) << endl;
-
-		output2 << "============================================================" << endl;
-		output2 << "PDF convultions - weighted with charges" << endl;
-		output2 << "============================================================" << endl;
-		output2 << "Sum_i(Q_q[i]Q_q[i]*1/x*q_i(z)*qbar_i(tau/z) + <-> ), for DeltaNNLONS, DeltaNNLOBC: " << pdf_sum_qqbar_charge_weighted(z, tau) << endl;
-		output2 << "Sum_i(Q_q[i]Q_q[i])*1/x*Sum_i(q_i(z)*qbar_i(tau/z) + <-> ), for DeltaNNLOB2: " << pdf_sum_qqbar_charge_unweighted(z, tau) << endl;
-		output2 << "Sum_(i,j)(Q_q[i]Q_q[i]*1/x*q_i(z)*q_j(tau/z) + <-> + ...), for qq + qbarqbar +qqbar (identical+non-identical), for DeltaNNLOC2: " << pdf_sum_qq_charge_weighted_double(z, tau) << endl;
-		output2 << "Sum_(i)(Q_q[i]Q_q[i]*1/x*q_i(z)*q_i(tau/z) + <-> + ...), for qq + qbarqbar +qqbar (identical), for DeltaNNLOCE: " << pdf_sum_qq_charge_weighted_single(z, tau) << endl;
-		output2 << "Sum_(i,j)(Q_q[i]Q_q[j]*1/x*q_i(z)*q_j(tau/z) + ...), for qq + qbarqbar +qqbar (identical+NI), for DeltaNNLOCD: " << pdf_sum_qq_charge_weighted_double_vivj(z, tau) << endl;
-		output2 << "Sum_(i)(Q_q[i]Q_q[i]*1/x*q_i(z)*q_i(tau/z) + ...), for qq + qbarqbar +qqbar (identical), for DeltaNNLOCF: " << pdf_sum_qq_charge_weighted_single_vivi(z, tau) << endl;
-		output2 << "Sum_(i)(Q_q[i]Q_q[i]*1/x*q_i(z)*g(tau/z) + <-> + ...), for qg + qbarg: " << pdf_sum_qg_charge_weighted(z, tau) << endl;
-		output2 << "Sum_(i)(Q_q[i]Q_q[i])*1/x*g(z)*g(tau/z)), for gg: " << pdf_sum_gg_charge_weighted(z, tau) << endl;
-
-
-		output2 << "============================================================" << endl;
-		output2 << "Higgs coefficients" << endl;
-		output2 << "============================================================" << endl;
-		output2 << "z=" << z <<", Q=" << Q << " GeV, muF=" << muF << " GeV, muR=" << muR << " GeV, tau=" << tau << ", alphas(muR2)=" << alphas_muR << endl;
-		output2 << "LO factor (tau*sigma0): " << higgs_LO_factor() << endl;
-		output2 << "===============NLO-gg==========================" << endl;
-		output2 << "NLO gg LP (*alphas/(pi)): " << higgs_LO_factor()*higgs_NLO_gg_plus(z) << endl;
-		output2 << "NLO gg z-regular: " << higgs_LO_factor()*higgs_NLO_gg_reg(z) << endl;
-		output2 << "NLO gg delta: " << higgs_LO_factor()*higgs_NLO_gg_delta() << endl;
-
-		output2 << "===============NLO-qg==========================" << endl;
-		output2 << "NLO qg full: " << higgs_LO_factor()*higgs_NLO_qg_full(z) << endl;
-		output2 << "===============NLO-qqbar==========================" << endl;
-		output2 << "NLO qqbar full: " << higgs_LO_factor()*higgs_NLO_qqbar_full(z) << endl;
-
-
-		output2 << "===============NNLO-gg==========================" << endl;
-		output2 << "NNLO gg LP (*alphas/(pi))**2: " << higgs_LO_factor()*(higgs_NNLO_gg_plus(z)+logdep_gg_plus(z)) << endl;
-		output2 << "NNLO gg z-regular: " <<  higgs_LO_factor()*(higgs_NNLO_gg_reg(z) + logdep_gg_reg(z)) << endl;
-		output2 << "NNLO gg delta: " << higgs_LO_factor()*(higgs_NNLO_gg_delta() + logdep_gg_constant()) << endl;
-		output2 << "===============NNLO-qg==========================" << endl;
-		output2 << "NNLO qg full: " << higgs_LO_factor()*(higgs_NNLO_qg_reg(z) +logdep_qg(z)) << endl;
-		output2 << "===============NNLO-qqbar==========================" << endl;
-		output2 << "NNLO qqbar full: " << higgs_LO_factor()*(higgs_NNLO_qqbar_reg(z)+logdep_qqbar(z)) << endl;
-		output2 << "===============NNLO-qq==========================" << endl;
-		output2 << "NNLO qq full: " << higgs_LO_factor()*(higgs_NNLO_qq_reg(z)+logdep_qq(z)) << endl;
-		output2 << "===============NNLO-qq'==========================" << endl;
-		output2 << "NNLO qq' full: " << higgs_LO_factor()*(higgs_NNLO_qqp_reg(z)+logdep_qq(z)) << endl;
-
-
-		output2 << "============================================================" << endl;
-		output2 << "PDF convultions" << endl;
-		output2 << "============================================================" << endl;
-		output2 << "Sum_i(1/x*q_i(z)*qbar_i(tau/z) + <-> ), for qqbar (identical): " << pdf_sum_qqbar(z, tau) << endl;
-		output2 << "Sum_(i)(1/x*q_i(z)*g(tau/z) + <->), for qg (and qbarg): " << pdf_sum_qg(z, tau) << endl;
-		output2 << "1/x*g(z)*g(tau/z)), for gg: " << pdf_sum_gg(z, tau) << endl;
-		output2 << "Sum_i(1/x*q_i(z)*q_i(tau/z)+qbar_i(z)*qbar_i(tau/z)), for qq+qbarqbar (identical) : " << pdf_sum_qq(z, tau) << endl;
-		output2 << "Sum_(i,j)(1/x*q_i(z)*q_j(tau/z)+<->+qbar_i(z)*qbar_j(tau/z)+<->), for qq+qbarqbar (non-identical) : " << pdf_sum_qqNI(z, tau) << endl;
-
-		output2.close();
-		exit(0);
-	}
+	/*double jacx = 1.-tau;
+	double x = 1.;
+	cout <<  1./(tau/jacx+x)*xfit_pdfs(4, tau+jacx*x)/(tau+jacx*x)*xfit_pdfs(6, tau/(tau+jacx*x))/(tau/(tau+jacx*x)) << endl;
+	vector<results_c> testit;
+	Q = 0.5;
+	cout << "z = " << Q << endl;
+	testit = call_cuhre_dy("test","qqbar","1",fitPDF);
+	cout << "O(1/N) " << testit[0].res << endl;
+	testit = call_cuhre_dy("test","qqbar","2",fitPDF);
+	cout << "O(1/N^2) " << testit[0].res << endl;
+	testit = call_cuhre_dy("test","qqbar","3",fitPDF);
+	cout << "O(1/N^3) " << testit[0].res << endl;
+	testit = call_cuhre_dy("test","qqbar","4",fitPDF);
+	cout << "O(1/N^5) " << testit[0].res << endl;
+	Q = 0.99;
+	cout << "z = " << Q << endl;
+	testit = call_cuhre_dy("test","qqbar","1",fitPDF);
+	cout << "O(1/N) " << testit[0].res << endl;
+	testit = call_cuhre_dy("test","qqbar","2",fitPDF);
+	cout << "O(1/N^2) " << testit[0].res << endl;
+	testit = call_cuhre_dy("test","qqbar","3",fitPDF);
+	cout << "O(1/N^3) " << testit[0].res<< endl;
+	testit = call_cuhre_dy("test","qqbar","4",fitPDF);
+	cout << "O(1/N^5) " << testit[0].res << endl;
+  exit(0);
+*/
+	bool doexpansions = true;
 
 	//////////////////////
 	/// LO declarations
@@ -285,22 +138,109 @@ int main(int argc, char* argv[]){
 	///////////////////////
 
 	//DY
+	vector<results_c> resummed_DY_NLP_exp_LL, resummed_DY_NLP_exp_NLL, resummed_DY_NLP_exp_NNLL, resummed_DY_NLP_qg;
 	vector<results_c> resummed_DY_LP_NNNLL, resummed_DY_LP_NNNLL_NLP_LL, resummed_DY_LP_NNLL, resummed_DY_LP_NNLL_NLP_LL, resummed_DY_LP_NLL, resummed_DY_LP_NLL_NLP_LL, resummed_DY_LP_LL_NLP_LL, resummed_DY_LP_LL;
 	vector<results_c> resummed_DY_LP_NNNLL_exp_NNLO, resummed_DY_LP_NNNLL_NLP_LL_exp_NNLO,resummed_DY_LP_NNLL_exp_NNLO, resummed_DY_LP_NNLL_NLP_LL_exp_NNLO, resummed_DY_LP_NLL_exp_NNLO, resummed_DY_LP_NLL_NLP_LL_exp_NNLO, resummed_DY_LP_LL_NLP_LL_exp_NNLO, resummed_DY_LP_LL_exp_NNLO;
 	vector<results_c> resummed_DY_LP_NNNLL_exp_NLO, resummed_DY_LP_NNNLL_NLP_LL_exp_NLO,resummed_DY_LP_NNLL_exp_NLO, resummed_DY_LP_NNLL_NLP_LL_exp_NLO, resummed_DY_LP_NLL_exp_NLO, resummed_DY_LP_NLL_NLP_LL_exp_NLO, resummed_DY_LP_LL_NLP_LL_exp_NLO, resummed_DY_LP_LL_exp_NLO;
+	vector<results_c> resummed_DY_LP_NLLp, resummed_DY_LP_NLLp_NLP_LL;
+	vector<results_c> resummed_DY_LP_NLLp_exp_NLO, resummed_DY_LP_NLLp_NLP_LL_exp_NLO;
 	vector<results_c> SCET_DY_LP_NNLL, SCET_DY_LP_NNLL_NLP_LL, SCET_DY_LP_NLL, SCET_DY_LP_NLL_NLP_LL, SCET_DY_LP_LL_NLP_LL, SCET_DY_LP_LL;
 
 	// higgs
+	vector<results_c> resummed_higgs_NLP_exp_LL, resummed_higgs_NLP_exp_NLL, resummed_higgs_NLP_exp_NNLL, resummed_higgs_NLP_qg;
 	vector<results_c> resummed_higgs_LP_NNNLL, resummed_higgs_LP_NNNLL_NLP_LL,resummed_higgs_LP_NNLL, resummed_higgs_LP_NNLL_NLP_LL, resummed_higgs_LP_NLL, resummed_higgs_LP_NLL_NLP_LL, resummed_higgs_LP_LL_NLP_LL, resummed_higgs_LP_LL;
 	vector<results_c> resummed_higgs_LP_NNNLL_exp_NNLO, resummed_higgs_LP_NNNLL_NLP_LL_exp_NNLO,resummed_higgs_LP_NNLL_exp_NNLO, resummed_higgs_LP_NNLL_NLP_LL_exp_NNLO, resummed_higgs_LP_NLL_exp_NNLO, resummed_higgs_LP_NLL_NLP_LL_exp_NNLO, resummed_higgs_LP_LL_NLP_LL_exp_NNLO, resummed_higgs_LP_LL_exp_NNLO;
 	vector<results_c> resummed_higgs_LP_NNNLL_exp_NLO, resummed_higgs_LP_NNNLL_NLP_LL_exp_NLO,resummed_higgs_LP_NNLL_exp_NLO, resummed_higgs_LP_NNLL_NLP_LL_exp_NLO, resummed_higgs_LP_NLL_exp_NLO, resummed_higgs_LP_NLL_NLP_LL_exp_NLO, resummed_higgs_LP_LL_NLP_LL_exp_NLO, resummed_higgs_LP_LL_exp_NLO;
+	vector<results_c> resummed_higgs_LP_NLLp, resummed_higgs_LP_NLLp_NLP_LL;
+	vector<results_c> resummed_higgs_LP_NLLp_exp_NLO, resummed_higgs_LP_NLLp_NLP_LL_exp_NLO;
 	vector<results_c> SCET_higgs_LP_NNLL, SCET_higgs_LP_NNLL_NLP_LL, SCET_higgs_LP_NLL, SCET_higgs_LP_NLL_NLP_LL, SCET_higgs_LP_LL_NLP_LL, SCET_higgs_LP_LL;
 
+	cout << "computing the resummed results" << endl;
+	cout << "LP NNLL'" << endl;
+	ISNNNLL = 0;
+	ISNLP = 0;
+	ISNNLL = 1;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD_prime",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+	cout << "LP NNLL" << endl;
+	ISNNNLL = 0;
+	ISNLP = 0;
+	ISNNLL = 1;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+	cout << "LP NLL'" << endl;
+	ISNNNLL = 0;
+	ISNLP = 0;
+	ISNNLL = 0;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD_prime",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+	cout << "LP NLL" << endl;
+	ISNNNLL = 0;
+	ISNLP = 0;
+	ISNNLL = 0;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+
+	cout << "LP NNLL'+NLP" << endl;
+	ISNNNLL = 0;
+	ISNLP = 1;
+	ISNNLL = 1;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD_prime",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+	cout << "LP NNLL+NLP" << endl;
+	ISNNNLL = 0;
+	ISNLP = 1;
+	ISNNLL = 1;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+	cout << "LP NLL'+NLP" << endl;
+	ISNNNLL = 0;
+	ISNLP = 1;
+	ISNNLL = 0;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD_prime",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+	cout << "LP NLL+NLP" << endl;
+	ISNNNLL = 0;
+	ISNLP = 1;
+	ISNNLL = 0;
+	ISNLL = 1;
+	ISLL = 1;
+	resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
+	cout << resummed_higgs_LP_NLL[0].res << endl;
+ exit(0);
 	////////////////////////////////////////////////////////////////////
 
 	///////////////////
 	/// output
 	///////////////////
+	/*complex<double> Nint = 2.5;
+	string lumchan = "qqbar"; complex<double> lumni = (complex<double>) LumN(Nint, 10, lumchan);
+	cout << "qqbar " << lumni << endl;
+  lumchan = "qg_charge"; lumni = (complex<double>) LumN(Nint, 10, lumchan);
+	cout << "qg_charge " << lumni << endl;
+	Nint = 1.5;
+	lumchan = "qqbar"; lumni = (complex<double>) LumN(Nint, 10, lumchan);
+	cout << "qqbar " << lumni << endl;
+	lumchan = "qg_charge"; lumni = (complex<double>) LumN(Nint, 10, lumchan);
+	cout << "qg_charge " << lumni << endl;
+
+	cout << "WARNING LOOK AT DEFINITION OF NNLL or NNLL' " << endl;
+	cout << "EXIT TO MAKE SURE THAT YOU DO " << endl;
+	exit(0);*/
 	ofstream output;
 	ostringstream x_convert; // need this for the output
 	x_convert << Q;
@@ -311,7 +251,10 @@ int main(int argc, char* argv[]){
 	ostringstream x_convert3; // need this for the output
 	x_convert3 << muF;
 	string mufstring  = x_convert3.str();
-	string q_str = "results/DYh_24082020/output_Q" + Qstring +"_as"+asstring+"_"+setname+"_muF"+mufstring;
+	ostringstream x_convert4; // need this for the output
+	x_convert4 << muR;
+	string murstring  = x_convert4.str();
+	string q_str = "results/DYh_16122020_without_prime/output_Q" + Qstring +"_as"+asstring+"_"+setname+"_muF"+mufstring+"_muR"+murstring;
 	if(DY) q_str = q_str+"_DY";
 	else if(higgs) q_str = q_str+"_Higgs";
 	else {cout << "process not well defined... exiting" << endl; exit(0);}
@@ -324,6 +267,7 @@ int main(int argc, char* argv[]){
 	if(PDFmemuse){q_str = q_str+"_members"; RES=false; fitPDF=false;}
 	if(chebPDF){q_str = q_str+"_cheb_pdfs"; fitPDF=false;} //if real pdfs, the resummed cannot be used!
 	else if(fitPDF){q_str = q_str+"_fitted_pdfs";}
+	else if(toy_pdfs){q_str = q_str+"_toy_pdfs";}
 	else if(realPDF){q_str = q_str+"_real_pdfs"; RES=false; fitPDF=false;} //if real pdfs, the resummed cannot be used!
 	if(RES) q_str = q_str+"_resummed";
 	q_str = q_str + ".txt";
@@ -334,7 +278,7 @@ int main(int argc, char* argv[]){
 	/// computation
 	/////////////////////////
 	int powerexpansion = 20;
-
+	int NLPexpansion = 10;
 	if(higgs){
 		cout << "working on higgs" << endl;
 		if((PDFmemuse == true) && (fitPDF == false)){
@@ -405,7 +349,12 @@ int main(int argc, char* argv[]){
 					higgs_NNLO_qqp_powers = call_cuhre_higgs("NNLO","qqp","exp",fitPDF,powerexpansion);
 					higgs_NNLO_qqbar_powers = call_cuhre_higgs("NLO","qqbar","exp",fitPDF,powerexpansion);
 				}
-				higgs_NNLO_gg_full.push_back({res_higgs_NNLO_gg_hard[0].res+res_higgs_NNLO_gg_LP_cor[0].res+res_higgs_NNLO_gg_delta[0].res, res_higgs_NNLO_gg_hard[0].err+res_higgs_NNLO_gg_LP_cor[0].err+res_higgs_NNLO_gg_delta[0].err, res_higgs_NNLO_gg_hard[0].prob+res_higgs_NNLO_gg_LP_cor[0].prob+res_higgs_NNLO_gg_delta[0].prob});
+				double error = higgs_scale_factor(higgs_LO_gg_full[0].res,higgs_NLO_gg_full[0].res);
+				higgs_NNLO_gg_full.push_back({error+res_higgs_NNLO_gg_hard[0].res+res_higgs_NNLO_gg_LP_cor[0].res+res_higgs_NNLO_gg_delta[0].res, res_higgs_NNLO_gg_hard[0].err+res_higgs_NNLO_gg_LP_cor[0].err+res_higgs_NNLO_gg_delta[0].err, res_higgs_NNLO_gg_hard[0].prob+res_higgs_NNLO_gg_LP_cor[0].prob+res_higgs_NNLO_gg_delta[0].prob});
+				error = higgs_scale_factor(0.,res_higgs_NLO_qg_full[0].res);
+				res_higgs_NNLO_qg_full[0].res += error;
+				error = higgs_scale_factor(0.,res_higgs_NLO_qqbar_full[0].res);
+				res_higgs_NNLO_qqbar_full[0].res += error;
 			}
 			if(RES&&higgs){
 				cout << "computing the resummed results" << endl;
@@ -429,19 +378,30 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_NNLL_NLP_LL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
 				resummed_higgs_LP_NNLL_NLP_LL_exp_NLO =call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_NNLL_NLP_LL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
+				resummed_higgs_NLP_exp_NNLL = call_cuhre_higgs("resum","gg","NLPexp",fitPDF, NLPexpansion);
+				resummed_higgs_NLP_qg = call_cuhre_higgs("resum","gg","offdiag",fitPDF, NLPexpansion);
 				cout << resummed_higgs_LP_NNLL_NLP_LL[0].res << " " << resummed_higgs_LP_NNLL_NLP_LL[0].err << endl;
-
 				cout << "LP NLL + NLP LL" << endl;
 				ISNNNLL = 0;
 				ISNNLL = 0;
 				ISNLP = 1;
 				ISLL = 1;
 				ISNLL = 1;
+				resummed_higgs_LP_NLLp_NLP_LL  = call_cuhre_higgs("resum","gg","pQCD_prime",fitPDF);
+				resummed_higgs_LP_NLLp_NLP_LL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO_prime",fitPDF);
 				resummed_higgs_LP_NLL_NLP_LL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
 				resummed_higgs_LP_NLL_NLP_LL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_NLL_NLP_LL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
+				resummed_higgs_NLP_exp_NLL = call_cuhre_higgs("resum","gg","NLPexp",fitPDF, NLPexpansion);
 				cout << resummed_higgs_LP_NLL_NLP_LL[0].res << " " << resummed_higgs_LP_NLL_NLP_LL[0].err << endl;
-
+				for(unsigned int i = 0; i < resummed_higgs_NLP_exp_NLL.size(); i++){
+							cout << "	order as "<<i<<" : " << resummed_higgs_NLP_exp_NLL[i].res << endl;
+						}
+				resummed_higgs_NLP_exp_NLL = call_cuhre_higgs("resum","gg","NLPexp",fitPDF, NLPexpansion);
+				cout << "NLO matched" << endl;
+				for(unsigned int i = 0; i < resummed_higgs_NLP_exp_NLL.size(); i++){
+							cout << "	order as "<<i<<" : " << resummed_higgs_NLP_exp_NLL[i].res << endl;
+								}
 				cout << "LP LL + NLP LL" << endl;
 				ISNNNLL = 0;
 				ISNNLL = 0;
@@ -451,6 +411,8 @@ int main(int argc, char* argv[]){
 				resummed_higgs_LP_LL_NLP_LL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
 				resummed_higgs_LP_LL_NLP_LL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_LL_NLP_LL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
+				resummed_higgs_NLP_exp_LL = call_cuhre_higgs("resum","gg","NLPexp",fitPDF, NLPexpansion);
+
 				cout << resummed_higgs_LP_LL_NLP_LL[0].res << " " << resummed_higgs_LP_LL_NLP_LL[0].err << endl;
 
 				cout << "LP NNNLL" << endl;
@@ -481,6 +443,8 @@ int main(int argc, char* argv[]){
 				ISNLP = 0;
 				ISLL = 1;
 				ISNLL = 1;
+				resummed_higgs_LP_NLLp  = call_cuhre_higgs("resum","gg","pQCD_prime",fitPDF);
+				resummed_higgs_LP_NLLp_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO_prime",fitPDF);
 				resummed_higgs_LP_NLL = call_cuhre_higgs("resum","gg","pQCD",fitPDF);
 				resummed_higgs_LP_NLL_exp_NLO = call_cuhre_higgs("resum","gg","pQCDNLO",fitPDF);
 				resummed_higgs_LP_NLL_exp_NNLO = call_cuhre_higgs("resum","gg","pQCDNNLO",fitPDF);
@@ -588,10 +552,14 @@ int main(int argc, char* argv[]){
 				ISNLP = 1;
 				ISLL = 1;
 				ISNLL = 1;
+				cout <<  ISNNNLL << endl;
 				resummed_DY_LP_NNLL_NLP_LL = call_cuhre_dy("resum","gg","pQCD",fitPDF);
 				resummed_DY_LP_NNLL_NLP_LL_exp_NLO =call_cuhre_dy("resum","gg","pQCDNLO",fitPDF);
 				resummed_DY_LP_NNLL_NLP_LL_exp_NNLO = call_cuhre_dy("resum","gg","pQCDNNLO",fitPDF);
+				resummed_DY_NLP_exp_NNLL = call_cuhre_dy("resum","gg","NLPexp",fitPDF, NLPexpansion);
+				resummed_DY_NLP_qg = call_cuhre_dy("resum","gg","offdiag",fitPDF, NLPexpansion);
 				cout << resummed_DY_LP_NNLL_NLP_LL[0].res << " " << resummed_DY_LP_NNLL_NLP_LL[0].err << endl;
+				cout <<  ISNNNLL << endl;
 
 				cout << "LP NLL + NLP LL" << endl;
 				ISNNNLL = 0;
@@ -599,10 +567,17 @@ int main(int argc, char* argv[]){
 				ISNLP = 1;
 				ISLL = 1;
 				ISNLL = 1;
+
+				resummed_DY_LP_NLLp_NLP_LL  = call_cuhre_dy("resum","gg","pQCD_prime",fitPDF);
+				resummed_DY_LP_NLLp_NLP_LL_exp_NLO = call_cuhre_dy("resum","gg","pQCDNLO_prime",fitPDF);
 				resummed_DY_LP_NLL_NLP_LL = call_cuhre_dy("resum","gg","pQCD",fitPDF);
 				resummed_DY_LP_NLL_NLP_LL_exp_NLO = call_cuhre_dy("resum","gg","pQCDNLO",fitPDF);
 				resummed_DY_LP_NLL_NLP_LL_exp_NNLO = call_cuhre_dy("resum","gg","pQCDNNLO",fitPDF);
+				resummed_DY_NLP_exp_NLL = call_cuhre_dy("resum","gg","NLPexp",fitPDF, NLPexpansion);
 				cout << resummed_DY_LP_NLL_NLP_LL[0].res << " " << resummed_DY_LP_NLL_NLP_LL[0].err << endl;
+				for(unsigned int i = 0; i < resummed_DY_NLP_exp_NLL.size(); i++){
+							cout << "	order as "<<i<<" : " << resummed_DY_NLP_exp_NLL[i].res << endl;
+						}
 
 				cout << "LP LL + NLP LL" << endl;
 				ISNNNLL = 0;
@@ -645,6 +620,8 @@ int main(int argc, char* argv[]){
 				ISNLP = 0;
 				ISLL = 1;
 				ISNLL = 1;
+				resummed_DY_LP_NLLp  = call_cuhre_dy("resum","gg","pQCD_prime",fitPDF);
+				resummed_DY_LP_NLLp_exp_NLO = call_cuhre_dy("resum","gg","pQCDNLO_prime",fitPDF);
 				resummed_DY_LP_NLL = call_cuhre_dy("resum","gg","pQCD",fitPDF);
 				resummed_DY_LP_NLL_exp_NLO = call_cuhre_dy("resum","gg","pQCDNLO",fitPDF);
 				resummed_DY_LP_NLL_exp_NNLO = call_cuhre_dy("resum","gg","pQCDNNLO",fitPDF);
@@ -672,7 +649,10 @@ int main(int argc, char* argv[]){
 	/// printouts
 	/////////////////////////
 	output.open(q_str.c_str()); //.c_str() needed to do a constant string conversion
+	//output.open(result_map.c_str());
 	cout << "Making the printouts" << endl;
+	cout << "muF = " << muF << " GeV ,muR = " << muR << " GeV, alphas(muR2) = " << alphas_muR << " ,alphas(Q2) = " << alphas_Q << " ,alphas(muF2) = " << alphas_muF << endl;
+	output << "muF = " << muF << " GeV ,muR = " << muR << " GeV, alphas(muR2) = " << alphas_muR << " ,alphas(Q2) = " << alphas_Q << " ,alphas(muF2) = " << alphas_muF << endl;
 	if(higgs){
 		output << "======================================================" << endl;
 		output << "Higgs results" << endl;
@@ -690,7 +670,7 @@ int main(int argc, char* argv[]){
 		else
 		{
 		if(LO&&higgs){
-
+			cout << "LO" << endl;
 			/////////////////////////////////////
 			///
 			output << "===================" << endl;
@@ -704,6 +684,8 @@ int main(int argc, char* argv[]){
 			output << "Total xsec:					" << higgs_LO_gg_full[0].res << " pb +/- " << higgs_LO_gg_full[0].err << " " << higgs_LO_gg_full[0].prob << endl;
 		}
 		if(NLO&&higgs){
+
+			cout << "NLO" << endl;
 			/////////////////////////////////////
 			///
 			output << "===================" << endl;
@@ -756,6 +738,7 @@ int main(int argc, char* argv[]){
 			////////////////////////////////////////////////////////////////////
 		}
 		if(NNLO&&higgs){
+			cout << "NNLO" << endl;
 			/////////////////////////////////////
 			///
 			output << "===================" << endl;
@@ -767,6 +750,7 @@ int main(int argc, char* argv[]){
 			/////////////////////////////////////
 			output << "Z-dependent, including LP (NNLO):		" <<  res_higgs_NNLO_gg_hard[0].res << " pb +/- " << res_higgs_NNLO_gg_hard[0].err <<  endl;
 			output << "Constant piece (NNLO):				" <<  res_higgs_NNLO_gg_delta[0].res << " pb +/- " << res_higgs_NNLO_gg_delta[0].err <<  endl;
+			output << "muR-dependent piece (NNLO): " << higgs_scale_factor(higgs_LO_gg_full[0].res,higgs_NLO_gg_full[0].res)<< endl;
 			output << "Fractional gg xsec (at NNLO):			" <<  higgs_NNLO_gg_full[0].res << " pb "  <<  endl;
 			if(doexpansions){
 				res_higgs_NNLO_gg_accum.push_back(res_higgs_NNLO_gg_LP[0]);
@@ -780,8 +764,9 @@ int main(int argc, char* argv[]){
 			/////////////////////////////////////
 			output << "qg channel" << endl;
 			/////////////////////////////////////
+			output << "muR-dependent piece (NNLO): " << higgs_scale_factor(0,res_higgs_NLO_qg_full[0].res)<< endl;
+			output << "Fractional qqbar xsec (at NNLO):		" <<  res_higgs_NNLO_qg_full[0].res << " pb +/-"  <<  res_higgs_NNLO_qg_full[0].err  <<  endl;
 			if(doexpansions){
-				output << "Fractional qg xsec (at NNLO):			" <<  res_higgs_NNLO_qg_full[0].res << " pb +/-"  <<  res_higgs_NNLO_qg_full[0].err  <<  endl;
 				res_higgs_NNLO_qg_accum.push_back({0,0,0});
 				for(unsigned int i = 0; i < higgs_NNLO_qg_powers.size(); i++){
 						res_higgs_NNLO_qg_accum[0].res = res_higgs_NNLO_qg_accum[0].res+higgs_NNLO_qg_powers[i].res;
@@ -792,6 +777,7 @@ int main(int argc, char* argv[]){
 			/////////////////////////////////////
 			output << "qqbar channel" << endl;
 			/////////////////////////////////////
+			output << "muR-dependent piece (NNLO): " << higgs_scale_factor(0,res_higgs_NLO_qqbar_full[0].res)<< endl;
 			output << "Fractional qqbar xsec (at NNLO):		" <<  res_higgs_NNLO_qqbar_full[0].res << " pb +/-"  <<  res_higgs_NNLO_qqbar_full[0].err  <<  endl;
 			if(doexpansions){
 				res_higgs_NNLO_qqbar_accum.push_back({0,0,0});
@@ -831,6 +817,19 @@ int main(int argc, char* argv[]){
 			output << "......................................................." << endl;
 		}
 		if(RES&&higgs){
+			/*cout << "My code: " << endl;
+			cout << "LO:	" << higgs_LO_gg_full[0].res << endl;
+			cout << "NLO:	" << higgs_LO_gg_full[0].res+higgs_NLO_gg_full[0].res << endl;
+			cout << "NNLO:	" << higgs_LO_gg_full[0].res+higgs_NLO_gg_full[0].res+higgs_NNLO_gg_full[0].res << endl;
+			cout << "LL_NLO: " <<  resummed_higgs_LP_LL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_LL_exp_NLO[0].err <<  endl;
+			cout << "LL_NNLO: " <<  resummed_higgs_LP_LL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_LL_exp_NNLO[0].err <<  endl;
+			cout << "NLL_NLO: " <<  resummed_higgs_LP_NLL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_NLL_exp_NLO[0].err <<  endl;
+			cout << "NLL_NNLO: " <<  resummed_higgs_LP_NLL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_NLL_exp_NNLO[0].err <<  endl;
+			cout << "NNLL_NLO: " <<  resummed_higgs_LP_NNLL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_NNLL_exp_NLO[0].err <<  endl;
+			cout << "NNLL_NNLO: " <<  resummed_higgs_LP_NNLL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_NNLL_exp_NNLO[0].err <<  endl;
+			cout << "NNNLL_NLO: " <<  resummed_higgs_LP_NNNLL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_NNNLL_exp_NLO[0].err <<  endl;
+			cout << "NNNLL_NNLO: " <<  resummed_higgs_LP_NNNLL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_NNNLL_exp_NNLO[0].err <<  endl;
+			*/
 			/////////////////////////////////////
 			///
 			output << "=======================" << endl;
@@ -847,11 +846,20 @@ int main(int argc, char* argv[]){
 			output << "Resummed (LP NNLL + NLP LL): 		" << resummed_higgs_LP_NNLL_NLP_LL[0].res << " pb +/- " << resummed_higgs_LP_NNLL_NLP_LL[0].err <<  endl;
 			output << "Expanded to NLO:				" <<  resummed_higgs_LP_NNLL_NLP_LL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_NNLL_NLP_LL_exp_NLO[0].err <<  endl;
 			output << "Expanded to NNLO:				" <<  resummed_higgs_LP_NNLL_NLP_LL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_NNLL_NLP_LL_exp_NNLO[0].err <<  endl;
+			for(unsigned int i = 0; i < resummed_higgs_NLP_exp_NNLL.size(); i++){
+						output << " NLP(NNLL) expanded to order as "<<i<<" : " << resummed_higgs_NLP_exp_NNLL[i].res << endl;
+					}
 			output << "--------------------------------" << endl;
 
 			output << "Resummed (LP NLL + NLP LL): 		" << resummed_higgs_LP_NLL_NLP_LL[0].res << " pb +/- " << resummed_higgs_LP_NLL_NLP_LL[0].err <<  endl;
 			output << "Expanded to NLO:				" <<  resummed_higgs_LP_NLL_NLP_LL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_NLL_NLP_LL_exp_NLO[0].err <<  endl;
 			output << "Expanded to NNLO:				" <<  resummed_higgs_LP_NLL_NLP_LL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_NLL_NLP_LL_exp_NNLO[0].err <<  endl;
+			for(unsigned int i = 0; i < resummed_higgs_NLP_exp_NLL.size(); i++){
+						output << "	NLP(NLL) expanded to order as "<<i<<" : " << resummed_higgs_NLP_exp_NLL[i].res << endl;
+					}
+			output << "--------------------------------" << endl;
+			output << "Resummed (LP NLLp + NLP LL): 		" << resummed_higgs_LP_NLLp_NLP_LL[0].res << " pb +/- " << resummed_higgs_LP_NLLp_NLP_LL[0].err <<  endl;
+			output << "Expanded to NLO_prime:				" <<  resummed_higgs_LP_NLLp_NLP_LL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_NLLp_NLP_LL_exp_NLO[0].err <<  endl;
 			output << "--------------------------------" << endl;
 
 			output << "Resummed (LP LL + NLP LL): 		" << resummed_higgs_LP_LL_NLP_LL[0].res << " pb +/- " << resummed_higgs_LP_LL_NLP_LL[0].err <<  endl;
@@ -874,11 +882,21 @@ int main(int argc, char* argv[]){
 			output << "Expanded to NNLO:				" <<  resummed_higgs_LP_NLL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_NLL_exp_NNLO[0].err <<  endl;
 			output << "--------------------------------" << endl;
 
+			output << "Resummed (LP NLLp): 		" << resummed_higgs_LP_NLLp[0].res << " pb +/- " << resummed_higgs_LP_NLLp[0].err <<  endl;
+			output << "Expanded to NLO_prime:				" <<  resummed_higgs_LP_NLLp_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_NLLp_exp_NLO[0].err <<  endl;
+			output << "--------------------------------" << endl;
+
 			output << "Resummed (LP LL): 		" << resummed_higgs_LP_LL[0].res << " pb +/- " << resummed_higgs_LP_LL[0].err <<  endl;
 			output << "Expanded to NLO:				" <<  resummed_higgs_LP_LL_exp_NLO[0].res << " pb +/- " << resummed_higgs_LP_LL_exp_NLO[0].err <<  endl;
 			output << "Expanded to NNLO:				" <<  resummed_higgs_LP_LL_exp_NNLO[0].res << " pb +/- " << resummed_higgs_LP_LL_exp_NNLO[0].err <<  endl;
 			output << "--------------------------------" << endl;
 
+			output << "NNLL NLP qg: 		" << resummed_higgs_NLP_qg[3].res << " pb +/- " << resummed_higgs_NLP_qg[3].err << endl;
+			output << "NLL NLP qg: 		" << resummed_higgs_NLP_qg[2].res << " pb +/- " << resummed_higgs_NLP_qg[2].err << endl;
+
+			for(unsigned int i = 0; i < resummed_higgs_NLP_qg.size(); i++){
+						output << "	NLP qg expanded to order as "<<i<<" : " << resummed_higgs_NLP_qg[i].res << endl;
+					}
 			output << "======================================================" << endl;
 		}
 	}
@@ -923,7 +941,7 @@ int main(int argc, char* argv[]){
 			/////////////////////////////////////
 			output << "qqbar channel" << endl;
 			/////////////////////////////////////
-			output << "Z-dependent, including LP (NLO):		" <<  res_DY_NLO_qqbar_hard[0].res << " pb +/- " << res_DY_NLO_qqbar_hard[0].err <<  endl;
+			output << "Z-dependent, including LP (NLO):		" <<  res_DY_NLO_qqbar_hard[0].res + res_DY_NLO_qqbar_LP_cor[0].res << " pb +/- " << res_DY_NLO_qqbar_hard[0].err + res_DY_NLO_qqbar_LP_cor[0].err <<  endl;
 			output << "Constant piece (NLO):				" <<  res_DY_NLO_qqbar_delta[0].res << " pb +/- " << res_DY_NLO_qqbar_delta[0].err <<  endl;
 			output << "Fractional qqbar xsec (at NLO):			" <<  DY_NLO_qqbar_full[0].res << " pb " <<  endl;
 			if(doexpansions){
@@ -963,7 +981,7 @@ int main(int argc, char* argv[]){
 			/////////////////////////////////////
 			output << "qqbar channel" << endl;
 			/////////////////////////////////////
-			output << "Z-dependent, including LP (NNLO):		" <<  res_DY_NNLO_qqbar_hard[0].res << " pb +/- " << res_DY_NNLO_qqbar_hard[0].err <<  endl;
+			output << "Z-dependent, including LP (NNLO):		" <<  res_DY_NNLO_qqbar_hard[0].res + res_DY_NNLO_qqbar_LP_cor[0].res<< " pb +/- " << res_DY_NNLO_qqbar_hard[0].err + res_DY_NNLO_qqbar_LP_cor[0].err <<  endl;
 			output << "Constant piece (NNLO):				" <<  res_DY_NNLO_qqbar_delta[0].res << " pb +/- " << res_DY_NNLO_qqbar_delta[0].err <<  endl;
 			output << "Fractional qqbar xsec (at NNLO):			" <<  DY_NNLO_qqbar_full[0].res << " pb "  <<  endl;
 			if(doexpansions){
@@ -1033,11 +1051,20 @@ int main(int argc, char* argv[]){
 			output << "Expanded to NNLO:				" <<  resummed_DY_LP_NNLL_NLP_LL_exp_NNLO[0].res << " pb +/- " << resummed_DY_LP_NNLL_NLP_LL_exp_NNLO[0].err <<  endl;
 			output << "--------------------------------" << endl;
 
+			for(unsigned int i = 0; i < resummed_DY_NLP_exp_NNLL.size(); i++){
+						output << "	NLP(NNLL) expanded to order as "<<i<<" : " << resummed_DY_NLP_exp_NNLL[i].res << endl;
+					}
 			output << "Resummed (LP NLL + NLP LL): 		" << resummed_DY_LP_NLL_NLP_LL[0].res << " pb +/- " << resummed_DY_LP_NLL_NLP_LL[0].err <<  endl;
 			output << "Expanded to NLO:				" <<  resummed_DY_LP_NLL_NLP_LL_exp_NLO[0].res << " pb +/- " << resummed_DY_LP_NLL_NLP_LL_exp_NLO[0].err <<  endl;
 			output << "Expanded to NNLO:				" <<  resummed_DY_LP_NLL_NLP_LL_exp_NNLO[0].res << " pb +/- " << resummed_DY_LP_NLL_NLP_LL_exp_NNLO[0].err <<  endl;
 			output << "--------------------------------" << endl;
-
+			for(unsigned int i = 0; i < resummed_DY_NLP_exp_NLL.size(); i++){
+						output << "	NLP(NLL) expanded to order as "<<i<<" : " << resummed_DY_NLP_exp_NLL[i].res << endl;
+					}
+			output << "--------------------------------" << endl;
+			output << "Resummed (LP NLLp + NLP LL): 		" << resummed_DY_LP_NLLp_NLP_LL[0].res << " pb +/- " << resummed_DY_LP_NLLp_NLP_LL[0].err <<  endl;
+			output << "Expanded to NLO_prime:				" <<  resummed_DY_LP_NLLp_NLP_LL_exp_NLO[0].res << " pb +/- " << resummed_DY_LP_NLLp_NLP_LL_exp_NLO[0].err <<  endl;
+			output << "--------------------------------" << endl;
 			output << "Resummed (LP LL + NLP LL): 		" << resummed_DY_LP_LL_NLP_LL[0].res << " pb +/- " << resummed_DY_LP_LL_NLP_LL[0].err <<  endl;
 			output << "Expanded to NLO:				" <<  resummed_DY_LP_LL_NLP_LL_exp_NLO[0].res << " pb +/- " << resummed_DY_LP_LL_NLP_LL_exp_NLO[0].err <<  endl;
 			output << "Expanded to NNLO:				" <<  resummed_DY_LP_LL_NLP_LL_exp_NNLO[0].res << " pb +/- " << resummed_DY_LP_LL_NLP_LL_exp_NNLO[0].err <<  endl;
@@ -1058,15 +1085,26 @@ int main(int argc, char* argv[]){
 			output << "Expanded to NNLO:				" <<  resummed_DY_LP_NLL_exp_NNLO[0].res << " pb +/- " << resummed_DY_LP_NLL_exp_NNLO[0].err <<  endl;
 			output << "--------------------------------" << endl;
 
+			output << "Resummed (LP NLLp): 		" << resummed_DY_LP_NLLp[0].res << " pb +/- " << resummed_DY_LP_NLLp[0].err <<  endl;
+			output << "Expanded to NLO_prime:				" <<  resummed_DY_LP_NLLp_exp_NLO[0].res << " pb +/- " << resummed_DY_LP_NLLp_exp_NLO[0].err <<  endl;
+			output << "--------------------------------" << endl;
+
 			output << "Resummed (LP LL): 		" << resummed_DY_LP_LL[0].res << " pb +/- " << resummed_DY_LP_LL[0].err <<  endl;
 			output << "Expanded to NLO:				" <<  resummed_DY_LP_LL_exp_NLO[0].res << " pb +/- " << resummed_DY_LP_LL_exp_NLO[0].err <<  endl;
 			output << "Expanded to NNLO:				" <<  resummed_DY_LP_LL_exp_NNLO[0].res << " pb +/- " << resummed_DY_LP_LL_exp_NNLO[0].err <<  endl;
 			output << "--------------------------------" << endl;
 
+			output << "NNLL NLP qg: 		" << resummed_DY_NLP_qg[3].res << " pb +/- " << resummed_DY_NLP_qg[3].err << endl;
+			output << "NLL NLP qg: 		" << resummed_DY_NLP_qg[2].res << " pb +/- " << resummed_DY_NLP_qg[2].err << endl;
+
+			for(unsigned int i = 0; i < resummed_DY_NLP_qg.size(); i++){
+						output << "	NLP qg expanded to order as "<<i<<" : " << resummed_DY_NLP_qg[i].res << endl;
+					}
 			output << "======================================================" << endl;
 		}
 		}
 }
+	cout << Q << " " << Q2 << " " << muR << " " << muR2 << " " << muF << " " << muF2 << endl;
 	output.close();
 	return 0;
 }

@@ -183,6 +183,23 @@ complex<double> NLPpiece = 2.*((A1*as*ISNLP*lnN)/(M_PI*N));
 return LPpiece + NLPpiece;
 }
 
+
+complex<double> NLOmatch_prime(complex<double> N, double A1, double g01){
+double as = alphas_muR;
+double LQmuF2 = log(Q2/muF2);
+complex<double> lnN = log(N*exp(M_gammaE*INCEULER));
+double EG = 0.;
+if(INCEULER == 0) EG = M_gammaE;
+complex<double> LPpiece = 4.*A1/M_PI*as*EG*ISNLL*lnN
+													+ as*((2.*A1*ISLL*pow(lnN,2))/M_PI
+													- (2.*A1*ISNLL*lnN*LQmuF2)/M_PI)
+													+ ISNLL*g01
+ 												  + 1.;
+complex<double> NLPpiece = 2.*((A1*as*ISNLP*lnN)/(M_PI*N));
+//cout <<
+return LPpiece + NLPpiece;
+}
+
 complex<double> NNLOmatch(complex<double> N, double A1, double A2, double D2, double g01, double g02){
 double as = alphas_muR;
 double LQmuF2 = log(Q2/muF2);

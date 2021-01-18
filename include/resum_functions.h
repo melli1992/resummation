@@ -14,6 +14,7 @@ std::complex<double> wideangle(double D2,std::complex<double>lambda);
 
 
 std::complex<double> NLOmatch(std::complex<double> N, double A1, double g01);
+std::complex<double> NLOmatch_prime(std::complex<double> N, double A1, double g01);
 std::complex<double> NNLOmatch(std::complex<double> N, double A1, double A2, double D2, double g01, double g02);
 
 double higgs_g01();
